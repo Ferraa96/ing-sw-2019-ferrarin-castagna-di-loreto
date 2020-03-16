@@ -5,12 +5,10 @@ import java.io.Serializable;
 public class Commands implements Serializable {
     private int raw;
     private int column;
+    private int height;
     private int player;
     private int chosenCard;
-    boolean move = false;
-    boolean buildBlock = false;
-    boolean buildDome = false;
-    boolean myTurn = false;
+    private int effect;         // 0 => move, 1 => buildBlock, 2 => buildDome, 3 => myTurn, 4 => setPlayerID, 5 => endGame
 
     public Commands() {}
 
@@ -36,6 +34,14 @@ public class Commands implements Serializable {
         this.column = column;
     }
 
+    public int getHeight() {
+        return height;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
     public int getPlayer() {
         return player;
     }
@@ -44,35 +50,15 @@ public class Commands implements Serializable {
         this.player = player;
     }
 
-    public boolean isMove() {
-        return move;
-    }
-
-    public void setMove(boolean move) {
-        this.move = move;
-    }
-
-    public boolean isBuildBlock() {
-        return buildBlock;
-    }
-
-    public void setBuildBlock(boolean buildBlock) {
-        this.buildBlock = buildBlock;
-    }
-
-    public boolean isBuildDome() {
-        return buildDome;
-    }
-
-    public void setBuildDome(boolean buildDome) {
-        this.buildDome = buildDome;
-    }
-
-    public boolean isChooseCard() {
-        return myTurn;
-    }
-
     public void setChosenCard(int chosenCard) {
         this.chosenCard = chosenCard;
+    }
+
+    public int getEffect() {
+        return effect;
+    }
+
+    public void setEffect(int effect) {
+        this.effect = effect;
     }
 }
