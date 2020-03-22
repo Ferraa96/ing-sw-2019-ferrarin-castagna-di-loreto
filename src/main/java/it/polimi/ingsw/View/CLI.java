@@ -3,23 +3,32 @@ package it.polimi.ingsw.View;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import it.polimi.ingsw.Controller.Commands;
-import it.polimi.ingsw.Controller.SocketInterface;
+import it.polimi.ingsw.Controller.Instruction;
+import it.polimi.ingsw.Controller.SocketClient;
+import it.polimi.ingsw.Model.Card;
+import it.polimi.ingsw.Model.CardDeserializer;
+import it.polimi.ingsw.Model.Position;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Scanner;
 
 public class CLI implements ViewInterface {
     private Commands commands;
-    private SocketInterface socket;
+    private SocketClient socket;
     private List<Tile> allTiles;
     private Tile[][] gameMap;
+    private Scanner scanner = new Scanner(System.in);
+    private CardDeserializer cardDeserializer = new CardDeserializer();
 
-    public CLI(SocketInterface socket) {
+    public CLI(SocketClient socket) {
         this.socket = socket;
+        commands = new Commands();
         Gson gson = new Gson();
         InputStream input = getClass().getResourceAsStream("/gameMap.json");
         BufferedReader bf = new BufferedReader(new InputStreamReader(input));
@@ -41,23 +50,23 @@ public class CLI implements ViewInterface {
     }
 
     @Override
-    public void move(int player, int row, int column) {
-        int index = allTiles.indexOf(gameMap[row][column]);
-        gameMap[row][column] = allTiles.get(index + 1);
+    public void move(int player, Position position) {
+        int index = allTiles.indexOf(gameMap[position.getRow()][position.getColumn()]);
+        gameMap[position.getRow()][position.getColumn()] = allTiles.get(index + 1);
         updateScreen();
     }
 
     @Override
-    public void buildBlock(int raw, int column, int height) {
-        int index = allTiles.indexOf(gameMap[raw][column]);
-        gameMap[raw][column] = allTiles.get(index + 2);
+    public void buildBlock(Position position, int height) {
+        int index = allTiles.indexOf(gameMap[position.getRow()][position.getColumn()]);
+        gameMap[position.getRow()][position.getColumn()] = allTiles.get(index + 2);
         updateScreen();
     }
 
     @Override
-    public void buildDome(int raw, int column, int height) {
-        int index = allTiles.indexOf(gameMap[raw][column]);
-        gameMap[raw][column] = allTiles.get(11 - index);
+    public void buildDome(Position position, int height) {
+        int index = allTiles.indexOf(gameMap[position.getRow()][position.getColumn()]);
+        gameMap[position.getRow()][position.getColumn()] = allTiles.get(11 - index);
         updateScreen();
     }
 
@@ -76,7 +85,92 @@ public class CLI implements ViewInterface {
     }
 
     @Override
-    public void updateServer(Commands commands) {
+    public void chooseCard(List<Integer> cardList) {
+        List<Card> cards;
+        cards = cardDeserializer.getCardList();
+        System.out.println("Scegli una carta tra\n");
+        for(Integer curr: cardList) {
+            System.out.println(curr + ": " + cards.get(curr).getName());
+            System.out.println(cards.get(curr).getDescription() + "\n");
+        }
+        commands.setInstruction(Instruction.setCard);
+        commands.setChosenCard(verifyCard(cardList));
         socket.send(commands);
+    }
+
+    @Override
+    public void chooseCardList(int num) {
+        List<Card> cards = cardDeserializer.getCardList();
+        List<Integer> choosen = new ArrayList<>();
+        System.out.println("Sei il primo giocatore, scegli " + num + " carte tra\n");
+        for(int i = 0; i < cards.size(); i++) {
+            System.out.println(i + ": " + cards.get(i).getName() + "\n" + cards.get(i).getDescription() + "\n");
+        }
+        commands.setInstruction(Instruction.initialCardChoose);
+        List<Integer> tempList = new ArrayList<>();
+        for(int i = 0; i < cards.size(); i++) {
+            tempList.add(i);
+        }
+        for(int i = 0; i < num; i++) {
+            System.out.println("Carta " + (i + 1) + ": ");
+            choosen.add(verifyCard(tempList));
+        }
+        commands.setCardList(choosen);
+        socket.send(commands);
+    }
+
+    private int verifyCard(List<Integer> list) {
+        int card = scanner.nextInt();
+        boolean ok = false;
+        while(true) {
+            for (Integer i : list) {
+                if (i == card) {
+                    ok = true;
+                    list.remove(i);
+                    break;
+                }
+            }
+            if(ok) {
+                return card;
+            }
+            System.out.println("Carta non valida, riprova: ");
+            card = scanner.nextInt();
+        }
+    }
+
+    @Override
+    public void firstPositioning(List<Position> availablePos) {
+        List<Position> list = new ArrayList<>();
+        Position pos;
+        System.out.println("Posizione iniziale lavoratore 1: (riga, colonna) ");
+        pos = verifyPosition(availablePos);
+        move(commands.getPlayer(), pos);
+        list.add(pos);
+        System.out.println("Posizione iniziale lavoratore 2: (riga, colonna) ");
+        pos = verifyPosition(availablePos);
+        move(commands.getPlayer(), pos);
+        list.add(pos);
+        commands.setInstruction(Instruction.initialPosition);
+        commands.setAvailablePos(list);
+        socket.send(commands);
+    }
+
+    private Position verifyPosition(List<Position> list) {
+        Position pos = new Position(scanner.nextInt(), scanner.nextInt());
+        boolean ok = false;
+        while(true) {
+            for (Position curr : list) {
+                if (pos.getRow() == curr.getRow() && pos.getColumn() == curr.getColumn()) {
+                    ok = true;
+                    list.remove(curr);
+                    break;
+                }
+            }
+            if(ok) {
+                return pos;
+            }
+            System.out.println("Posizione non valida, riprova: ");
+            pos = new Position(scanner.nextInt(), scanner.nextInt());
+        }
     }
 }

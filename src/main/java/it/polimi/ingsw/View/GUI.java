@@ -1,13 +1,15 @@
 package it.polimi.ingsw.View;
 
-import it.polimi.ingsw.Controller.Commands;
-import it.polimi.ingsw.Controller.SocketInterface;
+import it.polimi.ingsw.Controller.SocketClient;
+import it.polimi.ingsw.Model.Position;
+
+import java.util.List;
 
 public class GUI implements ViewInterface {
-    private SocketInterface socket;
+    private SocketClient socket;
     private int playerID;
 
-    public GUI(SocketInterface socket) {
+    public GUI(SocketClient socket) {
         this.socket = socket;
     }
 
@@ -17,17 +19,17 @@ public class GUI implements ViewInterface {
     }
 
     @Override
-    public void move(int player, int raw, int column) {
+    public void move(int player, Position position) {
 
     }
 
     @Override
-    public void buildBlock(int raw, int column, int height) {
+    public void buildBlock(Position position, int height) {
 
     }
 
     @Override
-    public void buildDome(int raw, int column, int height) {
+    public void buildDome(Position position, int height) {
 
     }
 
@@ -37,7 +39,17 @@ public class GUI implements ViewInterface {
     }
 
     @Override
-    public void updateServer(Commands commands) {
+    public void chooseCard(List<Integer> cardList) {
+
+    }
+
+    @Override
+    public void chooseCardList(int num) {
+
+    }
+
+    @Override
+    public void firstPositioning(List<Position> availablePos) {
 
     }
 }

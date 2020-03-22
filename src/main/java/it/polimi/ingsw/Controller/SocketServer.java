@@ -1,30 +1,27 @@
 package it.polimi.ingsw.Controller;
 
-import it.polimi.ingsw.View.CLI;
-import it.polimi.ingsw.View.GUI;
-import it.polimi.ingsw.View.ViewInterface;
+import it.polimi.ingsw.Model.Turn;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
-public class SocketServer implements SocketInterface {
-    private ViewInterface view;
+public class SocketServer {
     private ServerSocket serverSocket;
     private List<ServerThread> observers;
+
     public SocketServer(int playerNum) {
         observers = new ArrayList<>();
-        int actualNum = 1;
+        int actualNum = 0;
         Socket socket;
         try {
             serverSocket = new ServerSocket(59898);
             System.out.println("The server is running...");
             while (actualNum != playerNum) {
                 socket = serverSocket.accept();
-                ServerThread serverThread = new ServerThread(socket, actualNum + 1);
+                ServerThread serverThread = new ServerThread(socket, actualNum);
                 serverThread.start();
                 observers.add(serverThread);
                 actualNum++;
@@ -33,32 +30,28 @@ public class SocketServer implements SocketInterface {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("1: CLI\n2: GUI");
-        if(scanner.nextInt() == 1) {
-            view = new CLI(this);
-        } else {
-            view = new GUI(this);
-        }
-        new ServerViewUpdater(view);
+        Turn turn = new Turn(this, observers.size());
+        new ServerModelUpdater(turn);
     }
 
     public void closeServer() {
         try {
             serverSocket.close();
-        } catch (IOException e) {
+        } catch(IOException e) {
+            e.printStackTrace();
         }
         System.out.println("Closed: " + serverSocket);
     }
 
-    @Override
-    public void send(Commands commands) {
-        for(ServerThread curr: observers) {
-            curr.send(commands);
+    public void sendToAllExcept(int excludedClient, Commands commands) {
+        for(int i = 0; i < observers.size(); i++) {
+            if(i != excludedClient) {
+                observers.get(i).send(commands);
+            }
         }
     }
 
     public void sendTo(int clientID, Commands commands) {
-        observers.get(clientID - 1).send(commands);
+        observers.get(clientID).send(commands);
     }
 }

@@ -2,7 +2,6 @@ package it.polimi.ingsw.Model;
 
 public class Worker implements OnBoard {
     private int workerID;
-    private Player owner;
     private Position position;
 
     @Override
@@ -16,6 +15,7 @@ public class Worker implements OnBoard {
     }
 
     public void setPosition(Position position) {
+        System.out.println("Ok, vado in posizione " + position.getRow() + " " + position.getColumn());
         this.position = position;
     }
 }

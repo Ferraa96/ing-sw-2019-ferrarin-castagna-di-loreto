@@ -1,24 +1,25 @@
 package it.polimi.ingsw.Model;
 
 import it.polimi.ingsw.Controller.Commands;
+import it.polimi.ingsw.Controller.Instruction;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Moves implements Effect {
+public class Move implements Effect {
     OnBoard[][] map;
 
-    public Moves(OnBoard[][] map) {
+    public Move(OnBoard[][] map) {
         this.map = map;
     }
 
-    public List<Position> availableMoves(Position currPosition) {
+    public List<Position> available(int row, int column, OnBoardType type, int numMoves) {
         List<Position> list = new ArrayList<>();
         int left, right, up, down;
-        left = currPosition.getColumn() - 1;
-        right = currPosition.getColumn() + 2;
-        up = currPosition.getRow() - 1;
-        down = currPosition.getRow() + 2;
+        left = column - numMoves;
+        right = column + numMoves + 1;
+        up = row - numMoves;
+        down = row + numMoves + 1;
         if(left < 0) {
             left = 0;
         } else if(right > 5) {
@@ -31,7 +32,7 @@ public class Moves implements Effect {
         }
         for(int i = up; i < down; i++) {
             for(int j = left; j < right; j++) {
-                if(map[i][j].getType().equals(OnBoardType.nothing)) {
+                if(map[i][j].getType().equals(type)) {
                     list.add(new Position(i, j));
                 }
             }
@@ -52,7 +53,7 @@ public class Moves implements Effect {
     }
 
     public void basicMove(Position pos, int playerID) {
-        Commands commands = new Commands(pos.getRow(), pos.getColumn(), playerID);
-        commands.setEffect(0);
+        Commands commands = new Commands(pos, playerID);
+        commands.setInstruction(Instruction.move);
     }
 }

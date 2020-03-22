@@ -1,37 +1,57 @@
 package it.polimi.ingsw.Controller;
 
+import it.polimi.ingsw.Model.Position;
+
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Commands implements Serializable {
-    private int raw;
-    private int column;
+    private Position position;
     private int height;
     private int player;
     private int chosenCard;
-    private int effect;         // 0 => move, 1 => buildBlock, 2 => buildDome, 3 => myTurn, 4 => setPlayerID, 5 => endGame
+    private Instruction instruction;
+    private List<Integer> cardList = new ArrayList<>();
+    private List<Position> availablePos = new ArrayList<>();
 
     public Commands() {}
 
-    public Commands(int raw, int column, int player) {
-        this.raw = raw;
-        this.column = column;
+    public Commands(Position position, int player) {
+        this.position = position;
         this.player = player;
     }
 
-    public int getRaw() {
-        return raw;
+    public List<Position> getAvailablePos() {
+        return availablePos;
     }
 
-    public void setRaw(int raw) {
-        this.raw = raw;
+    public void setAvailablePos(List<Position> availablePos) {
+        this.availablePos = availablePos;
     }
 
-    public int getColumn() {
-        return column;
+    public int getChosenCard() {
+        return chosenCard;
     }
 
-    public void setColumn(int column) {
-        this.column = column;
+    public List<Integer> getCardList() {
+        return cardList;
+    }
+
+    public void setCardList(List<Integer> cardList) {
+        this.cardList = cardList;
+    }
+
+    public void removeCard(int numCard) {
+        cardList.remove(Integer.valueOf(numCard));
+    }
+
+    public Position getPosition() {
+        return position;
+    }
+
+    public void setPosition(Position position) {
+        this.position = position;
     }
 
     public int getHeight() {
@@ -54,11 +74,11 @@ public class Commands implements Serializable {
         this.chosenCard = chosenCard;
     }
 
-    public int getEffect() {
-        return effect;
+    public Instruction getInstruction() {
+        return instruction;
     }
 
-    public void setEffect(int effect) {
-        this.effect = effect;
+    public void setInstruction(Instruction instruction) {
+        this.instruction = instruction;
     }
 }

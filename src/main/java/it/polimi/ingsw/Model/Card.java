@@ -24,22 +24,13 @@ public class Card {
     private int opponentsID;
     @SerializedName("winID")
     private int winID;
-    private Board board;
     private Worker worker1;
     private Worker worker2;
-    private Moves moves;
+    private List<Effect> effects;
 
-    public Card(Card myCard) {
-        this.name = myCard.name;
-        this.description = myCard.description;
-        this.movID = myCard.movID;
-        this.costrID = myCard.costrID;
-        this.opponentsID = myCard.opponentsID;
-        this.winID = myCard.winID;
+    public Card() {
         worker1 = new Worker();
         worker2 = new Worker();
-        board = new Board();
-        moves = new Moves(board.getBoard());
     }
 
     public void setWorker1Position(Position position) {
@@ -50,19 +41,35 @@ public class Card {
         worker2.setPosition(position);
     }
 
-    public static List<Card> getCardList() {
-        Gson gson = new Gson();
-        InputStream input = Card.class.getClassLoader().getResourceAsStream("godsList.json");
-        BufferedReader bf = new BufferedReader(new InputStreamReader(input));
-        Type cardsList = new TypeToken<ArrayList<Card>>() {}.getType();
-        return gson.fromJson(bf, cardsList);
-    }
-
     public String getName() {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public String getDescription() {
         return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Worker getWorker1() {
+        return worker1;
+    }
+
+    public void setWorker1(Worker worker1) {
+        this.worker1 = worker1;
+    }
+
+    public Worker getWorker2() {
+        return worker2;
+    }
+
+    public void setWorker2(Worker worker2) {
+        this.worker2 = worker2;
     }
 }

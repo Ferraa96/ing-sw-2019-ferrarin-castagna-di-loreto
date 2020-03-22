@@ -1,13 +1,17 @@
 package it.polimi.ingsw.View;
 
-import it.polimi.ingsw.Controller.Commands;
+import it.polimi.ingsw.Model.Position;
+
+import java.util.List;
 
 public interface ViewInterface {
 
     void setPlayerID(int playerID);
-    void move(int player, int raw, int column);
-    void buildBlock(int raw, int column, int height);
-    void buildDome(int raw, int column, int height);
+    void move(int player, Position position);
+    void buildBlock(Position position, int height);
+    void buildDome(Position position, int height);
     void updateScreen();
-    void updateServer(Commands commands);
+    void chooseCard(List<Integer> cardList);
+    void chooseCardList(int num);
+    void firstPositioning(List<Position> availablePos);
 }
