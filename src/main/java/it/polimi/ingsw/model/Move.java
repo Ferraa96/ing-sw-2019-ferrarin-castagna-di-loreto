@@ -6,14 +6,14 @@ import it.polimi.ingsw.controller.Instruction;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Move implements Effect {
-    OnBoard[][] map;
+public class Move {
+    Cell[][] map;
 
-    public Move(OnBoard[][] map) {
+    public Move(Cell[][] map) {
         this.map = map;
     }
 
-    public List<Position> available(int row, int column, OnBoardType type, int numMoves) {
+    public List<Position> available(int row, int column, int numMoves) {
         List<Position> list = new ArrayList<>();
         int left, right, up, down;
         left = column - numMoves;
@@ -32,9 +32,7 @@ public class Move implements Effect {
         }
         for(int i = up; i < down; i++) {
             for(int j = left; j < right; j++) {
-                if(map[i][j].getType().equals(type)) {
-                    list.add(new Position(i, j));
-                }
+                list.add(new Position(i, j));
             }
         }
         return list;
@@ -44,7 +42,7 @@ public class Move implements Effect {
         List<Position> list = new ArrayList<>();
         for(int i = 0; i < 5; i++) {
             for(int j = 0; j < 5; j++) {
-                if(map[i][j].getType().equals(OnBoardType.nothing)) {
+                if(map[i][j].getWorkerID() == 0) {
                     list.add(new Position(i, j));
                 }
             }

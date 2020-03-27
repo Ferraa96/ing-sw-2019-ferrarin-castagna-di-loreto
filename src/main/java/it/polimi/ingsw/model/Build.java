@@ -8,7 +8,7 @@ public class Build implements Effect {
     }
 
     @Override
-    public List<Position> available(int row, int column, OnBoardType type, int numMoves) {
+    public List<Position> available(int row, int column, int numMoves) {
         return null;
     }
 }

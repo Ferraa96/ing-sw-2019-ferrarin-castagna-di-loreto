@@ -5,7 +5,6 @@ import java.io.Serializable;
 public class Position implements Serializable {
     private int row;
     private int column;
-    private OnBoardType type;
 
     public Position(int row, int column) {
         this.row = row;
@@ -20,19 +19,11 @@ public class Position implements Serializable {
         return row;
     }
 
-    public void setColumn(int posY) {
+    public void setColumn(int column) {
         this.column = column;
     }
 
     public int getColumn() {
         return column;
-    }
-
-    public void setType(OnBoardType type) {
-        this.type = type;
-    }
-
-    public OnBoardType getType() {
-        return type;
     }
 }

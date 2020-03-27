@@ -13,13 +13,15 @@ import java.util.*;
 public class SocketServer implements ControllerInterface {
     private ServerSocket serverSocket;
     private List<ServerThread> observers;
+    private Timer timer;
+    private int min = 2;
 
     /**
      * creates the server and creates a thread for all the clients
      */
     public SocketServer() {
         int actualNum = 0;
-        int max;
+        int max = 3;
         System.out.println("Numero di giocatori: ");
         max = new Scanner(System.in).nextInt();
         observers = new ArrayList<>();
@@ -34,12 +36,26 @@ public class SocketServer implements ControllerInterface {
                 observers.add(serverThread);
                 actualNum++;
                 System.out.println("Connected: " + socket);
+                if(actualNum == min) {
+                    timer = new Timer();
+                    setTimer();
+                }
             }
+            timer.cancel();
         } catch (IOException e) {
             e.printStackTrace();
         }
         Turn turn = new Turn(this, observers.size());
         new ServerModelUpdater(turn);
+    }
+
+    private void setTimer() {
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                System.out.println("Partita cominciata con " + min + " giocatori");
+            }
+        }, 10000);
     }
 
     /**

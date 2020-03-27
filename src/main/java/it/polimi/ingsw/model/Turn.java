@@ -54,8 +54,8 @@ public class Turn implements ModelInterface {
     public void choosePosition(List<Position> positions) {
         Position w1 = positions.get(0);
         Position w2 = positions.get(1);
-        board.getBoard()[w1.getRow()][w1.getColumn()] = cardList.get(actualPlayer).getWorker1();
-        board.getBoard()[w2.getRow()][w2.getColumn()] = cardList.get(actualPlayer).getWorker2();
+        board.getBoard()[w1.getRow()][w1.getColumn()].setWorkerID(cardList.get(actualPlayer).getWorker1().getWorkerID());
+        board.getBoard()[w2.getRow()][w2.getColumn()].setWorkerID(cardList.get(actualPlayer).getWorker2().getWorkerID());
         commands.setInstruction(Instruction.move);
         commands.setPlayer(actualPlayer);
         commands.setPosition(w1);

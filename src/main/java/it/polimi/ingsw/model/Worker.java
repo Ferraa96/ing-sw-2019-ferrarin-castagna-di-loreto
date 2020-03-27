@@ -1,12 +1,11 @@
 package it.polimi.ingsw.model;
 
-public class Worker implements OnBoard {
+public class Worker {
     private int workerID;
     private Position position;
 
-    @Override
-    public OnBoardType getType() {
-        return OnBoardType.worker;
+    public int getWorkerID() {
+        return workerID;
     }
 
     public Position getPosition() {
