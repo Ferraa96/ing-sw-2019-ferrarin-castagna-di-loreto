@@ -27,7 +27,7 @@ public class Turn implements ModelInterface {
         commands = new Commands();
         initialChoose();
         board = new Board();
-        move = new Move(board.getBoard());
+//        move = new Move(board.getBoard());
     }
 
     /**
@@ -42,7 +42,7 @@ public class Turn implements ModelInterface {
      */
     private void firstPositioning() {
         commands.setInstruction(Instruction.initialPosition);
-        commands.setAvailablePos(move.firstPositioning());
+//        commands.setAvailablePos(move.firstPositioning());
         socket.sendTo(actualPlayer, commands);
     }
 
@@ -90,6 +90,7 @@ public class Turn implements ModelInterface {
      * @param chosenCard the index of the card chosen
      */
     @Override
+    //deve assegnare la card al player e lanciare il setting delle due routine
     public void setCards(int chosenCard) {
         Card card = cardDeserializer.getCardList().get(chosenCard);
         cardList.add(card);

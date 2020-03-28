@@ -1,5 +1,8 @@
 package it.polimi.ingsw.model;
 
+/**
+ * store the status of the cell on the board
+ */
 public class Cell {
     private int workerID = 0;
     private int height = 0;

@@ -26,4 +26,18 @@ public class CardDeserializer {
         Type cardsList = new TypeToken<ArrayList<Card>>() {}.getType();
         return gson.fromJson(bf, cardsList);
     }
+
+    /**
+     * convert the json array to a list of flags
+     * @return the selected card
+     */
+    //va usato da chi assegna le carta al player
+    public List<Card> getSelectedCardFlags() {
+        Gson gson = new Gson();
+        InputStream input = getClass().getResourceAsStream("/flagsList.json");
+        BufferedReader bf = new BufferedReader(new InputStreamReader(input));
+        Type selectedCard = new TypeToken<Card>() {}.getType();
+        return gson.fromJson(bf, selectedCard);
+    }
+
 }

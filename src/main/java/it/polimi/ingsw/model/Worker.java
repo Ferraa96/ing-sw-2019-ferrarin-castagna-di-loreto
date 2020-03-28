@@ -1,5 +1,8 @@
 package it.polimi.ingsw.model;
 
+/**
+ * store worker's informations
+ */
 public class Worker {
     private int workerID;
     private Position position;
