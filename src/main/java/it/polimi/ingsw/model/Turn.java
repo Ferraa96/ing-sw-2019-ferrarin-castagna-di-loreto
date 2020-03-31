@@ -10,11 +10,13 @@ import java.util.List;
 /**
  * handle all the turns
  */
+//firstPosition dei worker, setEnemies, controlla Athena e setta noUp degli effect a true, controlla Pan
 public class Turn implements ModelInterface {
     private int numPlayer;
     private int actualPlayer = 0;
     private SocketServer socket;
     private List<Card> cardList;
+    private ArrayList<Card> playedCards= new ArrayList<>();
     private Commands commands;
     private Board board;
     private Move move;
@@ -90,7 +92,6 @@ public class Turn implements ModelInterface {
      * @param chosenCard the index of the card chosen
      */
     @Override
-    //deve assegnare la card al player e lanciare il setting delle due routine
     public void setCards(int chosenCard) {
         Card card = cardDeserializer.getCardList().get(chosenCard);
         cardList.add(card);
@@ -114,6 +115,11 @@ public class Turn implements ModelInterface {
         nextTurn();
         commands.setCardList(cards);
         socket.sendTo(actualPlayer, commands);
+    }
+
+    public void setEnemiesLists() {
+        for (int i = 0; i <playedCards.size() ; i++)
+            playedCards.get(i).setEnemies(playedCards);
     }
 
     /**

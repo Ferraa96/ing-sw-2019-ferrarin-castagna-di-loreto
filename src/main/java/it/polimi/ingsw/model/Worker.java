@@ -7,6 +7,10 @@ public class Worker {
     private int workerID;
     private Position position;
 
+    public Worker(int player, int workerNumber) {
+        this.workerID = player*10 + workerNumber;
+    }
+
     public int getWorkerID() {
         return workerID;
     }
@@ -18,4 +22,5 @@ public class Worker {
     public void setPosition(Position position) {
         this.position = position;
     }
+
 }

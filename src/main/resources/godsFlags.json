@@ -67,7 +67,7 @@
       "search_people_1": false,
       "knock_1": false,
       "move_2": false,
-      "myworker_2": true,
+      "myworker_2": false,
       "freemove_samebefore_nextlevelbuild_2": true,
       "specific_3": true,
       "samebefore_block_3": true
