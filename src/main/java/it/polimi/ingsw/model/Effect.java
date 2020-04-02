@@ -4,16 +4,46 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * regroup all different types of effects
+ * regroup 2 different types of effects: Move or Build
  */
 public interface Effect {
 
-    ArrayList<Position> availableCells(Position actualposition, int numMoves);
-    ArrayList<Position> availableWithGod(Worker target);
+    /**
+     * search free cells around
+     * @param target worker interested
+     * @return list of available positions
+     */
+    List<Position> availableWithGod(Worker target);
+
+    /**
+     * do the action and update the map
+     * @param chosenCell cell selected
+     * @param worker target of action
+     * @return height difference between final and initial cell
+     */
     int executeAction(Position chosenCell, Worker worker);
-    Boolean getMyWorker();
+
+    /**
+     * set last move
+     * @param lastMoveInitialPosition initial cell of last move
+     */
     void setLastMoveInitialPosition(Position lastMoveInitialPosition);
+
+    /**
+     * used for athena
+     * @param noUp true if athena triggers her power
+     */
     void setNoUp(Boolean noUp);
-    void executeAutoAction(Worker target);
-    public void setLastBuildPosition(Position lastBuildPosition);
+
+    /**
+     * auto move for forced targets
+     * @param enemy worker forced by mino/apollo
+     */
+    void executeAutoAction(Worker enemy);
+
+    /**
+     * set last build
+     * @param lastBuildPosition cell of last build
+     */
+    void setLastBuildPosition(Position lastBuildPosition);
 }

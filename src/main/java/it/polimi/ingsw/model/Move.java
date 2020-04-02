@@ -8,16 +8,14 @@ import java.util.List;
  */
 
 public class Move implements Effect{
-    Cell[][] map;
-    private Boolean myWorker;
+    private Cell[][] map;
     private Boolean searchPeople;
     private Boolean knock;
     private Boolean specificMovetype;
     private Boolean noUp;                           //usata da Athena all'inizio dello switch
     private Position lastMoveInitialPosition;
 
-    public Move(Cell[][] map, Boolean myWorker, Boolean knock, Boolean searchPeople, Boolean specificMovetype, Boolean noUp) {
-        this.myWorker = myWorker;
+    public Move(Cell[][] map, Boolean knock, Boolean searchPeople, Boolean specificMovetype, Boolean noUp) {
         this.knock = knock;
         this.searchPeople = searchPeople;
         this.specificMovetype = specificMovetype;
@@ -25,29 +23,26 @@ public class Move implements Effect{
         this.map = map;
     }
 
-    //8 celle attorno senza cupola
-    @Override
-    public ArrayList<Position> availableCells(Position actualPosition, int numMoves) {
-        ArrayList<Position> list = new ArrayList<>();
+    /**
+     * called by availableWithGod
+     * @param actualPosition worker's position
+     * @return list of position around
+     */
+    private List<Position> availableCells(Position actualPosition) {
+        List<Position> list = new ArrayList<>();
         int left, right, up, down;
         int row, column;
         row = actualPosition.getRow();
         column = actualPosition.getColumn();
 
-        left = column - numMoves;
-        right = column + numMoves + 1;
-        up = row - numMoves;
-        down = row + numMoves + 1;
-        if(left < 0) {
-            left = 0;
-        } else if(right > 5) {
-            right = 4;
-        }
-        if(up < 0) {
-            up = 0;
-        } else if(down > 5) {
-            down = 4;
-        }
+        left = column - 1;
+        right = column + 1 + 1;
+        up = row - 1;
+        down = row + 1 + 1;
+        if(left < 0) { left = 0; }
+        else if(right > 5) { right = 4; }
+        if(up < 0) { up = 0; }
+        else if(down > 5) { down = 4; }
         for(int i = up; i < down; i++) {
             for(int j = left; j < right; j++) {
                 if ( map[i][j].getHeight()!=4 && map[i][j].getHeight()-map[row][column].getHeight()<=1) {
@@ -59,12 +54,16 @@ public class Move implements Effect{
         return list;
     }
 
-    //celle consentite a seconda del god posseduto e del tipo di mossa che si sta per fare
+    /**
+     * search free cells around
+     * @param target worker interested
+     * @return list of available positions
+     */
     @Override
-    public ArrayList<Position> availableWithGod(Worker target) {
+    public List<Position> availableWithGod(Worker target) {
         Position actualPosition = new Position(target.getPosition().getRow(),target.getPosition().getColumn());
         int r,c;
-        ArrayList<Position> possibleCells= new ArrayList<>(availableCells(actualPosition,1));
+        List<Position> possibleCells= new ArrayList<>(availableCells(actualPosition));
         for (int i = 0; i < possibleCells.size(); i++) {
                 r = possibleCells.get(i).getRow();
                 c = possibleCells.get(i).getColumn();
@@ -99,7 +98,11 @@ public class Move implements Effect{
                         //controllo il knock di mino
                         r = 2*r - actualPosition.getRow();
                         c = 2*c - actualPosition.getColumn();
-                        if (map[r][c].getWorkerID()!=0 || r<0 || r>4 || c<0 || c>4) {
+                        if (r<0 || r>4 || c<0 || c>4) {
+                            possibleCells.remove(possibleCells.get(i));
+                            i--;
+                        }
+                        else if (map[r][c].getWorkerID()!=0) {
                             possibleCells.remove(possibleCells.get(i));
                             i--;
                         }
@@ -109,24 +112,25 @@ public class Move implements Effect{
         return possibleCells;
     }
 
-    //effettiva mossa del worker
+    /**
+     * do the action and update the map
+     * @param chosenCell cell selected
+     * @param worker target of action
+     * @return height difference between final and initial cell
+     */
     @Override
     public int executeAction(Position chosenCell, Worker worker) {
-        int downUp=0;
-        //if (availableWithGod(worker).contains(chosenCell)) {
-            downUp=map[chosenCell.getRow()][chosenCell.getColumn()].getHeight()-map[worker.getPosition().getRow()][worker.getPosition().getColumn()].getHeight();
-            map[worker.getPosition().getRow()][worker.getPosition().getColumn()].setWorkerID(0);
-            map[chosenCell.getRow()][chosenCell.getColumn()].setWorkerID(worker.getWorkerID());
-            worker.getPosition().setRow(chosenCell.getRow());
-            worker.getPosition().setColumn(chosenCell.getColumn());
-        //}
-        //else
-        //    System.out.println("Move not available");
-
+        int downUp=map[chosenCell.getRow()][chosenCell.getColumn()].getHeight()-map[worker.getPosition().getRow()][worker.getPosition().getColumn()].getHeight();
+        map[worker.getPosition().getRow()][worker.getPosition().getColumn()].setWorkerID(0);
+        map[chosenCell.getRow()][chosenCell.getColumn()].setWorkerID(worker.getWorkerID());
+        worker.setPosition( new Position(chosenCell.getRow(),chosenCell.getColumn()));
         return downUp;
     }
 
-    //mossa obbligata del nemico
+    /**
+     * auto move for forced targets
+     * @param enemy worker forced by mino/apollo
+     */
     @Override
     public void executeAutoAction(Worker enemy) {
         int r,c;
@@ -137,26 +141,33 @@ public class Move implements Effect{
         else {
             r = 2*enemy.getPosition().getRow() - lastMoveInitialPosition.getRow();
             c = 2*enemy.getPosition().getColumn() - lastMoveInitialPosition.getColumn();
-            enemy.getPosition().setRow(r);
-            enemy.getPosition().setColumn(c);
+            enemy.setPosition(new Position(r,c));
             map[r][c].setWorkerID(enemy.getWorkerID());
         }
     }
 
-    //setter e getter vari
+    /**
+     * set last move
+     * @param lastMoveInitialPosition initial cell of last move
+     */
     @Override
     public void setLastMoveInitialPosition(Position lastMoveInitialPosition) {
         this.lastMoveInitialPosition = lastMoveInitialPosition;
     }
-    @Override
-    public Boolean getMyWorker() {
-        return myWorker;
-    }
+
+    /**
+     * used for athena
+     * @param noUp true if athena triggers her power
+     */
     @Override
     public void setNoUp( Boolean noUp) {
         this.noUp = noUp;
     }
 
+    /**
+     * not used here
+     * @param lastBuildPosition cell of last build
+     */
     public void setLastBuildPosition(Position lastBuildPosition) {  }
 
 }

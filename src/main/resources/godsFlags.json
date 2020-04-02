@@ -2,15 +2,14 @@
   "gods": [
     {
       "name": "Apollo",
-      "action_3": true,
+      "action_3": false,
       "move_1": true,
       "search_people_1": true,
       "knock_1": false,
-      "move_2": true,
-      "myworker_2": false,
-      "freemove_samebefore_nextlevelbuild_2": true,
-      "specific_3": false,
-      "samebefore_block_3": false
+      "move_2": false,
+      "specific_2": false,
+      "dome_2": false,
+      "not_before_3": false
     },
     {
       "name": "Artemis",
@@ -19,10 +18,9 @@
       "search_people_1": false,
       "knock_1": false,
       "move_2": true,
-      "myworker_2": true,
-      "freemove_samebefore_nextlevelbuild_2": false,
-      "specific_3": false,
-      "samebefore_block_3": false
+      "specific_2": true,
+      "dome_2": false,
+      "not_before_3": false
     },
     {
       "name": "Athena",
@@ -31,10 +29,9 @@
       "search_people_1": false,
       "knock_1": false,
       "move_2": false,
-      "myworker_2": true,
-      "freemove_samebefore_nextlevelbuild_2": true,
-      "specific_3": true,
-      "samebefore_block_3": true
+      "specific_2": false,
+      "dome_2": false,
+      "not_before_3": false
     },
     {
       "name": "Atlas",
@@ -43,10 +40,9 @@
       "search_people_1": false,
       "knock_1": false,
       "move_2": false,
-      "myworker_2": true,
-      "freemove_samebefore_nextlevelbuild_2": false,
-      "specific_3": false,
-      "samebefore_block_3": false
+      "specific_2": true,
+      "dome_2": true,
+      "not_before_3": false
     },
     {
       "name": "Demeter",
@@ -55,34 +51,31 @@
       "search_people_1": false,
       "knock_1": false,
       "move_2": false,
-      "myworker_2": true,
-      "freemove_samebefore_nextlevelbuild_2": true,
-      "specific_3": true,
-      "samebefore_block_3": false
+      "specific_2": false,
+      "dome_2": false,
+      "not_before_3": true
     },
     {
       "name": "Hephaestus",
-      "action_3": true,
+      "action_3": false,
       "move_1": true,
       "search_people_1": false,
       "knock_1": false,
       "move_2": false,
-      "myworker_2": false,
-      "freemove_samebefore_nextlevelbuild_2": true,
-      "specific_3": true,
-      "samebefore_block_3": true
+      "specific_2": true,
+      "dome_2": false,
+      "not_before_3": false
     },
     {
       "name": "Minotaur",
-      "action_3": true,
+      "action_3": false,
       "move_1": true,
       "search_people_1": true,
       "knock_1": true,
-      "move_2": true,
-      "myworker_2": false,
-      "freemove_samebefore_nextlevelbuild_2": false,
-      "specific_3": false,
-      "samebefore_block_3": false
+      "move_2": false,
+      "specific_2": false,
+      "dome_2": false,
+      "not_before_3": false
     },
     {
       "name": "Pan",
@@ -91,10 +84,9 @@
       "search_people_1": false,
       "knock_1": false,
       "move_2": false,
-      "myworker_2": true,
-      "freemove_samebefore_nextlevelbuild_2": true,
-      "specific_3": true,
-      "samebefore_block_3": false
+      "specific_2": false,
+      "dome_2": false,
+      "not_before_3": false
     },
     {
       "name": "Prometheus",
@@ -103,10 +95,9 @@
       "search_people_1": false,
       "knock_1": false,
       "move_2": true,
-      "myworker_2": true,
-      "freemove_samebefore_nextlevelbuild_2": true,
-      "specific_3": false,
-      "samebefore_block_3": false
+      "specific_2": false,
+      "dome_2": false,
+      "not_before_3": false
     }
   ]
 }

@@ -16,7 +16,7 @@ public class Turn implements ModelInterface {
     private int actualPlayer = 0;
     private SocketServer socket;
     private List<Card> cardList;
-    private ArrayList<Card> playedCards= new ArrayList<>();
+    private List<Card> playedCards= new ArrayList<>();
     private Commands commands;
     private Board board;
     private Move move;

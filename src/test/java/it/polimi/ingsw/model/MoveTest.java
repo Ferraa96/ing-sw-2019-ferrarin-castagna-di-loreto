@@ -11,13 +11,13 @@ import static org.junit.Assert.*;
 public class MoveTest {
     Board board = new Board();
     Cell[][] map;
-    Move standardMove = new Move(board.getBoard(),true,false,false,false,false);
-    Move apolloMove = new Move(board.getBoard(),true,false,true,false,false);
-    Move minoMove = new Move(board.getBoard(),true,true,true,false,false);
-    Move prometheusMove = new Move(board.getBoard(),true,false,false,true,true);
-    Move artemisMove = new Move(board.getBoard(),true,false,false,true,false);
-    Move minoReturn = new Move(board.getBoard(),false,true,true,false,false);
-    Move apolloReturn = new Move(board.getBoard(),false,false,true,false,false);
+    Move standardMove = new Move(board.getBoard(),false,false,false,false);
+    Move apolloMove = new Move(board.getBoard(),false,true,false,false);
+    Move minoMove = new Move(board.getBoard(),true,true,false,false);
+    Move prometheusMove = new Move(board.getBoard(),false,false,true,true);
+    Move artemisMove = new Move(board.getBoard(),false,false,true,false);
+    Move minoReturn = new Move(board.getBoard(),true,true,false,false);
+    Move apolloReturn = new Move(board.getBoard(),false,true,false,false);
     Position position = new Position(2,2);
     Worker target = new Worker(1,1);
     Worker enemy1 = new Worker(0,1);
@@ -26,7 +26,7 @@ public class MoveTest {
     @Test
     public void availableMovesEasy() {
         target.setPosition(position);
-        List<Position> availablePos = standardMove.availableCells(position, 1 );
+        List<Position> availablePos = standardMove.availableWithGod(target);
         assertEquals(8, availablePos.size());
         assertEquals(1, availablePos.get(0).getRow());
         assertEquals(1, availablePos.get(0).getColumn());
@@ -37,16 +37,6 @@ public class MoveTest {
         List<Position> availablePos1 = standardMove.availableWithGod(target );
         assertEquals(8,availablePos1.size());
 
-    }
-
-    @Test
-    public void checkMapEasy() {
-        map=board.getBoard();
-        map[2][2].setWorkerID(11);
-        assertEquals(0,map[2][2].getHeight());
-        assertEquals(0,map[3][3].getHeight());
-        assertEquals(11,map[2][2].getWorkerID());
-        assertEquals(0,map[3][3].getWorkerID());
     }
 
     @Test
@@ -61,18 +51,18 @@ public class MoveTest {
         map[0][1].setHeight(0);
         // no escape
         map[2][2].setHeight(0);
-        List<Position> availablePos1 = standardMove.availableCells(position, 1 );
-        assertEquals(0,availablePos1.size());
+//        List<Position> availablePos1 = standardMove.availableCells(position, 1 );
+//        assertEquals(0,availablePos1.size());
         // 1 escape
         map[2][1].setHeight(1);
-        ArrayList<Position> availablePos2 = standardMove.availableWithGod(target);
+        List<Position> availablePos2 = standardMove.availableWithGod(target);
         assertEquals(1,availablePos2.size());
         assertEquals(1,availablePos2.get(0).getColumn());
         assertEquals(2,availablePos2.get(0).getRow());
         // diventa occupata
         map[2][1].setWorkerID(22);
         map[1][1].setHeight(1);
-        ArrayList<Position> availablePos5 = standardMove.availableWithGod(target);
+        List<Position> availablePos5 = standardMove.availableWithGod(target);
         assertEquals(1,availablePos5.size());
         assertEquals(1,availablePos5.get(0).getColumn());
         assertEquals(1,availablePos5.get(0).getRow());
@@ -107,21 +97,21 @@ public class MoveTest {
         map[0][1].setHeight(0);
         // no escape
         map[2][2].setHeight(0);
-        List<Position> availablePos1 = standardMove.availableCells(position, 1 );
-        assertEquals(0,availablePos1.size());
+    //    List<Position> availablePos1 = standardMove.availableCells(position, 1);
+    //    assertEquals(0,availablePos1.size());
         // 1 escape but not people
         map[2][1].setHeight(1);
-        ArrayList<Position> availablePos2 = apolloMove.availableWithGod(target);
+        List<Position> availablePos2 = apolloMove.availableWithGod(target);
         assertEquals(0,availablePos2.size());
         // 1 people
         map[2][1].setWorkerID(22);
-        ArrayList<Position> availablePos3 = apolloMove.availableWithGod(target);
+        List<Position> availablePos3 = apolloMove.availableWithGod(target);
         assertEquals(1,availablePos3.size());
         assertEquals(1,availablePos3.get(0).getColumn());
         assertEquals(2,availablePos3.get(0).getRow());
         //1 people ma diventa il suo compagno
         map[2][1].setWorkerID(12);
-        ArrayList<Position> availablePos4 = apolloMove.availableWithGod(target);
+        List<Position> availablePos4 = apolloMove.availableWithGod(target);
         assertEquals(0,availablePos4.size());
     }
 
@@ -144,10 +134,6 @@ public class MoveTest {
         map[1][2].setHeight(1);
         map[2][3].setHeight(4);
         map[3][3].setHeight(3);
-        List<Position> availablePos7 = standardMove.availableCells(target.getPosition(),1);
-        assertEquals(4,availablePos7.size());
-        assertEquals(1,availablePos7.get(0).getRow());
-        assertEquals(2,availablePos7.get(0).getColumn());
         List<Position> availablePos = standardMove.availableWithGod(target);
         assertEquals(1,availablePos.size());
         assertEquals(1,availablePos.get(0).getRow());
@@ -195,7 +181,6 @@ public class MoveTest {
         map[2][3].setHeight(4);
         map[3][3].setHeight(3);
 
- //       assertTrue(availablePos1.contains(mossa));
         i=standardMove.executeAction(mossa,target);
         assertEquals(0,i);
         assertEquals(11,target.getWorkerID());
@@ -216,6 +201,22 @@ public class MoveTest {
         assertEquals(0,map[0][3].getWorkerID());
         assertEquals(0,enemy2.getPosition().getRow());
         assertEquals(4,enemy2.getPosition().getColumn());
-
     }
+
+    @Test
+    public void edgeKnock() {
+        map=board.getBoard();
+        target.setPosition(new Position(0,0));
+        List<Position> availablePos = standardMove.availableWithGod(target);
+        assertEquals(3,availablePos.size());
+        target.setPosition(new Position(2,1));
+        map[2][0].setWorkerID(22);
+        map[1][2].setWorkerID(22);
+        map[1][1].setWorkerID(12);
+        List<Position> availablePos1 = minoMove.availableWithGod(target);
+        assertEquals(1,availablePos1.size());
+        assertEquals(1,availablePos1.get(0).getRow());
+        assertEquals(2,availablePos1.get(0).getColumn());
+    }
+
 }
