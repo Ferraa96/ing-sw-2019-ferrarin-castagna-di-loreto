@@ -1,5 +1,6 @@
 package it.polimi.ingsw.controller;
 
+import it.polimi.ingsw.model.Cell;
 import it.polimi.ingsw.model.Position;
 
 import java.io.Serializable;
@@ -17,6 +18,7 @@ public class Commands implements Serializable {
     private Instruction instruction;
     private List<Integer> cardList = new ArrayList<>();
     private List<Position> availablePos = new ArrayList<>();
+    private Cell[][] map;
 
     public Commands() {}
 
@@ -83,5 +85,13 @@ public class Commands implements Serializable {
 
     public void setInstruction(Instruction instruction) {
         this.instruction = instruction;
+    }
+
+    public Cell[][] getMap() {
+        return map;
+    }
+
+    public void setMap(Cell[][] map) {
+        this.map = map;
     }
 }

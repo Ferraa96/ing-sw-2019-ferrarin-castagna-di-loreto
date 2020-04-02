@@ -15,27 +15,29 @@ public class SocketClient extends Thread {
     private Socket socket;
     private ObjectOutputStream outStream;
     private ObjectInputStream inStream;
+    private ClientViewUpdater clientViewUpdater;
 
     /**
      * creates a client and instantiate the view
      */
     public SocketClient() {
         ViewInterface view;
+        Scanner scanner = new Scanner(System.in);
         try {
-            socket = new Socket("127.0.0.1",59898);
+            System.out.println("Port: ");
+            socket = new Socket("127.0.0.1", scanner.nextInt());
             outStream = new ObjectOutputStream(socket.getOutputStream());
             inStream = new ObjectInputStream(socket.getInputStream());
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Scanner scanner = new Scanner(System.in);
         System.out.println("1: CLI\n2: GUI");
         if(scanner.nextInt() == 1) {
             view = new CLI(this);
         } else {
             view = new GUI(this);
         }
-        new ClientViewUpdater(view);
+        clientViewUpdater = new ClientViewUpdater(view);
         start();
     }
 
@@ -48,7 +50,7 @@ public class SocketClient extends Thread {
         try {
             do {
                 commands = (Commands) inStream.readObject();
-                ClientViewUpdater.receive(commands);
+                clientViewUpdater.receive(commands);
             } while(commands.getInstruction() != Instruction.endGame);
             inStream.close();
             socket.close();

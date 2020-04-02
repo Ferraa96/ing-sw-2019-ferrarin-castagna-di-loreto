@@ -33,31 +33,8 @@ public class Tile {
         }
     }
 
-    public String getLine0() {
-        return line0;
-    }
-
-    public String getLine1() {
-        return line1;
-    }
-
-    public String getLine2() {
-        return line2;
-    }
-
-    public String getLine3() {
-        return line3;
-    }
-
-    public String getLine4() {
-        return line4;
-    }
-
-    public int getHeight() {
-        return height;
-    }
-
-    public boolean getPlayer() {
-        return player;
+    public void setIdentifier(char id) {
+        String line = "            ";
+        line4 = line + id;
     }
 }

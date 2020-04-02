@@ -1,6 +1,7 @@
 package it.polimi.ingsw.view;
 
 import it.polimi.ingsw.controller.SocketClient;
+import it.polimi.ingsw.model.Cell;
 import it.polimi.ingsw.model.Position;
 
 import java.util.List;
@@ -50,6 +51,11 @@ public class GUI implements ViewInterface {
 
     @Override
     public void firstPositioning(List<Position> availablePos) {
+
+    }
+
+    @Override
+    public void resumeGame(Cell[][] cells) {
 
     }
 }

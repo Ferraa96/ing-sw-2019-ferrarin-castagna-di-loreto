@@ -13,15 +13,17 @@ public class ServerThread extends Thread {
     private ObjectOutputStream outStream;
     private ObjectInputStream inStream;
     private int playerID;
+    private ServerModelUpdater serverModelUpdater;
 
     /**
      * handle the client connected to the server
      * @param socket the socket that represent the client
      * @param playerID the ID of the client
      */
-    public ServerThread(Socket socket, int playerID) {
+    public ServerThread(Socket socket, int playerID, ServerModelUpdater serverModelUpdater) {
         this.socket = socket;
         this.playerID = playerID;
+        this.serverModelUpdater = serverModelUpdater;
         try {
             outStream = new ObjectOutputStream(socket.getOutputStream());
             inStream = new ObjectInputStream(socket.getInputStream());
@@ -43,7 +45,7 @@ public class ServerThread extends Thread {
         try {
             do {
                 commands = (Commands) inStream.readObject();
-                ServerModelUpdater.receive(commands);
+                serverModelUpdater.receive(commands);
             } while(commands.getInstruction() != Instruction.endGame);
             inStream.close();
             socket.close();
@@ -63,12 +65,5 @@ public class ServerThread extends Thread {
         } catch(IOException e) {
             e.printStackTrace();
         }
-    }
-
-    /**
-     * @return the ID of the client
-     */
-    public int getPlayerID() {
-        return playerID;
     }
 }

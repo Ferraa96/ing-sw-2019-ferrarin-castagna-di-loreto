@@ -7,6 +7,7 @@ import it.polimi.ingsw.controller.Instruction;
 import it.polimi.ingsw.controller.SocketClient;
 import it.polimi.ingsw.model.Card;
 import it.polimi.ingsw.model.CardDeserializer;
+import it.polimi.ingsw.model.Cell;
 import it.polimi.ingsw.model.Position;
 
 import java.io.BufferedReader;
@@ -59,21 +60,18 @@ public class CLI implements ViewInterface {
     public void move(int player, Position position) {
         int index = allTiles.indexOf(gameMap[position.getRow()][position.getColumn()]);
         gameMap[position.getRow()][position.getColumn()] = allTiles.get(index + 1);
-        updateScreen();
     }
 
     @Override
     public void buildBlock(Position position, int height) {
         int index = allTiles.indexOf(gameMap[position.getRow()][position.getColumn()]);
         gameMap[position.getRow()][position.getColumn()] = allTiles.get(index + 2);
-        updateScreen();
     }
 
     @Override
     public void buildDome(Position position, int height) {
         int index = allTiles.indexOf(gameMap[position.getRow()][position.getColumn()]);
         gameMap[position.getRow()][position.getColumn()] = allTiles.get(11 - index);
-        updateScreen();
     }
 
     @Override
@@ -153,6 +151,7 @@ public class CLI implements ViewInterface {
     public void firstPositioning(List<Position> availablePos) {
         List<Position> list = new ArrayList<>();
         Position pos;
+        markAvailablePositions(availablePos, 'x');
         System.out.println("Posizione iniziale lavoratore 1: (riga, colonna) ");
         pos = verifyPosition(availablePos);
         move(commands.getPlayer(), pos);
@@ -164,6 +163,12 @@ public class CLI implements ViewInterface {
         commands.setInstruction(Instruction.initialPosition);
         commands.setAvailablePos(list);
         socket.send(commands);
+        markAvailablePositions(availablePos, ' ');
+    }
+
+    @Override
+    public void resumeGame(Cell[][] cells) {
+
     }
 
     /**
@@ -188,5 +193,12 @@ public class CLI implements ViewInterface {
             System.out.println("Posizione non valida, riprova: ");
             pos = new Position(scanner.nextInt(), scanner.nextInt());
         }
+    }
+
+    private void markAvailablePositions(List<Position> list, char mark) {
+        for(Position currPos: list) {
+            gameMap[currPos.getRow()][currPos.getColumn()].setIdentifier(mark);
+        }
+        updateScreen();
     }
 }

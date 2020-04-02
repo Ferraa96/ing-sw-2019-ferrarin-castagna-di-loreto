@@ -1,5 +1,6 @@
 package it.polimi.ingsw.view;
 
+import it.polimi.ingsw.model.Cell;
 import it.polimi.ingsw.model.Position;
 
 import java.util.List;
@@ -58,4 +59,9 @@ public interface ViewInterface {
      * @param availablePos the list of all the available positions
      */
     void firstPositioning(List<Position> availablePos);
+
+    /**
+     * resume the game state
+     */
+    void resumeGame(Cell[][] cells);
 }

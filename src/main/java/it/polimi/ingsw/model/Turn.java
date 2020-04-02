@@ -16,27 +16,26 @@ public class Turn implements ModelInterface {
     private int actualPlayer = 0;
     private SocketServer socket;
     private List<Card> cardList;
-    private List<Card> playedCards= new ArrayList<>();
     private Commands commands;
     private Board board;
-    private Move move;
     private CardDeserializer cardDeserializer = new CardDeserializer();
+    private SaveState saveState;
 
     public Turn(SocketServer socket, int numPlayer) {
         this.socket = socket;
         this.numPlayer = numPlayer;
+        saveState = new SaveState();
         cardList = new ArrayList<>();
         commands = new Commands();
         initialChoose();
         board = new Board();
-//        move = new Move(board.getBoard());
     }
 
     /**
      * handle all the turns after the setup of the game
      */
     private void game() {
-        System.out.println("Comincia la partita");
+        System.out.println("Setup complete");
     }
 
     /**
@@ -44,7 +43,7 @@ public class Turn implements ModelInterface {
      */
     private void firstPositioning() {
         commands.setInstruction(Instruction.initialPosition);
-//        commands.setAvailablePos(move.firstPositioning());
+        commands.setAvailablePos(cardList.get(actualPlayer).availableFirstPositioning());
         socket.sendTo(actualPlayer, commands);
     }
 
@@ -56,8 +55,8 @@ public class Turn implements ModelInterface {
     public void choosePosition(List<Position> positions) {
         Position w1 = positions.get(0);
         Position w2 = positions.get(1);
-        board.getBoard()[w1.getRow()][w1.getColumn()].setWorkerID(cardList.get(actualPlayer).getWorker1().getWorkerID());
-        board.getBoard()[w2.getRow()][w2.getColumn()].setWorkerID(cardList.get(actualPlayer).getWorker2().getWorkerID());
+        cardList.get(actualPlayer).firstPositioning(w1, cardList.get(actualPlayer).getWorker1());
+        cardList.get(actualPlayer).firstPositioning(w2, cardList.get(actualPlayer).getWorker2());
         commands.setInstruction(Instruction.move);
         commands.setPlayer(actualPlayer);
         commands.setPosition(w1);
@@ -66,6 +65,7 @@ public class Turn implements ModelInterface {
         socket.sendToAllExcept(actualPlayer, commands);
         nextTurn();
         if(actualPlayer == 0) {
+            setEnemiesLists();
             game();
         } else {
             firstPositioning();
@@ -93,7 +93,8 @@ public class Turn implements ModelInterface {
      */
     @Override
     public void setCards(int chosenCard) {
-        Card card = cardDeserializer.getCardList().get(chosenCard);
+        Card card = cardDeserializer.getSelectedCardFlags().get(chosenCard);
+        card.setCard(board.getBoard(), actualPlayer);
         cardList.add(card);
         commands.removeCard(chosenCard);
         if(!commands.getCardList().isEmpty()) {
@@ -117,9 +118,9 @@ public class Turn implements ModelInterface {
         socket.sendTo(actualPlayer, commands);
     }
 
-    public void setEnemiesLists() {
-        for (int i = 0; i <playedCards.size() ; i++)
-            playedCards.get(i).setEnemies(playedCards);
+    private void setEnemiesLists() {
+        for (int i = 0; i < cardList.size() ; i++)
+            cardList.get(i).setEnemies(cardList);
     }
 
     /**

@@ -1,5 +1,4 @@
-{
-  "gods": [
+[
     {
       "name": "Apollo",
       "action_3": false,
@@ -99,5 +98,4 @@
       "dome_2": false,
       "not_before_3": false
     }
-  ]
-}
+]

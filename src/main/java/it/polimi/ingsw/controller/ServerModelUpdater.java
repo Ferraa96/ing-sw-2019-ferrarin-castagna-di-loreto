@@ -6,21 +6,13 @@ import it.polimi.ingsw.model.Turn;
  * handle the messages from the client
  */
 public class ServerModelUpdater {
-    private static Turn turn;
-
-    /**
-     * adapter client-server
-     * @param turn the turn instance
-     */
-    public ServerModelUpdater(Turn turn) {
-        ServerModelUpdater.turn = turn;
-    }
+    private Turn turn;
 
     /**
      * translate the commands from the client to call to methods in the server
      * @param commands the command sent by the client
      */
-    public static void receive(Commands commands) {
+    public void receive(Commands commands) {
         switch (commands.getInstruction()) {
             case move:
                 break;
@@ -40,5 +32,9 @@ public class ServerModelUpdater {
             default:
                 System.out.println("Ricevuto " + commands.getInstruction());
         }
+    }
+
+    public void setTurn(Turn turn) {
+        this.turn = turn;
     }
 }

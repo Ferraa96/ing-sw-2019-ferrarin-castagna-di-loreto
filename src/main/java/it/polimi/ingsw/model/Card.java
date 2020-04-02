@@ -40,11 +40,11 @@ public class Card {
     private List<Card> enemies;
     private Worker enemy;
 
-    public Card( Cell[][] map, int player) {
+    public void setCard(Cell[][] map, int playerId) {
         this.map = map;
-        this.playerId=player;
-        this.worker1 = new Worker(player,1);
-        this.worker2 = new Worker(player,2);
+        this.playerId = playerId;
+        this.worker1 = new Worker(playerId, 1);
+        this.worker2 = new Worker(playerId, 2);
         //serializeCards
         this.setStandardRoutine();
         this.setCardRoutine();
@@ -218,12 +218,13 @@ public class Card {
      */
     public void setEnemies(List<Card> playedCards) {
         this.enemies = new ArrayList<>(playedCards);
-        for (int i = 0; i < enemies.size(); i++) {
-            if (enemies.get(i).getPlayerId() == this.playerId) {
-                enemies.remove(enemies.get(i));
-                i--;
-            }
-        }
+        enemies.removeIf(curr -> curr.getPlayerId() == this.playerId);
+//        for (int i = 0; i < enemies.size(); i++) {
+//            if (enemies.get(i).getPlayerId() == this.playerId) {
+//                enemies.remove(enemies.get(i));
+//                i--;
+//            }
+//        }
     }
 
     //setter e getter vari

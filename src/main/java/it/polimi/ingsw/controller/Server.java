@@ -1,10 +1,13 @@
 package it.polimi.ingsw.controller;
 
-import java.util.Scanner;
-
 public class Server {
 
     public static void main(String[] args) {
-        new SocketServer();
+        int port = 59898;
+        while(true) {
+            System.out.println("Server " + (port - 59897) + " online on port " + port);
+            new SocketServer(port);
+            port++;
+        }
     }
 }

@@ -13,49 +13,51 @@ import java.util.*;
 public class SocketServer implements ControllerInterface {
     private ServerSocket serverSocket;
     private List<ServerThread> observers;
-    private Timer timer;
-    private int min = 2;
+    private int port = 59898;
+    private ServerModelUpdater serverModelUpdater;
 
     /**
      * creates the server and creates a thread for all the clients
      */
-    public SocketServer() {
-        int actualNum = 0;
-        int max = 3;
-        System.out.println("Numero di giocatori: ");
-        max = new Scanner(System.in).nextInt();
+    public SocketServer(int port) {
+        this.port = port;
         observers = new ArrayList<>();
-        Socket socket;
+        addClients();
+    }
+
+    private void addClients() {
+        int actualNum = 0;
+        int min = 2;
+        int max = 3;
         try {
-            serverSocket = new ServerSocket(59898);
-            System.out.println("The server is running...");
+            serverSocket = new ServerSocket(port);
+            serverModelUpdater = new ServerModelUpdater();
             while (actualNum != max) {
-                socket = serverSocket.accept();
-                ServerThread serverThread = new ServerThread(socket, actualNum);
+                Socket socket = serverSocket.accept();
+                ServerThread serverThread = new ServerThread(socket, actualNum, serverModelUpdater);
                 serverThread.start();
                 observers.add(serverThread);
                 actualNum++;
                 System.out.println("Connected: " + socket);
-                if(actualNum == min) {
-                    timer = new Timer();
-                    setTimer();
+                if (actualNum == min) {
+                    System.out.println("Timer start");
+                    serverSocket.setSoTimeout(10000);
                 }
             }
-            timer.cancel();
         } catch (IOException e) {
-            e.printStackTrace();
+            if(!(e.getMessage().equals("Accept timed out"))) {
+                e.printStackTrace();
+            }
         }
-        Turn turn = new Turn(this, observers.size());
-        new ServerModelUpdater(turn);
+        gameStart();
     }
 
-    private void setTimer() {
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                System.out.println("Partita cominciata con " + min + " giocatori");
-            }
-        }, 10000);
+    private void gameStart() {
+        serverModelUpdater.setTurn(new Turn(this, observers.size()));
+        System.out.println("Game start");
+        for(ServerThread curr: observers) {
+            System.out.println(curr);
+        }
     }
 
     /**
