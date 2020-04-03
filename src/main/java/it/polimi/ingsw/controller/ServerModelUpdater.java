@@ -32,6 +32,15 @@ public class ServerModelUpdater {
             case setName:
                 turn.setPlayerName(commands.getPlayer(), commands.getStringList());
                 break;
+            case chooseWorker:
+                turn.chooseWorker(commands.getPosition());
+                break;
+            case choosePosition:
+                turn.apply(commands.getPosition());
+                break;
+            case usePower:
+                turn.setPower(commands.isAnswer());
+                break;
             default:
                 System.out.println("Ricevuto " + commands.getInstruction());
         }

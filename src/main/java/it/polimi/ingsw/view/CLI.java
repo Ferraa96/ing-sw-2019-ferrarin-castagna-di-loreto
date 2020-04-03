@@ -28,7 +28,7 @@ public class CLI implements ViewInterface {
     private Tile[][] gameMap;
     private Scanner scanner = new Scanner(System.in);
     private CardDeserializer cardDeserializer = new CardDeserializer();
-    private List<Integer> workerPos;
+    private List<Position> workerPos;
 
     /**
      * creates the CLI
@@ -59,9 +59,10 @@ public class CLI implements ViewInterface {
     }
 
     @Override
-    public void move(int player, Position position) {
+    public void move(int workerID, Position position) {
         int index = allTiles.indexOf(gameMap[position.getRow()][position.getColumn()]);
         gameMap[position.getRow()][position.getColumn()] = allTiles.get(index + 1);
+        workerPos.add(workerID, position);
     }
 
     @Override
@@ -88,6 +89,14 @@ public class CLI implements ViewInterface {
             }
             System.out.println("-----------------------------------------------------------------------");
         }
+    }
+
+    @Override
+    public void choosePosition(List<Position> list) {
+        System.out.print("Scegli la posizione (riga, colonna): ");
+        commands.setInstruction(Instruction.choosePosition);
+        commands.setPosition(verifyPosition(list));
+        socket.send(commands);
     }
 
     @Override
@@ -199,7 +208,7 @@ public class CLI implements ViewInterface {
             if(ok) {
                 return pos;
             }
-            System.out.print("Posizione non valida, inseriscine un'altra: ");
+            System.out.print("Scelta non valida, inseriscine un'altra: ");
             pos = new Position(scanner.nextInt(), scanner.nextInt());
         }
     }
@@ -232,6 +241,38 @@ public class CLI implements ViewInterface {
             }
             System.out.print("Nome " + name + " già preso, scegline un altro: ");
             ok = true;
+        }
+    }
+
+    @Override
+    public void chooseWorker() {
+//        for(Position curr: workerPos) {
+//            markPosition(curr, 'x');
+//        }
+//        updateScreen();
+        System.out.print("Seleziona il worker: ");
+        commands.setPosition(verifyPosition(workerPos));
+        commands.setInstruction(Instruction.chooseWorker);
+        socket.send(commands);
+    }
+
+    @Override
+    public void choosePower() {
+        System.out.print("Attivare il potere della carta? S/N ");
+        commands.setInstruction(Instruction.usePower);
+        commands.setAnswer(verifyBoolean());
+        socket.send(commands);
+    }
+
+    private boolean verifyBoolean() {
+        String answer;
+        while (true) {
+            answer = scanner.nextLine();
+            if(answer.equals("s")) {
+                return true;
+            } else if(answer.equals("n")) {
+                return false;
+            }
         }
     }
 }

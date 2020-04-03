@@ -5,7 +5,9 @@ import it.polimi.ingsw.model.Position;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * commands class
@@ -20,8 +22,8 @@ public class Commands implements Serializable {
     private List<Position> availablePos = new ArrayList<>();
     private Cell[][] map;
     private List<String> stringList = new ArrayList<>();
-
-    public Commands() {}
+    private boolean answer;
+    private Map<Integer, Position> movement = new HashMap<>();  //<workerID, finalPos>
 
     public List<Position> getAvailablePos() {
         return availablePos;
@@ -93,5 +95,21 @@ public class Commands implements Serializable {
 
     public List<String> getStringList() {
         return stringList;
+    }
+
+    public void setAnswer(boolean answer) {
+        this.answer = answer;
+    }
+
+    public boolean isAnswer() {
+        return answer;
+    }
+
+    public void setMovement(Map<Integer, Position> movement) {
+        this.movement = movement;
+    }
+
+    public Map<Integer, Position> getMovement() {
+        return movement;
     }
 }

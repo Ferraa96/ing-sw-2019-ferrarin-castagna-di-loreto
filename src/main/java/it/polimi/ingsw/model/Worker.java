@@ -8,7 +8,7 @@ public class Worker {
     private Position position;
 
     public Worker(int player, int workerNumber) {
-        this.workerID = player*10 + workerNumber;
+        this.workerID = player * 2 + workerNumber;
     }
 
     public int getWorkerID() {

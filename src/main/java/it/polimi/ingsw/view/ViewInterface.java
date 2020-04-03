@@ -66,4 +66,10 @@ public interface ViewInterface {
     void resumeGame(Cell[][] cells);
 
     void setName(List<String> stringList);
+
+    void chooseWorker();
+
+    void choosePower();
+
+    void choosePosition(List<Position> list);
 }

@@ -5,7 +5,7 @@ package it.polimi.ingsw.model;
  */
 public class Cell {
 
-    private int workerID = 0;
+    private int workerID = -1;
     private int height = 0;
 
     public int getWorkerID() {

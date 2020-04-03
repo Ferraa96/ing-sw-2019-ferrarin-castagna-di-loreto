@@ -41,7 +41,7 @@ public class Build implements Effect {
         else if(down > 5) { down = 4; }
         for(int i = up; i < down; i++) {
             for(int j = left; j < right; j++) {
-                if (map[i][j].getHeight()!=4 && map[i][j].getWorkerID()==0) {
+                if (map[i][j].getHeight()!=4 && map[i][j].getWorkerID() == -1) {
                     if (!(i == row && j == column))
                         list.add(new Position(i, j));
                 }

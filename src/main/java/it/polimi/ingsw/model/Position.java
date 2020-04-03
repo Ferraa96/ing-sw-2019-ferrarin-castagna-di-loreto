@@ -21,4 +21,8 @@ public class Position implements Serializable {
     public int getColumn() {
         return column;
     }
+
+    public boolean isEqual(Position position) {
+        return (this.row == position.getRow() && this.column == position.getColumn());
+    }
 }

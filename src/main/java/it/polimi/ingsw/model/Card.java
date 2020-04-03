@@ -39,6 +39,7 @@ public class Card {
     private List<Effect> standardRoutine;
     private List<Card> enemies;
     private Worker enemy;
+    private boolean activePower;
 
     /**
      * check for current player win
@@ -58,14 +59,14 @@ public class Card {
      * @return correct enemy
      */
     private Worker getCorrectEnemy(int id) {
-        for (int i = 0; i <enemies.size() ; i++) {
+        for (int i = 0; i < enemies.size() ; i++) {
             if (enemies.get(i).getWorker1().getWorkerID()==id) {
                 enemy = enemies.get(i).getWorker1();
-                i=enemies.size();
+                i = enemies.size();
             }
             else if (enemies.get(i).getWorker2().getWorkerID()==id) {
                 enemy = enemies.get(i).getWorker2();
-                i=enemies.size();
+                i = enemies.size();
             }
         }
         return enemy;
@@ -78,7 +79,7 @@ public class Card {
      * @param target interested worker
      */
     private void setParameters(int i,Position chosenCell, Worker target) {
-        if (map[chosenCell.getRow()][chosenCell.getColumn()].getWorkerID()==0)
+        if (map[chosenCell.getRow()][chosenCell.getColumn()].getWorkerID() == -1)
             if (i+1< cardRoutine.size()) {
             cardRoutine.get(i + 1).setLastMoveInitialPosition(target.getPosition());
             cardRoutine.get(i + 1).setLastBuildPosition(chosenCell);
@@ -173,10 +174,9 @@ public class Card {
      * asks for available position to move or build
      * @param i number of action in the routine
      * @param target interested worker
-     * @param activePower true if u want use card power
      * @return available positions
      */
-    public List<Position> availablePositions(int i,Worker target, Boolean activePower) {
+    public List<Position> availablePositions(int i, Worker target) {
         if (!activePower)
             return standardRoutine.get(i).availableWithGod(target);
         return cardRoutine.get(i).availableWithGod(target);
@@ -186,19 +186,18 @@ public class Card {
      * launch the real move/build
      * @param i number of action in the routine
      * @param target interested worker
-     * @param activePower true if u want use card power
      * @param chosenCell cell chosen by player
      * @return difference between final and initial position
      */
-    public Boolean applyEffect(int i,Worker target, Boolean activePower, Position chosenCell) {
+    public boolean applyEffect(int i, Worker target, Position chosenCell) {
         int heightDifference;
         if (!activePower) {
             heightDifference = standardRoutine.get(i).executeAction(chosenCell, target);
             checkMoveUp(heightDifference);
         }
         else {
-            setParameters(i,chosenCell,target);
-            if (map[chosenCell.getRow()][chosenCell.getColumn()].getWorkerID()!=0) {
+            setParameters(i, chosenCell, target);
+            if (map[chosenCell.getRow()][chosenCell.getColumn()].getWorkerID() != -1) {
                 enemy = getCorrectEnemy(map[chosenCell.getRow()][chosenCell.getColumn()].getWorkerID());
                 heightDifference = cardRoutine.get(i).executeAction(chosenCell, target);
                 cardRoutine.get(i).executeAutoAction(enemy);
@@ -206,7 +205,7 @@ public class Card {
             else
                 heightDifference = cardRoutine.get(i).executeAction(chosenCell, target);
         }
-        return checkWin(heightDifference,chosenCell);
+        return checkWin(heightDifference, chosenCell);
     }
 
     /**
@@ -217,8 +216,8 @@ public class Card {
     public void setCard(Cell[][] map, int playerId) {
         this.map = map;
         this.playerId = playerId;
-        this.worker1 = new Worker(playerId, 1);
-        this.worker2 = new Worker(playerId, 2);
+        this.worker1 = new Worker(playerId, 0);
+        this.worker2 = new Worker(playerId, 1);
         this.setStandardRoutine();
         this.setCardRoutine();
     }
@@ -231,7 +230,7 @@ public class Card {
         List<Position> list = new ArrayList<>();
         for(int i = 0; i < 5; i++) {
             for(int j = 0; j < 5; j++) {
-                if(map[i][j].getWorkerID() == 0) {
+                if(map[i][j].getWorkerID() == -1) {
                     list.add(new Position(i, j));
                 }
             }
@@ -242,12 +241,15 @@ public class Card {
     /**
      * place workers on the board
      * @param chosenMove initial position chosen
-     * @param target worker interested
+     * @param workerID worker interested
      */
-    public void firstPositioning(Position chosenMove, Worker target) {
-        if (map[chosenMove.getRow()][chosenMove.getColumn()].getWorkerID() == 0) {
-            target.setPosition(new Position(chosenMove.getRow(),chosenMove.getColumn()));
-            map[chosenMove.getRow()][chosenMove.getColumn()].setWorkerID(target.getWorkerID());
+    public void firstPositioning(Position chosenMove, int workerID) {
+        if(workerID == 0) {
+            worker1.setPosition(new Position(chosenMove.getRow(), chosenMove.getColumn()));
+            map[chosenMove.getRow()][chosenMove.getColumn()].setWorkerID(worker1.getWorkerID());
+        } else {
+            worker2.setPosition(new Position(chosenMove.getRow(), chosenMove.getColumn()));
+            map[chosenMove.getRow()][chosenMove.getColumn()].setWorkerID(worker2.getWorkerID());
         }
     }
 
@@ -287,6 +289,10 @@ public class Card {
     }
     public List<Effect> getStandardRoutine() {
         return standardRoutine;
+    }
+
+    public void setActivePower(boolean activePower) {
+        this.activePower = activePower;
     }
 
 }

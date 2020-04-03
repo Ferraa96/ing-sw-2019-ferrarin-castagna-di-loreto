@@ -38,19 +38,30 @@ public class Move implements Effect{
         column = actualPosition.getColumn();
 
         left = column - 1;
-        right = column + 1 + 1;
+        right = column + 2;
         up = row - 1;
-        down = row + 1 + 1;
-        if(left < 0) { left = 0; }
-        else if(right > 5) { right = 4; }
-        if(up < 0) { up = 0; }
-        else if(down > 5) { down = 4; }
+        down = row + 2;
+        if(left < 0) {
+            left = 0;
+        }
+        else if(right > 5) {
+            right = 5;
+        }
+        if(up < 0) {
+            up = 0;
+        }
+        else if(down > 5) {
+            down = 5;
+        }
         for(int i = up; i < down; i++) {
             for(int j = left; j < right; j++) {
-                if ( map[i][j].getHeight()!=4 && map[i][j].getHeight()-map[row][column].getHeight()<=1)
-                    if (!(noUp && map[i][j].getHeight()-map[row][column].getHeight()==1))
-                        if (!(i==row && j==column))
+                if (map[i][j].getHeight() != 4 && map[i][j].getHeight()-map[row][column].getHeight()<=1) {
+                    if (!(noUp && map[i][j].getHeight() - map[row][column].getHeight() == 1)) {
+                        if (!(i == row && j == column)) {
                             list.add(new Position(i, j));
+                        }
+                    }
+                }
             }
         }
         return list;
@@ -66,12 +77,12 @@ public class Move implements Effect{
      */
     private int people(Worker target, int r, int c, int curr) {
         if (!searchPeople) {
-            if (map[r][c].getWorkerID() != 0) {
+            if (map[r][c].getWorkerID() != -1) {
                 possibleCells.remove(possibleCells.get(curr));
                 curr--;
             }
         }
-        else if (map[r][c].getWorkerID() == 0 || map[r][c].getWorkerID()/10==target.getWorkerID()/10) {
+        else if (map[r][c].getWorkerID() == -1 || map[r][c].getWorkerID() / 2 == target.getWorkerID() / 2) {
             possibleCells.remove(possibleCells.get(curr));
             curr--;
         }
@@ -95,7 +106,7 @@ public class Move implements Effect{
                 possibleCells.remove(possibleCells.get(curr));
                 curr--;
             }
-            else if (map[r][c].getWorkerID()!=0) {
+            else if (map[r][c].getWorkerID() != -1) {
                 possibleCells.remove(possibleCells.get(curr));
                 curr--;
             }
@@ -136,7 +147,7 @@ public class Move implements Effect{
      */
     @Override
     public List<Position> availableWithGod(Worker target) {
-        Position actualPosition = new Position(target.getPosition().getRow(),target.getPosition().getColumn());
+        Position actualPosition = new Position(target.getPosition().getRow(), target.getPosition().getColumn());
         int r,c;
         possibleCells= new ArrayList<>(availableCells(actualPosition));
         for (int i = 0; i < possibleCells.size(); i++) {
@@ -161,7 +172,7 @@ public class Move implements Effect{
     @Override
     public int executeAction(Position chosenCell, Worker worker) {
         int downUp=map[chosenCell.getRow()][chosenCell.getColumn()].getHeight()-map[worker.getPosition().getRow()][worker.getPosition().getColumn()].getHeight();
-        map[worker.getPosition().getRow()][worker.getPosition().getColumn()].setWorkerID(0);
+        map[worker.getPosition().getRow()][worker.getPosition().getColumn()].setWorkerID(-1);
         map[chosenCell.getRow()][chosenCell.getColumn()].setWorkerID(worker.getWorkerID());
         worker.setPosition( new Position(chosenCell.getRow(),chosenCell.getColumn()));
         return downUp;
@@ -173,15 +184,15 @@ public class Move implements Effect{
      */
     @Override
     public void executeAutoAction(Worker enemy) {
-        int r,c;
+        int r, c;
         if (!knock) {
             enemy.setPosition(lastMoveInitialPosition);
             map[enemy.getPosition().getRow()][enemy.getPosition().getColumn()].setWorkerID(enemy.getWorkerID());
         }
         else {
-            r = 2*enemy.getPosition().getRow() - lastMoveInitialPosition.getRow();
-            c = 2*enemy.getPosition().getColumn() - lastMoveInitialPosition.getColumn();
-            enemy.setPosition(new Position(r,c));
+            r = 2 * enemy.getPosition().getRow() - lastMoveInitialPosition.getRow();
+            c = 2 * enemy.getPosition().getColumn() - lastMoveInitialPosition.getColumn();
+            enemy.setPosition(new Position(r, c));
             map[r][c].setWorkerID(enemy.getWorkerID());
         }
     }

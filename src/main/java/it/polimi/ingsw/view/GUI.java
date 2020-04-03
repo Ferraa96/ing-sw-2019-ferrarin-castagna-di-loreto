@@ -63,4 +63,19 @@ public class GUI implements ViewInterface {
     public void setName(List<String> stringList) {
 
     }
+
+    @Override
+    public void chooseWorker() {
+
+    }
+
+    @Override
+    public void choosePower() {
+
+    }
+
+    @Override
+    public void choosePosition(List<Position> list) {
+
+    }
 }

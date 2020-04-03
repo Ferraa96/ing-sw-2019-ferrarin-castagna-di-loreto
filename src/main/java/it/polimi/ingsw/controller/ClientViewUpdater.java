@@ -51,6 +51,15 @@ public class ClientViewUpdater {
             case setName:
                 view.setName(commands.getStringList());
                 break;
+            case chooseWorker:
+                view.chooseWorker();
+                break;
+            case usePower:
+                view.choosePower();
+                break;
+            case choosePosition:
+                view.choosePosition(commands.getAvailablePos());
+                break;
             default:
                 System.out.println("Ricevuto " + commands.getInstruction());
         }
