@@ -48,6 +48,9 @@ public class ClientViewUpdater {
                 break;
             case resumeGame:
                 break;
+            case setName:
+                view.setName(commands.getStringList());
+                break;
             default:
                 System.out.println("Ricevuto " + commands.getInstruction());
         }

@@ -13,10 +13,6 @@ public class Tile {
     private String line3;
     @SerializedName("line4")
     private String line4;
-    @SerializedName("height")
-    private int height;
-    @SerializedName("player")
-    private boolean player;
 
     public String getLine(int x) {
         switch (x) {
@@ -34,7 +30,8 @@ public class Tile {
     }
 
     public void setIdentifier(char id) {
-        String line = "            ";
+        String line = line4;
+        line = line.substring(0, 12);
         line4 = line + id;
     }
 }

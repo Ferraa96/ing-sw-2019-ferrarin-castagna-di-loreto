@@ -29,6 +29,9 @@ public class ServerModelUpdater {
             case initialPosition:
                 turn.choosePosition(commands.getAvailablePos());
                 break;
+            case setName:
+                turn.setPlayerName(commands.getPlayer(), commands.getStringList());
+                break;
             default:
                 System.out.println("Ricevuto " + commands.getInstruction());
         }

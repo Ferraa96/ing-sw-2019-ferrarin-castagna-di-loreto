@@ -64,4 +64,6 @@ public interface ViewInterface {
      * resume the game state
      */
     void resumeGame(Cell[][] cells);
+
+    void setName(List<String> stringList);
 }

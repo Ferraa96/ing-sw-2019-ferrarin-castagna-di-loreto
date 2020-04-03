@@ -13,7 +13,7 @@ import java.util.*;
 public class SocketServer implements ControllerInterface {
     private ServerSocket serverSocket;
     private List<ServerThread> observers;
-    private int port = 59898;
+    private int port;
     private ServerModelUpdater serverModelUpdater;
 
     /**
@@ -41,7 +41,7 @@ public class SocketServer implements ControllerInterface {
                 System.out.println("Connected: " + socket);
                 if (actualNum == min) {
                     System.out.println("Timer start");
-                    serverSocket.setSoTimeout(10000);
+                    serverSocket.setSoTimeout(1000);
                 }
             }
         } catch (IOException e) {

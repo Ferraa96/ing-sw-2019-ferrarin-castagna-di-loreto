@@ -28,6 +28,7 @@ public class CLI implements ViewInterface {
     private Tile[][] gameMap;
     private Scanner scanner = new Scanner(System.in);
     private CardDeserializer cardDeserializer = new CardDeserializer();
+    private List<Integer> workerPos;
 
     /**
      * creates the CLI
@@ -48,6 +49,7 @@ public class CLI implements ViewInterface {
             }
         }
         updateScreen();
+        workerPos = new ArrayList<>();
     }
 
     @Override
@@ -105,7 +107,7 @@ public class CLI implements ViewInterface {
     @Override
     public void chooseCardList(int num) {
         List<Card> cards = cardDeserializer.getCardList();
-        List<Integer> choosen = new ArrayList<>();
+        List<Integer> chosen = new ArrayList<>();
         System.out.println("Sei il primo giocatore, scegli " + num + " carte tra\n");
         for(int i = 0; i < cards.size(); i++) {
             System.out.println(i + ": " + cards.get(i).getName() + "\n" + cards.get(i).getDescription() + "\n");
@@ -116,10 +118,10 @@ public class CLI implements ViewInterface {
             tempList.add(i);
         }
         for(int i = 0; i < num; i++) {
-            System.out.println("Carta " + (i + 1) + ": ");
-            choosen.add(verifyCard(tempList));
+            System.out.print("Carta " + (i + 1) + ": ");
+            chosen.add(verifyCard(tempList));
         }
-        commands.setCardList(choosen);
+        commands.setCardList(chosen);
         socket.send(commands);
     }
 
@@ -142,7 +144,7 @@ public class CLI implements ViewInterface {
             if(ok) {
                 return card;
             }
-            System.out.println("Carta non valida, riprova: ");
+            System.out.print("Carta non valida, selezionane un'altra: ");
             card = scanner.nextInt();
         }
     }
@@ -151,19 +153,26 @@ public class CLI implements ViewInterface {
     public void firstPositioning(List<Position> availablePos) {
         List<Position> list = new ArrayList<>();
         Position pos;
-        markAvailablePositions(availablePos, 'x');
-        System.out.println("Posizione iniziale lavoratore 1: (riga, colonna) ");
+        for(Position currPos: availablePos) {
+            markPosition(currPos, 'x');
+        }
+        updateScreen();
+        System.out.print("Posizione iniziale lavoratore 1 (riga, colonna): ");
         pos = verifyPosition(availablePos);
         move(commands.getPlayer(), pos);
+        updateScreen();
         list.add(pos);
-        System.out.println("Posizione iniziale lavoratore 2: (riga, colonna) ");
+        System.out.print("Posizione iniziale lavoratore 2 (riga, colonna): ");
         pos = verifyPosition(availablePos);
         move(commands.getPlayer(), pos);
         list.add(pos);
         commands.setInstruction(Instruction.initialPosition);
         commands.setAvailablePos(list);
         socket.send(commands);
-        markAvailablePositions(availablePos, ' ');
+        for(Position currPos: availablePos) {
+            markPosition(currPos, ' ');
+        }
+        updateScreen();
     }
 
     @Override
@@ -190,15 +199,39 @@ public class CLI implements ViewInterface {
             if(ok) {
                 return pos;
             }
-            System.out.println("Posizione non valida, riprova: ");
+            System.out.print("Posizione non valida, inseriscine un'altra: ");
             pos = new Position(scanner.nextInt(), scanner.nextInt());
         }
     }
 
-    private void markAvailablePositions(List<Position> list, char mark) {
-        for(Position currPos: list) {
-            gameMap[currPos.getRow()][currPos.getColumn()].setIdentifier(mark);
+    private void markPosition(Position pos, char mark) {
+        gameMap[pos.getRow()][pos.getColumn()].setIdentifier(mark);
+    }
+
+    @Override
+    public void setName(List<String> stringList) {
+        System.out.print("Imposta il nome: ");
+        commands.setInstruction(Instruction.setName);
+        commands.getStringList().add(0, verifyName(stringList));
+        socket.send(commands);
+    }
+
+    private String verifyName(List<String> alreadyChosen) {
+        String name;
+        boolean ok = true;
+        while (true) {
+            name = scanner.nextLine();
+            for(String curr: alreadyChosen) {
+                if(curr.equals(name)) {
+                    ok = false;
+                    break;
+                }
+            }
+            if(ok) {
+                return name;
+            }
+            System.out.print("Nome " + name + " già preso, scegline un altro: ");
+            ok = true;
         }
-        updateScreen();
     }
 }

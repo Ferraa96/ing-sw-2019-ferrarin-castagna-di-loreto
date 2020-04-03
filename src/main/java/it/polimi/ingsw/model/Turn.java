@@ -5,7 +5,9 @@ import it.polimi.ingsw.controller.Instruction;
 import it.polimi.ingsw.controller.SocketServer;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * handle all the turns
@@ -20,6 +22,7 @@ public class Turn implements ModelInterface {
     private Board board;
     private CardDeserializer cardDeserializer = new CardDeserializer();
     private SaveState saveState;
+    private Map<Integer, String> names;
 
     public Turn(SocketServer socket, int numPlayer) {
         this.socket = socket;
@@ -27,8 +30,9 @@ public class Turn implements ModelInterface {
         saveState = new SaveState();
         cardList = new ArrayList<>();
         commands = new Commands();
-        initialChoose();
+        names = new HashMap<>();
         board = new Board();
+        askName();
     }
 
     /**
@@ -70,6 +74,22 @@ public class Turn implements ModelInterface {
         } else {
             firstPositioning();
         }
+    }
+
+    public void setPlayerName(int playerID, List<String> nameList) {
+        names.put(playerID, nameList.get(0));
+        nextTurn();
+        if(actualPlayer == 0) {
+            initialChoose();
+        } else {
+            commands.getStringList().add(nameList.get(0));
+            askName();
+        }
+    }
+
+    private void askName() {
+        commands.setInstruction(Instruction.setName);
+        socket.sendTo(actualPlayer, commands);
     }
 
     /**

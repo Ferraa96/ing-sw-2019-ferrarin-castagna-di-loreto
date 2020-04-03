@@ -58,4 +58,9 @@ public class GUI implements ViewInterface {
     public void resumeGame(Cell[][] cells) {
 
     }
+
+    @Override
+    public void setName(List<String> stringList) {
+
+    }
 }

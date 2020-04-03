@@ -19,13 +19,9 @@ public class Commands implements Serializable {
     private List<Integer> cardList = new ArrayList<>();
     private List<Position> availablePos = new ArrayList<>();
     private Cell[][] map;
+    private List<String> stringList = new ArrayList<>();
 
     public Commands() {}
-
-    public Commands(Position position, int player) {
-        this.position = position;
-        this.player = player;
-    }
 
     public List<Position> getAvailablePos() {
         return availablePos;
@@ -93,5 +89,9 @@ public class Commands implements Serializable {
 
     public void setMap(Cell[][] map) {
         this.map = map;
+    }
+
+    public List<String> getStringList() {
+        return stringList;
     }
 }
