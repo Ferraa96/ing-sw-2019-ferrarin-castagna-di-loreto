@@ -12,14 +12,16 @@ public class Move implements Effect{
     private Boolean searchPeople;
     private Boolean knock;
     private Boolean specificMovetype;
-    private Boolean noUp;                           //usata da Athena all'inizio dello switch
+    private Boolean noUp = false;
+    private Boolean notBefore;
     private Position lastMoveInitialPosition;
+    private List<Position> possibleCells;
 
-    public Move(Cell[][] map, Boolean knock, Boolean searchPeople, Boolean specificMovetype, Boolean noUp) {
+    public Move(Cell[][] map, Boolean knock, Boolean searchPeople, Boolean specificMovetype, Boolean notBefore) {
         this.knock = knock;
         this.searchPeople = searchPeople;
         this.specificMovetype = specificMovetype;
-        this.noUp = noUp;
+        this.notBefore = notBefore;
         this.map = map;
     }
 
@@ -45,13 +47,86 @@ public class Move implements Effect{
         else if(down > 5) { down = 4; }
         for(int i = up; i < down; i++) {
             for(int j = left; j < right; j++) {
-                if ( map[i][j].getHeight()!=4 && map[i][j].getHeight()-map[row][column].getHeight()<=1) {
-                    if (!(i==row && j==column))
-                       list.add(new Position(i, j));
-                }
+                if ( map[i][j].getHeight()!=4 && map[i][j].getHeight()-map[row][column].getHeight()<=1)
+                    if (!(noUp && map[i][j].getHeight()-map[row][column].getHeight()==1))
+                        if (!(i==row && j==column))
+                            list.add(new Position(i, j));
             }
         }
         return list;
+    }
+
+    /**
+     * remove correct positions considering if you are searching for people or not
+     * @param target interested worker
+     * @param r row index
+     * @param c column index
+     * @param curr possibleCells current cell
+     * @return index of cell in possibleCells
+     */
+    private int people(Worker target, int r, int c, int curr) {
+        if (!searchPeople) {
+            if (map[r][c].getWorkerID() != 0) {
+                possibleCells.remove(possibleCells.get(curr));
+                curr--;
+            }
+        }
+        else if (map[r][c].getWorkerID() == 0 || map[r][c].getWorkerID()/10==target.getWorkerID()/10) {
+            possibleCells.remove(possibleCells.get(curr));
+            curr--;
+        }
+        return curr;
+    }
+
+    /**
+     * remove correct positions considering mino's knock
+     * @param target interested worker
+     * @param r row index
+     * @param c column index
+     * @param curr possibleCells current cell
+     * @return index of cell in possibleCells
+     */
+    private int knockable(Worker target, int r, int c, int curr) {
+        if (knock){
+            //controllo il knock di mino
+            r = 2*r - target.getPosition().getRow();
+            c = 2*c - target.getPosition().getColumn();
+            if (r<0 || r>4 || c<0 || c>4) {
+                possibleCells.remove(possibleCells.get(curr));
+                curr--;
+            }
+            else if (map[r][c].getWorkerID()!=0) {
+                possibleCells.remove(possibleCells.get(curr));
+                curr--;
+            }
+        }
+        return curr;
+    }
+
+    /**
+     * remove correct positions considering specific move condition
+     * @param target interested worker
+     * @param r row index
+     * @param c column index
+     * @param curr possibleCells current cell
+     * @return index of cell in possibleCells
+     */
+    private int specific(Worker target, int r, int c, int curr) {
+        if (specificMovetype) {
+            //nomoveup di prometheus
+            if (!notBefore) {
+                if (map[r][c].getHeight() - map[target.getPosition().getRow()][target.getPosition().getColumn()].getHeight() >= 1) {
+                    possibleCells.remove(possibleCells.get(curr));
+                    curr--;
+                }
+            } else
+                //not before di artemis
+                if (r == lastMoveInitialPosition.getRow() && c == lastMoveInitialPosition.getColumn()) {
+                    possibleCells.remove(possibleCells.get(curr));
+                    curr--;
+                }
+        }
+        return curr;
     }
 
     /**
@@ -63,52 +138,17 @@ public class Move implements Effect{
     public List<Position> availableWithGod(Worker target) {
         Position actualPosition = new Position(target.getPosition().getRow(),target.getPosition().getColumn());
         int r,c;
-        List<Position> possibleCells= new ArrayList<>(availableCells(actualPosition));
+        possibleCells= new ArrayList<>(availableCells(actualPosition));
         for (int i = 0; i < possibleCells.size(); i++) {
-                r = possibleCells.get(i).getRow();
-                c = possibleCells.get(i).getColumn();
-                if (!searchPeople){
-                    //levo le celle occupate
-                    if (map[r][c].getWorkerID()!=0) {
-                        possibleCells.remove(possibleCells.get(i));
-                        i--;
-                    }
-                    else if (specificMovetype) {
-                        //nomoveup di prometeo e athena
-                        if (noUp) {
-                            if (map[r][c].getHeight() - map[actualPosition.getRow()][actualPosition.getColumn()].getHeight() >= 1) {
-                                possibleCells.remove(possibleCells.get(i));
-                                i--;
-                            }
-                        } else
-                            //not before di artemis
-                            if (r == lastMoveInitialPosition.getRow() && c == lastMoveInitialPosition.getColumn()) {
-                                possibleCells.remove(possibleCells.get(i));
-                                i--;
-                            }
-                    }
-                }
-                else {
-                    //considero solo quelle con people non mie per apollo e mino
-                    if (map[r][c].getWorkerID() == 0 || map[r][c].getWorkerID()/10==target.getWorkerID()/10) {
-                        possibleCells.remove(possibleCells.get(i));
-                        i--;
-                    }
-                    else if (knock){
-                        //controllo il knock di mino
-                        r = 2*r - actualPosition.getRow();
-                        c = 2*c - actualPosition.getColumn();
-                        if (r<0 || r>4 || c<0 || c>4) {
-                            possibleCells.remove(possibleCells.get(i));
-                            i--;
-                        }
-                        else if (map[r][c].getWorkerID()!=0) {
-                            possibleCells.remove(possibleCells.get(i));
-                            i--;
-                        }
-                    }
-                }
+            r = possibleCells.get(i).getRow();
+            c = possibleCells.get(i).getColumn();
+            int j=i;
+            i = people(target, r, c, i);
+            if (i==j) {
+                i = knockable(target, r, c, i);
+                i = specific(target, r, c, i);
             }
+        }
         return possibleCells;
     }
 

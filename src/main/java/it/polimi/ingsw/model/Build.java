@@ -11,6 +11,7 @@ public class Build implements Effect {
     private Boolean nextBlock;
     private Boolean specific;
     private Position lastBuildPosition;
+    private List<Position> possibleCells;
 
     public Build(Cell[][] map, Boolean nextBlock, Boolean specific) {
         this.map = map;
@@ -50,6 +51,32 @@ public class Build implements Effect {
     }
 
     /**
+     * remove correct positions considering specific build condition
+     * @param r row index
+     * @param c column index
+     * @param curr possibleCells current cell
+     * @return index of cell in possibleCells
+     */
+    private int specificBuild(int r, int c, int curr) {
+        if (specific) {
+            if (!nextBlock) {
+                //max height 2
+                if (map[r][c].getHeight()>2) {
+                    possibleCells.remove(possibleCells.get(curr));
+                    curr--;
+                }
+            }
+            else
+                //notbefore di demeter
+                if (r==lastBuildPosition.getRow() && c==lastBuildPosition.getColumn()) {
+                    possibleCells.remove(possibleCells.get(curr));
+                    curr--;
+                }
+        }
+        return curr;
+    }
+
+    /**
      * search free cells around
      * @param target worker interested
      * @return list of available positions
@@ -58,29 +85,15 @@ public class Build implements Effect {
     public List<Position> availableWithGod(Worker target) {
         Position actualPosition = target.getPosition();
         int r,c;
-            List<Position> possibleCells =new ArrayList<>(availableCells(actualPosition));
+            possibleCells =new ArrayList<>(availableCells(actualPosition));
         for (int i = 0; i < possibleCells.size(); i++) {
                 r = possibleCells.get(i).getRow();
                 c = possibleCells.get(i).getColumn();
-                if (specific) {
-                    if (!nextBlock) {
-                        //max height 2
-                        if (map[r][c].getHeight()>2) {
-                            possibleCells.remove(possibleCells.get(i));
-                            i--;
-                        }
-                    }
-                    else
-                        //notbefore di demeter
-                        if (r==lastBuildPosition.getRow() && c==lastBuildPosition.getColumn()) {
-                            possibleCells.remove(possibleCells.get(i));
-                            i--;
-                        }
-
-                }
+                i = specificBuild(r, c, i);
             }
         return possibleCells;
     }
+
 
     /**
      * do the action and update the map

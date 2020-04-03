@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * card/player contains card informations, list of effects and is linked to his 2 workers
+ * card/player contains card informations, list of effects and it's linked to his 2 workers
  */
 public class Card {
     @SerializedName("name")
@@ -40,23 +40,16 @@ public class Card {
     private List<Card> enemies;
     private Worker enemy;
 
-    public void setCard(Cell[][] map, int playerId) {
-        this.map = map;
-        this.playerId = playerId;
-        this.worker1 = new Worker(playerId, 1);
-        this.worker2 = new Worker(playerId, 2);
-        //serializeCards
-        this.setStandardRoutine();
-        this.setCardRoutine();
-    }
-
     /**
-     * check if you can use god power for selectedWorker
-     * @param selectedWorker is the target
-     * @return true if available
+     * check for current player win
+     * @param difference height difference between final and starting block
+     * @param finalPosition final position
+     * @return true if you satisfy a win condition
      */
-    public Boolean checkCardActivation(Worker selectedWorker) {
-        return cardRoutine.get(0).availableWithGod(selectedWorker).size() != 0;
+    private Boolean checkWin(int difference, Position finalPosition) {
+        if (difference == 1 && map[finalPosition.getRow()][finalPosition.getColumn()].getHeight() == 3)
+            return true;
+        return this.name.equals("Pan") && difference <= -2;
     }
 
     /**
@@ -64,7 +57,7 @@ public class Card {
      * @param id worker's id of the enemy you want search
      * @return correct enemy
      */
-    public Worker getCorrectEnemy(int id) {
+    private Worker getCorrectEnemy(int id) {
         for (int i = 0; i <enemies.size() ; i++) {
             if (enemies.get(i).getWorker1().getWorkerID()==id) {
                 enemy = enemies.get(i).getWorker1();
@@ -76,6 +69,104 @@ public class Card {
             }
         }
         return enemy;
+    }
+
+    /**
+     * set parameters for actual/next effect
+     * @param i number of action in the routine
+     * @param chosenCell cell chosen by player
+     * @param target interested worker
+     */
+    private void setParameters(int i,Position chosenCell, Worker target) {
+        if (map[chosenCell.getRow()][chosenCell.getColumn()].getWorkerID()==0)
+            if (i+1< cardRoutine.size()) {
+            cardRoutine.get(i + 1).setLastMoveInitialPosition(target.getPosition());
+            cardRoutine.get(i + 1).setLastBuildPosition(chosenCell);
+        }
+        else
+            cardRoutine.get(i).setLastMoveInitialPosition(target.getPosition());
+    }
+
+    /**
+     * check for athena move up
+     * @param difference difference between final and initial position
+     */
+    private void checkMoveUp( int difference) {
+        if (this.name.equals("Athena")) {
+            if (difference > 0) {
+                for (Card curr : enemies) {
+                    for (int j = 0; j < curr.getStandardRoutine().size(); j++)
+                        curr.getStandardRoutine().get(j).setNoUp(true);
+                    for (int j = 0; j < curr.getCardRoutine().size(); j++)
+                        curr.getCardRoutine().get(j).setNoUp(true);
+                }
+            }
+            else {
+                for (Card curr : enemies) {
+                    for (int j = 0; j < curr.getStandardRoutine().size(); j++)
+                        curr.getStandardRoutine().get(j).setNoUp(false);
+                    for (int j = 0; j < curr.getCardRoutine().size(); j++)
+                        curr.getCardRoutine().get(j).setNoUp(false);
+                }
+            }
+        }
+    }
+
+    /**
+     * set the correct routine without using the god power
+     */
+    private void setStandardRoutine() {
+        standardRoutine = new ArrayList<>();
+        standardRoutine.add(new Move(map,false,false,false,false));
+        standardRoutine.add(new Build(map,true,false));
+    }
+
+    /**
+     * set the correct routine using the god power
+     */
+    private void setCardRoutine(){
+        cardRoutine = new ArrayList<>();
+        if (move_1)
+            if (search_people_1)
+                if (knock_1)
+                    cardRoutine.add(new Move(map,true,true, false, false)); //Mino
+                else
+                    cardRoutine.add(new Move(map,false,true, false, false)); //Apollo
+            else
+                cardRoutine.add(new Move(map,false,false,false,false)); //standard move
+        else
+            cardRoutine.add(new Build(map,true,false)); //standard build
+
+        if (move_2)
+            if (specific_2)
+                cardRoutine.add(new Move(map,true,false, true,true)); //Artemis
+            else
+                cardRoutine.add(new Move(map,false, false, true, false)); //Prometheus
+        else
+            if (specific_2)
+                if (dome_2)
+                    cardRoutine.add(new Build(map,false,false)); //Atlas
+                else
+                    cardRoutine.add(new Build(map,false,true)); //Hephaestus
+            else
+                cardRoutine.add(new Build(map,true,false)); //standard build
+
+        if (action_3)
+            if (not_before_3)
+                cardRoutine.add(new Build(map,true,true)); //Demeter
+            else
+                cardRoutine.add(new Build(map,true,false)); //standard build
+    }
+
+    /**
+     * check if you can use god power for selectedWorker
+     * @param selectedWorker is the target
+     * @return true if available
+     */
+    public Boolean checkCardActivation(Worker selectedWorker) {
+        if (this.name.equals("Athena") || this.name.equals("Pan"))
+            return false;
+        return cardRoutine.get(0).availableWithGod(selectedWorker).size() != 0;
     }
 
     /**
@@ -99,11 +190,12 @@ public class Card {
      * @param chosenCell cell chosen by player
      * @return difference between final and initial position
      */
-    //esegue l'azione effettiva aggiornando tutto il necessario
-    public int applyEffect(int i,Worker target, Boolean activePower, Position chosenCell) {
+    public Boolean applyEffect(int i,Worker target, Boolean activePower, Position chosenCell) {
         int heightDifference;
-        if (!activePower)
-            heightDifference = standardRoutine.get(i).executeAction(chosenCell,target);
+        if (!activePower) {
+            heightDifference = standardRoutine.get(i).executeAction(chosenCell, target);
+            checkMoveUp(heightDifference);
+        }
         else {
             setParameters(i,chosenCell,target);
             if (map[chosenCell.getRow()][chosenCell.getColumn()].getWorkerID()!=0) {
@@ -114,74 +206,21 @@ public class Card {
             else
                 heightDifference = cardRoutine.get(i).executeAction(chosenCell, target);
         }
-        return heightDifference;
+        return checkWin(heightDifference,chosenCell);
     }
 
     /**
-     * set parameters for actual/next effect
-     * @param i number of action in the routine
-     * @param chosenCell cell chosen by player
-     * @param target interested worker
+     * set card ready for first turn
+     * @param map game board
+     * @param playerId player's Identifier
      */
-    private void setParameters(int i,Position chosenCell, Worker target) {
-        if (map[chosenCell.getRow()][chosenCell.getColumn()].getWorkerID()==0)
-            if (i+1< cardRoutine.size()) {
-            cardRoutine.get(i + 1).setLastMoveInitialPosition(target.getPosition());
-            cardRoutine.get(i + 1).setLastBuildPosition(chosenCell);
-        }
-        else
-            cardRoutine.get(i).setLastMoveInitialPosition(target.getPosition());
-    }
-
-    /**
-     * set the correct routine without using the god power
-     */
-    public void setStandardRoutine() {
-        standardRoutine = new ArrayList<>();
-        standardRoutine.add(new Move(map,false,false,false,false));
-        standardRoutine.add(new Build(map,true,false));
-    }
-
-    /**
-     * set the correct routine using the god power
-     */
-    public void setCardRoutine(){
-        cardRoutine = new ArrayList<>();
-        if (move_1)
-            if (search_people_1)
-                if (knock_1)
-                    cardRoutine.add(new Move(map,true,true, false, false)); //Mino
-                else
-                    cardRoutine.add(new Move(map,false,true, false, false)); //Apollo
-            else
-                cardRoutine.add(new Move(map,false,false,false,false)); //standard move
-        else
-            cardRoutine.add(new Build(map,true,false)); //standard build
-
-        if (move_2)
-            if (specific_2)
-                cardRoutine.add(new Move(map,true,false, true,false)); //Artemis
-            else
-                cardRoutine.add(new Move(map,false, false, true, true)); //Prometheus
-        else
-            if (specific_2)
-                if (dome_2)
-                    cardRoutine.add(new Build(map,false,false)); //Atlas
-                else
-                    cardRoutine.add(new Build(map,false,true)); //Hephaestus
-            else
-                cardRoutine.add(new Build(map,true,false)); //standard build
-
-        if (action_3)
-            if (not_before_3)
-                cardRoutine.add(new Build(map,true,true)); //Demeter
-            else
-                cardRoutine.add(new Build(map,true,false)); //standard build
-/*        else
-            if (samebefore_block_3)
-                blocco di athena;
-            else
-                extra win di pan; */
+    public void setCard(Cell[][] map, int playerId) {
+        this.map = map;
+        this.playerId = playerId;
+        this.worker1 = new Worker(playerId, 1);
+        this.worker2 = new Worker(playerId, 2);
+        this.setStandardRoutine();
+        this.setCardRoutine();
     }
 
     /**
@@ -242,6 +281,12 @@ public class Card {
     }
     public int getPlayerId() {
         return playerId;
+    }
+    public List<Effect> getCardRoutine() {
+        return cardRoutine;
+    }
+    public List<Effect> getStandardRoutine() {
+        return standardRoutine;
     }
 
 }

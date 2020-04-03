@@ -14,8 +14,8 @@ public class MoveTest {
     Move standardMove = new Move(board.getBoard(),false,false,false,false);
     Move apolloMove = new Move(board.getBoard(),false,true,false,false);
     Move minoMove = new Move(board.getBoard(),true,true,false,false);
-    Move prometheusMove = new Move(board.getBoard(),false,false,true,true);
-    Move artemisMove = new Move(board.getBoard(),false,false,true,false);
+    Move prometheusMove = new Move(board.getBoard(),false,false,true,false);
+    Move artemisMove = new Move(board.getBoard(),false,false,true,true);
     Move minoReturn = new Move(board.getBoard(),true,true,false,false);
     Move apolloReturn = new Move(board.getBoard(),false,true,false,false);
     Position position = new Position(2,2);
