@@ -4,6 +4,7 @@ import it.polimi.ingsw.model.Cell;
 import it.polimi.ingsw.model.Position;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * handle the view
@@ -18,10 +19,9 @@ public interface ViewInterface {
 
     /**
      * move player to position
-     * @param player the player to move
-     * @param position the position to move the player to
+     * @param movement workerId and position of the movement
      */
-    void move(int player, Position position);
+    void move(Map<Integer,Position> movement);
 
     /**
      * build a block in position

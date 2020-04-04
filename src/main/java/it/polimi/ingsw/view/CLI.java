@@ -14,9 +14,7 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 /**
  * the CLI
@@ -59,10 +57,12 @@ public class CLI implements ViewInterface {
     }
 
     @Override
-    public void move(int workerID, Position position) {
-        int index = allTiles.indexOf(gameMap[position.getRow()][position.getColumn()]);
-        gameMap[position.getRow()][position.getColumn()] = allTiles.get(index + 1);
-        workerPos.add(workerID, position);
+    public void move(Map<Integer,Position> movement) {
+        for(Integer key: movement.keySet()) {
+            int index = allTiles.indexOf(gameMap[movement.get(key).getRow()][movement.get(key).getColumn()]);
+            gameMap[movement.get(key).getRow()][movement.get(key).getColumn()] = allTiles.get(index + 1);
+            workerPos.add(key, movement.get(key));
+        }
     }
 
     @Override
@@ -161,6 +161,7 @@ public class CLI implements ViewInterface {
     @Override
     public void firstPositioning(List<Position> availablePos) {
         List<Position> list = new ArrayList<>();
+        Map<Integer, Position> movement = new HashMap<>();
         Position pos;
         for(Position currPos: availablePos) {
             markPosition(currPos, 'x');
@@ -168,12 +169,17 @@ public class CLI implements ViewInterface {
         updateScreen();
         System.out.print("Posizione iniziale lavoratore 1 (riga, colonna): ");
         pos = verifyPosition(availablePos);
-        move(commands.getPlayer(), pos);
+        movement.put(commands.getPlayer()*2,pos);
+        //move(commands.getPlayer(), pos);
+        move(movement);
         updateScreen();
         list.add(pos);
+        movement.clear();
         System.out.print("Posizione iniziale lavoratore 2 (riga, colonna): ");
         pos = verifyPosition(availablePos);
-        move(commands.getPlayer(), pos);
+        movement.put(commands.getPlayer()*2+1, pos);
+        //move(commands.getPlayer(), pos);
+        move(movement);
         list.add(pos);
         commands.setInstruction(Instruction.initialPosition);
         commands.setAvailablePos(list);

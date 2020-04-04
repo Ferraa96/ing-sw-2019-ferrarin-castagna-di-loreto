@@ -1,5 +1,8 @@
 package it.polimi.ingsw.model;
 
+import it.polimi.ingsw.controller.Commands;
+import it.polimi.ingsw.controller.Instruction;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,15 +12,17 @@ import java.util.List;
 
 public class Move implements Effect{
     private Cell[][] map;
-    private Boolean searchPeople;
-    private Boolean knock;
-    private Boolean specificMovetype;
-    private Boolean noUp = false;
-    private Boolean notBefore;
+    private boolean searchPeople;
+    private boolean knock;
+    private boolean specificMovetype;
+    private boolean noUp = false;
+    private boolean notBefore;
     private Position lastMoveInitialPosition;
     private List<Position> possibleCells;
+    private Commands moveMessage = new Commands();
+    private int downUp;
 
-    public Move(Cell[][] map, Boolean knock, Boolean searchPeople, Boolean specificMovetype, Boolean notBefore) {
+    public Move(Cell[][] map, boolean knock, boolean searchPeople, boolean specificMovetype, boolean notBefore) {
         this.knock = knock;
         this.searchPeople = searchPeople;
         this.specificMovetype = specificMovetype;
@@ -167,34 +172,40 @@ public class Move implements Effect{
      * do the action and update the map
      * @param chosenCell cell selected
      * @param worker target of action
-     * @return height difference between final and initial cell
+     * @return message you have to send to view
      */
     @Override
-    public int executeAction(Position chosenCell, Worker worker) {
-        int downUp=map[chosenCell.getRow()][chosenCell.getColumn()].getHeight()-map[worker.getPosition().getRow()][worker.getPosition().getColumn()].getHeight();
+    public Commands executeAction(Position chosenCell, Worker worker) {
+        downUp=map[chosenCell.getRow()][chosenCell.getColumn()].getHeight()-map[worker.getPosition().getRow()][worker.getPosition().getColumn()].getHeight();
         map[worker.getPosition().getRow()][worker.getPosition().getColumn()].setWorkerID(-1);
         map[chosenCell.getRow()][chosenCell.getColumn()].setWorkerID(worker.getWorkerID());
         worker.setPosition( new Position(chosenCell.getRow(),chosenCell.getColumn()));
-        return downUp;
+        moveMessage.setInstruction(Instruction.move);
+        moveMessage.getMovement().put(worker.getWorkerID(),chosenCell);
+        return moveMessage;
     }
 
     /**
      * auto move for forced targets
      * @param enemy worker forced by mino/apollo
+     * @return message you have to send to view
      */
     @Override
-    public void executeAutoAction(Worker enemy) {
+    public Commands executeAutoAction(Worker enemy) {
         int r, c;
         if (!knock) {
             enemy.setPosition(lastMoveInitialPosition);
             map[enemy.getPosition().getRow()][enemy.getPosition().getColumn()].setWorkerID(enemy.getWorkerID());
+            moveMessage.getMovement().put(enemy.getWorkerID(),lastMoveInitialPosition);
         }
         else {
             r = 2 * enemy.getPosition().getRow() - lastMoveInitialPosition.getRow();
             c = 2 * enemy.getPosition().getColumn() - lastMoveInitialPosition.getColumn();
             enemy.setPosition(new Position(r, c));
             map[r][c].setWorkerID(enemy.getWorkerID());
+            moveMessage.getMovement().put(enemy.getWorkerID(),enemy.getPosition());
         }
+        return moveMessage;
     }
 
     /**
@@ -213,6 +224,15 @@ public class Move implements Effect{
     @Override
     public void setNoUp( Boolean noUp) {
         this.noUp = noUp;
+    }
+
+    /**
+     * getter
+     * @return height difference of the move
+     */
+    @Override
+    public int getDownUp() {
+        return this.downUp;
     }
 
     /**

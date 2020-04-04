@@ -23,7 +23,7 @@ public class ClientViewUpdater {
     public void receive(Commands commands) {
         switch (commands.getInstruction()) {
             case move:
-                view.move(commands.getPlayer(), commands.getPosition());
+                view.move(commands.getMovement());
                 view.updateScreen();
                 break;
             case buildBlock:

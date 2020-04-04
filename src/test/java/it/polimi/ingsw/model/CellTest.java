@@ -15,6 +15,6 @@ public class CellTest {
         assertEquals(0,map[2][2].getHeight());
         assertEquals(0,map[3][3].getHeight());
         assertEquals(11,map[2][2].getWorkerID());
-        assertEquals(0,map[3][3].getWorkerID());
+        assertEquals(-1,map[3][3].getWorkerID());
     }
 }

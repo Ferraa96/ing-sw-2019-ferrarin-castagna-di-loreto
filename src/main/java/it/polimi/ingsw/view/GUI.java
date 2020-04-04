@@ -5,6 +5,7 @@ import it.polimi.ingsw.model.Cell;
 import it.polimi.ingsw.model.Position;
 
 import java.util.List;
+import java.util.Map;
 
 public class GUI implements ViewInterface {
     private SocketClient socket;
@@ -20,7 +21,7 @@ public class GUI implements ViewInterface {
     }
 
     @Override
-    public void move(int player, Position position) {
+    public void move(Map<Integer, Position> movement) {
 
     }
 

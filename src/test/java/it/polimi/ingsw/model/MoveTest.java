@@ -1,5 +1,6 @@
 package it.polimi.ingsw.model;
 
+import it.polimi.ingsw.controller.Commands;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -19,9 +20,9 @@ public class MoveTest {
     Move minoReturn = new Move(board.getBoard(),true,true,false,false);
     Move apolloReturn = new Move(board.getBoard(),false,true,false,false);
     Position position = new Position(2,2);
-    Worker target = new Worker(1,1);
-    Worker enemy1 = new Worker(0,1);
-    Worker enemy2 = new Worker(0,2);
+    Worker target = new Worker(1,0);
+    Worker enemy1 = new Worker(0,0);
+    Worker enemy2 = new Worker(0,1);
 
     @Test
     public void availableMovesEasy() {
@@ -104,13 +105,13 @@ public class MoveTest {
         List<Position> availablePos2 = apolloMove.availableWithGod(target);
         assertEquals(0,availablePos2.size());
         // 1 people
-        map[2][1].setWorkerID(22);
+        map[2][1].setWorkerID(1);
         List<Position> availablePos3 = apolloMove.availableWithGod(target);
         assertEquals(1,availablePos3.size());
         assertEquals(1,availablePos3.get(0).getColumn());
         assertEquals(2,availablePos3.get(0).getRow());
         //1 people ma diventa il suo compagno
-        map[2][1].setWorkerID(12);
+        map[2][1].setWorkerID(3);
         List<Position> availablePos4 = apolloMove.availableWithGod(target);
         assertEquals(0,availablePos4.size());
     }
@@ -120,15 +121,15 @@ public class MoveTest {
         map=board.getBoard();
         target.setPosition(position);
         map[2][2].setHeight(1);
-        map[4][0].setWorkerID(12);
+        map[4][0].setWorkerID(3);
         map[4][0].setHeight(3);
-        map[3][1].setWorkerID(1);
+        map[3][1].setWorkerID(0);
         map[3][1].setHeight(0);
-        map[1][3].setWorkerID(2);
+        map[1][3].setWorkerID(1);
         map[1][3].setHeight(2);
-        map[2][1].setWorkerID(21);
+        map[2][1].setWorkerID(4);
         map[2][1].setHeight(3);
-        map[3][2].setWorkerID(22);
+        map[3][2].setWorkerID(5);
         map[3][2].setHeight(1);
         map[1][1].setHeight(4);
         map[1][2].setHeight(1);
@@ -166,39 +167,40 @@ public class MoveTest {
         map=board.getBoard();
         target.setPosition(position);
         map[2][2].setHeight(1);
-        map[4][0].setWorkerID(12);
+        map[4][0].setWorkerID(3);
         map[4][0].setHeight(3);
-        map[3][1].setWorkerID(1);
+        map[3][1].setWorkerID(0);
         map[3][1].setHeight(0);
-        map[1][3].setWorkerID(2);
+        map[1][3].setWorkerID(1);
         map[1][3].setHeight(2);
-        map[2][1].setWorkerID(21);
+        map[2][1].setWorkerID(4);
         map[2][1].setHeight(3);
-        map[3][2].setWorkerID(22);
+        map[3][2].setWorkerID(5);
         map[3][2].setHeight(1);
         map[1][1].setHeight(4);
         map[1][2].setHeight(1);
         map[2][3].setHeight(4);
         map[3][3].setHeight(3);
 
-        i=standardMove.executeAction(mossa,target);
+        standardMove.executeAction(mossa,target);
+        i=standardMove.getDownUp();
         assertEquals(0,i);
-        assertEquals(11,target.getWorkerID());
+        assertEquals(2,target.getWorkerID());
         assertEquals(1,map[1][2].getHeight());
         assertEquals(1,target.getPosition().getRow());
         assertEquals(2,target.getPosition().getColumn());
-        assertEquals(0,map[2][2].getWorkerID());
+        assertEquals(-1,map[2][2].getWorkerID());
         enemy1.setPosition(new Position(3,1));
         apolloReturn.setLastMoveInitialPosition(new Position(2,2));
         apolloReturn.executeAutoAction(enemy1);
-        assertEquals(1,map[2][2].getWorkerID());
+        assertEquals(0,map[2][2].getWorkerID());
         assertEquals(2,enemy1.getPosition().getRow());
         assertEquals(2,enemy1.getPosition().getColumn());
         enemy2.setPosition(new Position(1,3));
         minoReturn.setLastMoveInitialPosition(new Position(2,2));
         minoReturn.executeAutoAction(enemy2);
-        assertEquals(2,map[0][4].getWorkerID());
-        assertEquals(0,map[0][3].getWorkerID());
+        assertEquals(1,map[0][4].getWorkerID());
+        assertEquals(-1,map[0][3].getWorkerID());
         assertEquals(0,enemy2.getPosition().getRow());
         assertEquals(4,enemy2.getPosition().getColumn());
     }
@@ -210,9 +212,9 @@ public class MoveTest {
         List<Position> availablePos = standardMove.availableWithGod(target);
         assertEquals(3,availablePos.size());
         target.setPosition(new Position(2,1));
-        map[2][0].setWorkerID(22);
-        map[1][2].setWorkerID(22);
-        map[1][1].setWorkerID(12);
+        map[2][0].setWorkerID(5);
+        map[1][2].setWorkerID(4);
+        map[1][1].setWorkerID(3);
         List<Position> availablePos1 = minoMove.availableWithGod(target);
         assertEquals(1,availablePos1.size());
         assertEquals(1,availablePos1.get(0).getRow());

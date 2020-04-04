@@ -12,7 +12,6 @@ import java.util.Map;
 /**
  * handle all the turns
  */
-//firstPosition dei worker, setEnemies, controlla Athena e setta noUp degli effect a true, controlla Pan
 public class Turn implements ModelInterface {
     private int numPlayer;
     private int actualPlayer = 0;
@@ -26,6 +25,8 @@ public class Turn implements ModelInterface {
     private int totalEffects;
     private int currEffect = 0;
     private Worker currWorker;
+    private boolean powerUsed;
+    private boolean stopGame = false;
 
     public Turn(SocketServer socket, int numPlayer) {
         this.socket = socket;
@@ -42,8 +43,9 @@ public class Turn implements ModelInterface {
      * handle all the turns after the setup of the game
      */
     private void game() {
-        System.out.println("Setup complete");
+        System.out.println("Start turn player" + " " + actualPlayer);
         commands.setInstruction(Instruction.chooseWorker);
+        commands.setPlayer(actualPlayer);
         socket.sendTo(actualPlayer, commands);
     }
 
@@ -57,18 +59,20 @@ public class Turn implements ModelInterface {
 
     private void verifyPower(Worker worker) {
         currWorker = worker;
-        System.out.println("Worker: " + currWorker.getPosition().getRow() + " " + currWorker.getPosition().getColumn());
+        System.out.println("Selected worker: " + currWorker.getPosition().getRow() + " " + currWorker.getPosition().getColumn());
         if(cardList.get(actualPlayer).checkCardActivation(worker)) {
             commands.setInstruction(Instruction.usePower);
             socket.sendTo(actualPlayer, commands);
         } else {
+            System.out.println("Power not available");
             setPower(false);
         }
     }
 
     public void setPower(boolean use) {
+        powerUsed = use;
         cardList.get(actualPlayer).setActivePower(use);
-        if(use) {
+        if(powerUsed) {
             totalEffects = cardList.get(actualPlayer).getCardRoutine().size();
         } else {
             totalEffects = cardList.get(actualPlayer).getStandardRoutine().size();
@@ -76,6 +80,7 @@ public class Turn implements ModelInterface {
         commands.setInstruction(Instruction.choosePosition);
         commands.setAvailablePos(cardList.get(actualPlayer).availablePositions(currEffect, currWorker));
         socket.sendTo(actualPlayer, commands);
+        System.out.println("Available positions:");
         for(Position pos: commands.getAvailablePos()) {
             System.out.println(pos.getRow() + " " + pos.getColumn());
         }
@@ -86,11 +91,30 @@ public class Turn implements ModelInterface {
     }
 
     public void apply(Position pos) {
-        if(cardList.get(actualPlayer).applyEffect(currEffect, currWorker, pos)) {
-            System.out.println("Winner winner chicken dinner");
-        } else {
-            System.out.println("Non hai vinto lol");
+        commands = cardList.get(actualPlayer).applyEffect(currEffect, currWorker, pos);
+        socket.sendTo(actualPlayer,commands);
+        socket.sendToAllExcept(actualPlayer, commands);
+        if (commands.getInstruction() == Instruction.move)
+            stopGame = cardList.get(actualPlayer).checkWin(currEffect, pos);
+        facceVede();
+        if (!stopGame) {
+            if (currEffect < totalEffects - 1) {
+                currEffect++;
+                setPower(powerUsed);
+            } else {
+                currEffect = 0;
+                nextTurn();
+                game();
+            }
         }
+        //else blocca tutto
+    }
+
+    private void facceVede() {
+        if (!stopGame)
+            System.out.println("Avanti il prossimo");
+        else
+            System.out.println("Colazione finita!");
     }
 
     /**
@@ -99,6 +123,8 @@ public class Turn implements ModelInterface {
     private void firstPositioning() {
         commands.setInstruction(Instruction.initialPosition);
         commands.setAvailablePos(cardList.get(actualPlayer).availableFirstPositioning());
+        commands.getMovement().put(cardList.get(actualPlayer).getWorker1().getWorkerID(), new Position(-1, -1));
+        commands.getMovement().put(cardList.get(actualPlayer).getWorker2().getWorkerID(), new Position(-1, -1));
         socket.sendTo(actualPlayer, commands);
     }
 
@@ -110,14 +136,15 @@ public class Turn implements ModelInterface {
     public void choosePosition(List<Position> positions) {
         Position w1 = positions.get(0);
         Position w2 = positions.get(1);
-        cardList.get(actualPlayer).firstPositioning(w1, 0);
-        cardList.get(actualPlayer).firstPositioning(w2, 1);
+        cardList.get(actualPlayer).firstPositioning(w1, w2);
         commands.setInstruction(Instruction.move);
+        commands.getMovement().put(cardList.get(actualPlayer).getWorker1().getWorkerID(),w1);
+        commands.getMovement().put(cardList.get(actualPlayer).getWorker2().getWorkerID(),w2);
         commands.setPlayer(actualPlayer);
-        commands.setPosition(w1);
+        //commands.setPosition(w1);
         socket.sendToAllExcept(actualPlayer, commands);
-        commands.setPosition(w2);
-        socket.sendToAllExcept(actualPlayer, commands);
+        //commands.setPosition(w2);
+        //socket.sendToAllExcept(actualPlayer, commands);
         nextTurn();
         if(actualPlayer == 0) {
             setEnemiesLists();

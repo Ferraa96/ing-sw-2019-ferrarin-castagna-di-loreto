@@ -1,5 +1,7 @@
 package it.polimi.ingsw.model;
 
+import it.polimi.ingsw.controller.Commands;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,9 +21,9 @@ public interface Effect {
      * do the action and update the map
      * @param chosenCell cell selected
      * @param worker target of action
-     * @return height difference between final and initial cell
+     * @return message to send to view
      */
-    int executeAction(Position chosenCell, Worker worker);
+    Commands executeAction(Position chosenCell, Worker worker);
 
     /**
      * set last move
@@ -38,12 +40,19 @@ public interface Effect {
     /**
      * auto move for forced targets
      * @param enemy worker forced by mino/apollo
+     * @return message to send to view
      */
-    void executeAutoAction(Worker enemy);
+    Commands executeAutoAction(Worker enemy);
 
     /**
      * set last build
      * @param lastBuildPosition cell of last build
      */
     void setLastBuildPosition(Position lastBuildPosition);
+
+    /**
+     * getter
+     * @return height difference of the move
+     */
+    int getDownUp();
 }

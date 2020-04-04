@@ -1,5 +1,8 @@
 package it.polimi.ingsw.model;
 
+import it.polimi.ingsw.controller.Commands;
+import it.polimi.ingsw.controller.Instruction;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,13 +35,13 @@ public class Build implements Effect {
         column = actualPosition.getColumn();
 
         left = column - 1;
-        right = column + 1 + 1;
+        right = column + 2;
         up = row - 1;
-        down = row + 1 + 1;
+        down = row + 2;
         if(left < 0) { left = 0; }
-        else if(right > 5) { right = 4; }
+        else if(right > 5) { right = 5; }
         if(up < 0) { up = 0; }
-        else if(down > 5) { down = 4; }
+        else if(down > 5) { down = 5; }
         for(int i = up; i < down; i++) {
             for(int j = left; j < right; j++) {
                 if (map[i][j].getHeight()!=4 && map[i][j].getWorkerID() == -1) {
@@ -99,26 +102,40 @@ public class Build implements Effect {
      * do the action and update the map
      * @param chosenCell cell selected
      * @param worker target of action
-     * @return height difference between final and initial cell
+     * @return message to send o view
      */
     @Override
-    public int executeAction(Position chosenCell, Worker worker) {
+    public Commands executeAction(Position chosenCell, Worker worker) {
+        Commands buildMessage = new Commands();
         if (!nextBlock) {
-            if (!specific)
+            if (!specific) {
+                buildMessage.setInstruction(Instruction.buildDome);
+                buildMessage.setPosition(chosenCell);
+                buildMessage.setHeight(map[chosenCell.getRow()][chosenCell.getColumn()].getHeight());
                 map[chosenCell.getRow()][chosenCell.getColumn()].setHeight(4);
-            else
+            }
+            else {
                 map[chosenCell.getRow()][chosenCell.getColumn()].setHeight(map[chosenCell.getRow()][chosenCell.getColumn()].getHeight() + 2);
+                buildMessage.setInstruction(Instruction.buildBlock);
+                buildMessage.setPosition(chosenCell);
+                buildMessage.setHeight(2);
+            }
         }
-        else
-            map[chosenCell.getRow()][chosenCell.getColumn()].setHeight(map[chosenCell.getRow()][chosenCell.getColumn()].getHeight()+1);
-        return 0;
+        else {
+            map[chosenCell.getRow()][chosenCell.getColumn()].setHeight(map[chosenCell.getRow()][chosenCell.getColumn()].getHeight() + 1);
+            buildMessage.setInstruction(Instruction.buildBlock);
+            buildMessage.setPosition(chosenCell);
+            buildMessage.setHeight(1);
+        }
+        return buildMessage;
     }
 
     /**
      * not used here
-     * @param enemy worker forced by mino/apollo
+     * @param enemy not used
+     * @return nothing
      */
-    public void executeAutoAction(Worker enemy) { }
+    public Commands executeAutoAction(Worker enemy) { return null; }
 
     /**
      * not used here
@@ -141,5 +158,11 @@ public class Build implements Effect {
      */
     @Override
     public void setNoUp(Boolean noUp) { }
+
+    /**
+     * getter
+     * @return  height difference of the move
+     */
+    public int getDownUp() { return 0; }
 
 }

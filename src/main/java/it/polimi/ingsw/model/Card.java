@@ -1,6 +1,7 @@
 package it.polimi.ingsw.model;
 
 import com.google.gson.annotations.SerializedName;
+import it.polimi.ingsw.controller.Commands;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,18 +43,6 @@ public class Card {
     private boolean activePower;
 
     /**
-     * check for current player win
-     * @param difference height difference between final and starting block
-     * @param finalPosition final position
-     * @return true if you satisfy a win condition
-     */
-    private Boolean checkWin(int difference, Position finalPosition) {
-        if (difference == 1 && map[finalPosition.getRow()][finalPosition.getColumn()].getHeight() == 3)
-            return true;
-        return this.name.equals("Pan") && difference <= -2;
-    }
-
-    /**
      * gives the enemy corresponding input id
      * @param id worker's id of the enemy you want search
      * @return correct enemy
@@ -79,13 +68,16 @@ public class Card {
      * @param target interested worker
      */
     private void setParameters(int i,Position chosenCell, Worker target) {
-        if (map[chosenCell.getRow()][chosenCell.getColumn()].getWorkerID() == -1)
+        if (map[chosenCell.getRow()][chosenCell.getColumn()].getWorkerID() == -1) {
             if (i+1< cardRoutine.size()) {
-            cardRoutine.get(i + 1).setLastMoveInitialPosition(target.getPosition());
-            cardRoutine.get(i + 1).setLastBuildPosition(chosenCell);
+                cardRoutine.get(i + 1).setLastMoveInitialPosition(target.getPosition());
+                cardRoutine.get(i + 1).setLastBuildPosition(chosenCell);
+            }
         }
-        else
+        else {
             cardRoutine.get(i).setLastMoveInitialPosition(target.getPosition());
+            enemy = getCorrectEnemy(map[chosenCell.getRow()][chosenCell.getColumn()].getWorkerID());
+        }
     }
 
     /**
@@ -93,22 +85,15 @@ public class Card {
      * @param difference difference between final and initial position
      */
     private void checkMoveUp( int difference) {
+        boolean temp = false;
         if (this.name.equals("Athena")) {
-            if (difference > 0) {
-                for (Card curr : enemies) {
-                    for (int j = 0; j < curr.getStandardRoutine().size(); j++)
-                        curr.getStandardRoutine().get(j).setNoUp(true);
-                    for (int j = 0; j < curr.getCardRoutine().size(); j++)
-                        curr.getCardRoutine().get(j).setNoUp(true);
-                }
-            }
-            else {
-                for (Card curr : enemies) {
-                    for (int j = 0; j < curr.getStandardRoutine().size(); j++)
-                        curr.getStandardRoutine().get(j).setNoUp(false);
-                    for (int j = 0; j < curr.getCardRoutine().size(); j++)
-                        curr.getCardRoutine().get(j).setNoUp(false);
-                }
+            if (difference > 0)
+                temp = true;
+            for (Card curr : enemies) {
+                for (int j = 0; j < curr.getStandardRoutine().size(); j++)
+                    curr.getStandardRoutine().get(j).setNoUp(temp);
+                for (int j = 0; j < curr.getCardRoutine().size(); j++)
+                    curr.getCardRoutine().get(j).setNoUp(temp);
             }
         }
     }
@@ -187,25 +172,40 @@ public class Card {
      * @param i number of action in the routine
      * @param target interested worker
      * @param chosenCell cell chosen by player
-     * @return difference between final and initial position
+     * @return command to send to view
      */
-    public boolean applyEffect(int i, Worker target, Position chosenCell) {
-        int heightDifference;
+    public Commands applyEffect(int i, Worker target, Position chosenCell) {
+        Commands actionMessage;
         if (!activePower) {
-            heightDifference = standardRoutine.get(i).executeAction(chosenCell, target);
-            checkMoveUp(heightDifference);
+            actionMessage = standardRoutine.get(i).executeAction(chosenCell, target);
+            checkMoveUp(standardRoutine.get(i).getDownUp());
         }
         else {
             setParameters(i, chosenCell, target);
+            actionMessage = cardRoutine.get(i).executeAction(chosenCell, target);
             if (map[chosenCell.getRow()][chosenCell.getColumn()].getWorkerID() != -1) {
-                enemy = getCorrectEnemy(map[chosenCell.getRow()][chosenCell.getColumn()].getWorkerID());
-                heightDifference = cardRoutine.get(i).executeAction(chosenCell, target);
-                cardRoutine.get(i).executeAutoAction(enemy);
+                //enemy = getCorrectEnemy(map[chosenCell.getRow()][chosenCell.getColumn()].getWorkerID());
+                actionMessage = cardRoutine.get(i).executeAutoAction(enemy);
             }
-            else
-                heightDifference = cardRoutine.get(i).executeAction(chosenCell, target);
         }
-        return checkWin(heightDifference, chosenCell);
+        return actionMessage;
+    }
+
+    /**
+     * check for current player win
+     * @param i current action
+     * @param finalPosition final position
+     * @return true if you satisfy a win condition
+     */
+    public Boolean checkWin(int i, Position finalPosition) {
+        int difference;
+        if (activePower)
+            difference = cardRoutine.get(i).getDownUp();
+        else
+            difference = standardRoutine.get(i).getDownUp();
+        if (difference == 1 && map[finalPosition.getRow()][finalPosition.getColumn()].getHeight() == 3)
+            return true;
+        return this.name.equals("Pan") && difference <= -2;
     }
 
     /**
@@ -240,17 +240,14 @@ public class Card {
 
     /**
      * place workers on the board
-     * @param chosenMove initial position chosen
-     * @param workerID worker interested
+     * @param w1 position of w1
+     * @param w2 position of w2
      */
-    public void firstPositioning(Position chosenMove, int workerID) {
-        if(workerID == 0) {
-            worker1.setPosition(new Position(chosenMove.getRow(), chosenMove.getColumn()));
-            map[chosenMove.getRow()][chosenMove.getColumn()].setWorkerID(worker1.getWorkerID());
-        } else {
-            worker2.setPosition(new Position(chosenMove.getRow(), chosenMove.getColumn()));
-            map[chosenMove.getRow()][chosenMove.getColumn()].setWorkerID(worker2.getWorkerID());
-        }
+    public void firstPositioning(Position w1, Position w2) {
+        worker1.setPosition(new Position(w1.getRow(), w1.getColumn()));
+        map[w1.getRow()][w1.getColumn()].setWorkerID(worker1.getWorkerID());
+        worker2.setPosition(new Position(w2.getRow(), w2.getColumn()));
+        map[w2.getRow()][w2.getColumn()].setWorkerID(worker2.getWorkerID());
     }
 
     /**
@@ -259,13 +256,7 @@ public class Card {
      */
     public void setEnemies(List<Card> playedCards) {
         this.enemies = new ArrayList<>(playedCards);
-        enemies.removeIf(curr -> curr.getPlayerId() == this.playerId);
-//        for (int i = 0; i < enemies.size(); i++) {
-//            if (enemies.get(i).getPlayerId() == this.playerId) {
-//                enemies.remove(enemies.get(i));
-//                i--;
-//            }
-//        }
+        this.enemies.removeIf(curr -> curr.getPlayerId() == this.playerId);
     }
 
     //setter e getter vari

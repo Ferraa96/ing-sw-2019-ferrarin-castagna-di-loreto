@@ -14,7 +14,7 @@ public class BuildTest {
     Build atlasBuild = new Build(board.getBoard(),false,false);
     Build demeterBuild = new Build(board.getBoard(),true,true);
     Position position = new Position(2,2);
-    Worker target = new Worker(1,1);
+    Worker target = new Worker(1,0);
 
     @Test
     public void availableBuildEasy() {
@@ -140,9 +140,10 @@ public class BuildTest {
         map[2][3].setHeight(4);
         map[3][3].setHeight(3);
 
-        i=standardBuild.executeAction(mossa,target);
+        standardBuild.executeAction(mossa,target);
+        i=standardBuild.getDownUp();
         assertEquals(0,i);
-        assertEquals(11,target.getWorkerID());
+        assertEquals(2,target.getWorkerID());
         assertEquals(2,map[1][2].getHeight());
         assertEquals(2,target.getPosition().getRow());
         assertEquals(2,target.getPosition().getColumn());
