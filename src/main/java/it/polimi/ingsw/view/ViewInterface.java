@@ -18,29 +18,10 @@ public interface ViewInterface {
     void setPlayerID(int playerID);
 
     /**
-     * move player to position
-     * @param movement workerId and position of the movement
+     * ask for name
+     * @param stringList list to save names
      */
-    void move(Map<Integer,Position> movement);
-
-    /**
-     * build a block in position
-     * @param position the position to build the block in
-     * @param height the height of the block
-     */
-    void buildBlock(Position position, int height);
-
-    /**
-     * build a dome in position
-     * @param position the position to build the dome in
-     * @param height the height of the dome
-     */
-    void buildDome(Position position, int height);
-
-    /**
-     * update the screen
-     */
-    void updateScreen();
+    void setName(List<String> stringList);
 
     /**
      * lets the player choose a card from a list
@@ -65,11 +46,45 @@ public interface ViewInterface {
      */
     void resumeGame(Cell[][] cells);
 
-    void setName(List<String> stringList);
-
+    /**
+     * allows player to select the worker to use in current turn
+     */
     void chooseWorker();
 
+    /**
+     * allows player to choose for power activation
+     */
     void choosePower();
 
+    /**
+     * allows player to choose cell for move/build
+     * @param list list of available positions
+     */
     void choosePosition(List<Position> list);
+
+    /**
+     * move player to position
+     * @param movement workerId and position of the movement
+     */
+    void move(Map<Integer,Position> movement);
+
+    /**
+     * build a block in position
+     * @param position the position to build the block in
+     * @param height the height of the block
+     */
+    void buildBlock(Position position, int height);
+
+    /**
+     * build a dome in position
+     * @param position the position to build the dome in
+     * @param height the height of the dome
+     */
+    void buildDome(Position position, int height);
+
+    /**
+     * update the screen
+     */
+    void updateScreen();
+
 }

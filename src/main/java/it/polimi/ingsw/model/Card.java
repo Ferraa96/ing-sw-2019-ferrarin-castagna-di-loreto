@@ -14,7 +14,6 @@ public class Card {
     private String name;
     @SerializedName("description")
     private String description;
-
     @SerializedName("move_1")
     private Boolean move_1;
     @SerializedName("search_people_1")
@@ -96,6 +95,8 @@ public class Card {
                     curr.getCardRoutine().get(j).setNoUp(temp);
             }
         }
+        if (temp)
+            System.out.println("Athena attiva");
     }
 
     /**
@@ -125,17 +126,17 @@ public class Card {
 
         if (move_2)
             if (specific_2)
-                cardRoutine.add(new Move(map,true,false, true,true)); //Artemis
+                cardRoutine.add(new Move(map,false,false, true,true)); //Artemis
             else
                 cardRoutine.add(new Move(map,false, false, true, false)); //Prometheus
         else
-            if (specific_2)
-                if (dome_2)
-                    cardRoutine.add(new Build(map,false,false)); //Atlas
-                else
-                    cardRoutine.add(new Build(map,false,true)); //Hephaestus
+        if (specific_2)
+            if (dome_2)
+                cardRoutine.add(new Build(map,false,false)); //Atlas
             else
-                cardRoutine.add(new Build(map,true,false)); //standard build
+                cardRoutine.add(new Build(map,false,true)); //Hephaestus
+        else
+            cardRoutine.add(new Build(map,true,false)); //standard build
 
         if (action_3)
             if (not_before_3)
@@ -182,11 +183,12 @@ public class Card {
         }
         else {
             setParameters(i, chosenCell, target);
-            actionMessage = cardRoutine.get(i).executeAction(chosenCell, target);
             if (map[chosenCell.getRow()][chosenCell.getColumn()].getWorkerID() != -1) {
-                //enemy = getCorrectEnemy(map[chosenCell.getRow()][chosenCell.getColumn()].getWorkerID());
+                cardRoutine.get(i).executeAction(chosenCell, target);
                 actionMessage = cardRoutine.get(i).executeAutoAction(enemy);
             }
+            else
+                actionMessage = cardRoutine.get(i).executeAction(chosenCell, target);
         }
         return actionMessage;
     }
@@ -281,7 +283,6 @@ public class Card {
     public List<Effect> getStandardRoutine() {
         return standardRoutine;
     }
-
     public void setActivePower(boolean activePower) {
         this.activePower = activePower;
     }

@@ -27,19 +27,19 @@ public class ServerModelUpdater {
                 turn.setInitialCards(commands.getCardList());
                 break;
             case initialPosition:
-                turn.choosePosition(commands.getAvailablePos());
+                turn.setWorkersPosition(commands.getAvailablePos());
                 break;
             case setName:
                 turn.setPlayerName(commands.getPlayer(), commands.getStringList());
                 break;
             case chooseWorker:
-                turn.chooseWorker(commands.getPosition());
+                turn.selectCorrectWorker(commands.getPosition());
+                break;
+            case usePower:
+                turn.providePosition(commands.isAnswer());
                 break;
             case choosePosition:
                 turn.apply(commands.getPosition());
-                break;
-            case usePower:
-                turn.setPower(commands.isAnswer());
                 break;
             default:
                 System.out.println("Ricevuto " + commands.getInstruction());

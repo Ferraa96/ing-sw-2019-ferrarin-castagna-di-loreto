@@ -40,120 +40,18 @@ public class Turn implements ModelInterface {
     }
 
     /**
-     * handle all the turns after the setup of the game
+     * ask for player name
      */
-    private void game() {
-        System.out.println("Start turn player" + " " + actualPlayer);
-        commands.setInstruction(Instruction.chooseWorker);
-        commands.setPlayer(actualPlayer);
-        socket.sendTo(actualPlayer, commands);
-    }
-
-    public void chooseWorker(Position pos) {
-        if(cardList.get(actualPlayer).getWorker1().getPosition().isEqual(pos)) {
-            verifyPower(cardList.get(actualPlayer).getWorker1());
-        } else {
-            verifyPower(cardList.get(actualPlayer).getWorker2());
-        }
-    }
-
-    private void verifyPower(Worker worker) {
-        currWorker = worker;
-        System.out.println("Selected worker: " + currWorker.getPosition().getRow() + " " + currWorker.getPosition().getColumn());
-        if(cardList.get(actualPlayer).checkCardActivation(worker)) {
-            commands.setInstruction(Instruction.usePower);
-            socket.sendTo(actualPlayer, commands);
-        } else {
-            System.out.println("Power not available");
-            setPower(false);
-        }
-    }
-
-    public void setPower(boolean use) {
-        powerUsed = use;
-        cardList.get(actualPlayer).setActivePower(use);
-        if(powerUsed) {
-            totalEffects = cardList.get(actualPlayer).getCardRoutine().size();
-        } else {
-            totalEffects = cardList.get(actualPlayer).getStandardRoutine().size();
-        }
-        commands.setInstruction(Instruction.choosePosition);
-        commands.setAvailablePos(cardList.get(actualPlayer).availablePositions(currEffect, currWorker));
-        socket.sendTo(actualPlayer, commands);
-        System.out.println("Available positions:");
-        for(Position pos: commands.getAvailablePos()) {
-            System.out.println(pos.getRow() + " " + pos.getColumn());
-        }
-    }
-
-    private void providePositions() {
-
-    }
-
-    public void apply(Position pos) {
-        commands = cardList.get(actualPlayer).applyEffect(currEffect, currWorker, pos);
-        socket.sendTo(actualPlayer,commands);
-        socket.sendToAllExcept(actualPlayer, commands);
-        if (commands.getInstruction() == Instruction.move)
-            stopGame = cardList.get(actualPlayer).checkWin(currEffect, pos);
-        facceVede();
-        if (!stopGame) {
-            if (currEffect < totalEffects - 1) {
-                currEffect++;
-                setPower(powerUsed);
-            } else {
-                currEffect = 0;
-                nextTurn();
-                game();
-            }
-        }
-        //else blocca tutto
-    }
-
-    private void facceVede() {
-        if (!stopGame)
-            System.out.println("Avanti il prossimo");
-        else
-            System.out.println("Colazione finita!");
-    }
-
-    /**
-     * it send to actualPlayer the list of all the positions available for the first positioning
-     */
-    private void firstPositioning() {
-        commands.setInstruction(Instruction.initialPosition);
-        commands.setAvailablePos(cardList.get(actualPlayer).availableFirstPositioning());
-        commands.getMovement().put(cardList.get(actualPlayer).getWorker1().getWorkerID(), new Position(-1, -1));
-        commands.getMovement().put(cardList.get(actualPlayer).getWorker2().getWorkerID(), new Position(-1, -1));
+    private void askName() {
+        commands.setInstruction(Instruction.setName);
         socket.sendTo(actualPlayer, commands);
     }
 
     /**
-     * called by all the players when they choose the position of their workers
-     * @param positions the list of positions of the two workers of actualPlayer
+     * set player name
+     * @param playerID id of current player
+     * @param nameList save all player's names
      */
-    @Override
-    public void choosePosition(List<Position> positions) {
-        Position w1 = positions.get(0);
-        Position w2 = positions.get(1);
-        cardList.get(actualPlayer).firstPositioning(w1, w2);
-        commands.setInstruction(Instruction.move);
-        commands.getMovement().put(cardList.get(actualPlayer).getWorker1().getWorkerID(),w1);
-        commands.getMovement().put(cardList.get(actualPlayer).getWorker2().getWorkerID(),w2);
-        commands.setPlayer(actualPlayer);
-        //commands.setPosition(w1);
-        socket.sendToAllExcept(actualPlayer, commands);
-        //commands.setPosition(w2);
-        //socket.sendToAllExcept(actualPlayer, commands);
-        nextTurn();
-        if(actualPlayer == 0) {
-            setEnemiesLists();
-            game();
-        } else {
-            firstPositioning();
-        }
-    }
-
     public void setPlayerName(int playerID, List<String> nameList) {
         names.put(playerID, nameList.get(0));
         nextTurn();
@@ -163,11 +61,6 @@ public class Turn implements ModelInterface {
             commands.getStringList().add(nameList.get(0));
             askName();
         }
-    }
-
-    private void askName() {
-        commands.setInstruction(Instruction.setName);
-        socket.sendTo(actualPlayer, commands);
     }
 
     /**
@@ -183,6 +76,17 @@ public class Turn implements ModelInterface {
         commands.setCardList(list);
         socket.sendTo(actualPlayer, commands);
         commands.setInstruction(Instruction.setCard);
+    }
+
+    /**
+     * called by the first player, he has chosen all the cards in the game
+     * @param cards the list of cards
+     */
+    @Override
+    public void setInitialCards(List<Integer> cards) {
+        nextTurn();
+        commands.setCardList(cards);
+        socket.sendTo(actualPlayer, commands);
     }
 
     /**
@@ -209,19 +113,144 @@ public class Turn implements ModelInterface {
     }
 
     /**
-     * called by the first player, he has chosen all the cards in the game
-     * @param cards the list of cards
+     * it send to actualPlayer the list of all the positions available for the first positioning
      */
-    @Override
-    public void setInitialCards(List<Integer> cards) {
-        nextTurn();
-        commands.setCardList(cards);
+    private void firstPositioning() {
+        commands.setInstruction(Instruction.initialPosition);
+        commands.setAvailablePos(cardList.get(actualPlayer).availableFirstPositioning());
+        commands.setPlayer(actualPlayer);
         socket.sendTo(actualPlayer, commands);
     }
 
+    /**
+     * called by all the players when they choose the position of their workers
+     * @param positions the list of positions of worker1 and worker2 of the actual player
+     */
+    @Override
+    public void setWorkersPosition(List<Position> positions) {
+        Position w1 = positions.get(0);
+        Position w2 = positions.get(1);
+        cardList.get(actualPlayer).firstPositioning(w1, w2);
+        commands.setInstruction(Instruction.move);
+        commands.getMovement().clear();
+        commands.getMovement().put(cardList.get(actualPlayer).getWorker1().getWorkerID(),w1);
+        commands.getMovement().put(cardList.get(actualPlayer).getWorker2().getWorkerID(),w2);
+        commands.setPlayer(actualPlayer);
+        socket.sendToAllExcept(actualPlayer, commands);
+        nextTurn();
+        if(actualPlayer == 0) {
+            setEnemiesLists();
+            game();
+        } else {
+            firstPositioning();
+        }
+    }
+
+    /**
+     * set enemies list of every player
+     */
     private void setEnemiesLists() {
         for (int i = 0; i < cardList.size() ; i++)
             cardList.get(i).setEnemies(cardList);
+    }
+
+    /**
+     * handle all the turns after the setup of the game
+     */
+    private void game() {
+        System.out.println("Start turn player" + " " + actualPlayer);
+        commands.setInstruction(Instruction.chooseWorker);
+        commands.setPlayer(actualPlayer);
+        socket.sendTo(actualPlayer, commands);
+    }
+
+    /**
+     * select the correct worker
+     * @param pos position of one of the two player's workers
+     */
+    @Override
+    public void selectCorrectWorker(Position pos) {
+        if(cardList.get(actualPlayer).getWorker1().getPosition().isEqual(pos)) {
+            verifyPower(cardList.get(actualPlayer).getWorker1());
+        } else {
+            verifyPower(cardList.get(actualPlayer).getWorker2());
+        }
+    }
+
+    /**
+     * verify if hero power is available
+     * @param worker selected worker by player
+     */
+    private void verifyPower(Worker worker) {
+        currWorker = worker;
+        System.out.println("Selected worker: " + currWorker.getPosition().getRow() + " " + currWorker.getPosition().getColumn());
+        if(cardList.get(actualPlayer).checkCardActivation(worker)) {
+            commands.setInstruction(Instruction.usePower);
+            socket.sendTo(actualPlayer, commands);
+        } else {
+            System.out.println("Power not available");
+            providePosition(false);
+        }
+    }
+
+    /**
+     * send player available positions
+     * @param use true if player active hero power
+     */
+    @Override
+    public void providePosition(boolean use) {
+        if (currEffect == 0) {
+            powerUsed = use;
+            cardList.get(actualPlayer).setActivePower(use);
+            if (powerUsed) {
+                totalEffects = cardList.get(actualPlayer).getCardRoutine().size();
+            } else {
+                totalEffects = cardList.get(actualPlayer).getStandardRoutine().size();
+            }
+        }
+        commands.setInstruction(Instruction.choosePosition);
+        commands.setAvailablePos(cardList.get(actualPlayer).availablePositions(currEffect, currWorker));
+        socket.sendTo(actualPlayer, commands);
+        System.out.println("Available positions:");
+        for(Position pos: commands.getAvailablePos()) {
+            System.out.println(pos.getRow() + " " + pos.getColumn());
+        }
+    }
+
+    /**
+     * apply effect of current action
+     * @param pos position chosen by player
+     */
+    @Override
+    public void apply(Position pos) {
+        commands.getMovement().clear();
+        commands = cardList.get(actualPlayer).applyEffect(currEffect, currWorker, pos);
+        socket.sendTo(actualPlayer,commands);
+        socket.sendToAllExcept(actualPlayer, commands);
+        if (commands.getInstruction() == Instruction.move)
+            stopGame = cardList.get(actualPlayer).checkWin(currEffect, pos);
+        showWin();
+        if (!stopGame) {
+            if (currEffect < totalEffects - 1) {
+                currEffect++;
+                providePosition(powerUsed);
+            } else {
+                currEffect = 0;
+                nextTurn();
+                game();
+            }
+        }
+        //else blocca tutto
+    }
+
+    /**
+     * ce fa vede se amo vinto
+     */
+    private void showWin() {
+        if (!stopGame)
+            System.out.println("Avanti il prossimo");
+        else
+            System.out.println("Colazione finita! GG");
     }
 
     /**
