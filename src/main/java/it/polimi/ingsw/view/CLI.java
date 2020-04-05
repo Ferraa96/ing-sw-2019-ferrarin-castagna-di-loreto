@@ -1,7 +1,5 @@
 package it.polimi.ingsw.view;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import it.polimi.ingsw.controller.Commands;
 import it.polimi.ingsw.controller.Instruction;
 import it.polimi.ingsw.controller.SocketClient;
@@ -10,10 +8,6 @@ import it.polimi.ingsw.model.CardDeserializer;
 import it.polimi.ingsw.model.Cell;
 import it.polimi.ingsw.model.Position;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.lang.reflect.Type;
 import java.util.*;
 
 /**
@@ -22,11 +16,10 @@ import java.util.*;
 public class CLI implements ViewInterface {
     private Commands commands;
     private SocketClient socket;
-    private List<Tile> allTiles;
     private Tile[][] gameMap;
     private Scanner scanner = new Scanner(System.in);
-    private CardDeserializer cardDeserializer = new CardDeserializer();
-    private List<Position> workerPos;
+    private Map<Integer, Position> workerPos;
+    private TileGetter tileGetter;
 
     /**
      * creates the CLI
@@ -35,74 +28,119 @@ public class CLI implements ViewInterface {
     public CLI(SocketClient socket) {
         this.socket = socket;
         commands = new Commands();
-        Gson gson = new Gson();
-        InputStream input = getClass().getResourceAsStream("/gameMap.json");
-        BufferedReader bf = new BufferedReader(new InputStreamReader(input));
-        Type tilesList = new TypeToken<ArrayList<Tile>>() {}.getType();
-        allTiles = gson.fromJson(bf, tilesList);
         gameMap = new Tile[5][5];
+        tileGetter = new TileGetter();
         for(int i = 0; i < 5; i++) {
             for(int j = 0; j < 5; j++) {
-                gameMap[i][j] = allTiles.get(0);
+                gameMap[i][j] = tileGetter.getTile(0, 0, false);
             }
         }
         updateScreen();
-        workerPos = new ArrayList<>();
+        workerPos = new HashMap<>();
     }
 
+    /**
+     * set the player ID
+     * @param playerID the player ID
+     */
     @Override
     public void setPlayerID(int playerID) {
         commands.setPlayer(playerID);
         System.out.println("Sono il giocatore " + playerID);
     }
 
+    /**
+     * change the position of all players in movement
+     * @param movement workerId and position of the movement
+     */
     @Override
-    public void move(Map<Integer,Position> movement) {
+    public void move(Map<Integer, Position> movement) {
         for(Integer key: movement.keySet()) {
-            int index = allTiles.indexOf(gameMap[movement.get(key).getRow()][movement.get(key).getColumn()]);
-            gameMap[movement.get(key).getRow()][movement.get(key).getColumn()] = allTiles.get(index + 1);
-            workerPos.add(key, movement.get(key));
+            int height;
+            Position pos = movement.get(key);
+            if(workerPos.size() > key) {
+                Position oldPos = workerPos.get(key);
+                height = gameMap[oldPos.getRow()][oldPos.getColumn()].getHeight();
+                gameMap[oldPos.getRow()][oldPos.getColumn()] = tileGetter.getTile(0, height, false);
+            }
+            height = gameMap[pos.getRow()][pos.getColumn()].getHeight();
+            System.out.println("GetTile(1, " + height + ", false)");
+            gameMap[pos.getRow()][pos.getColumn()] = tileGetter.getTile(1, height, false);
+            if(workerPos.containsKey(key)) {
+                workerPos.replace(key, pos);
+            } else {
+                workerPos.put(key, pos);
+            }
         }
     }
 
+    /**
+     * add a block in position
+     * @param position the position to build the block in
+     * @param height the height of the block
+     */
     @Override
     public void buildBlock(Position position, int height) {
-        int index = allTiles.indexOf(gameMap[position.getRow()][position.getColumn()]);
-        gameMap[position.getRow()][position.getColumn()] = allTiles.get(index + 2);
+        gameMap[position.getRow()][position.getColumn()] = tileGetter.getTile(0, height, false);
+        gameMap[position.getRow()][position.getColumn()].setHeight(height);
     }
 
+    /**
+     * add a dome
+     * @param position the position to build the dome in
+     * @param height the height of the dome
+     */
     @Override
     public void buildDome(Position position, int height) {
-        int index = allTiles.indexOf(gameMap[position.getRow()][position.getColumn()]);
-        gameMap[position.getRow()][position.getColumn()] = allTiles.get(11 - index);
+        gameMap[position.getRow()][position.getColumn()] = tileGetter.getTile(0, height, true);
     }
 
+    /**
+     * update the screen
+     */
     @Override
     public void updateScreen() {
-        System.out.println("-----------------------------------------------------------------------");
-        for(int i = 0; i < 5; i++) {
+        System.out.println(String.format("%11d" + "%14d" + "%14d" + "%14d" + "%14d", 1, 2, 3, 4, 5));
+        System.out.println("    -----------------------------------------------------------------------");
+        for(int raw = 0; raw < 5; raw++) {
             for(int line = 0; line < 5; line++) {
-                for(int j = 0; j < 5; j++) {
-                    System.out.print("|" + gameMap[i][j].getLine(line));
+                if(line == 2) {
+                    System.out.print(" " + (raw + 1) + "  ");
+                } else {
+                    System.out.print("    ");
+                }
+                for(int column = 0; column < 5; column++) {
+                    System.out.print("|" + gameMap[raw][column].getLine(line));
                 }
                 System.out.print("|\n");
             }
-            System.out.println("-----------------------------------------------------------------------");
+            System.out.println("    -----------------------------------------------------------------------");
         }
     }
 
+    /**
+     * lets the player select the position
+     * @param list the list of all possible positions
+     */
     @Override
     public void choosePosition(List<Position> list) {
+        for(Position pos: list) {
+            markPosition(pos, 'x');
+        }
+        updateScreen();
         System.out.print("Scegli la posizione (riga, colonna): ");
         commands.setInstruction(Instruction.choosePosition);
         commands.setPosition(verifyPosition(list));
+        for(Position pos: list) {
+            markPosition(pos, ' ');
+        }
         socket.send(commands);
     }
 
     @Override
     public void chooseCard(List<Integer> cardList) {
         List<Card> cards;
-        cards = cardDeserializer.getCardList();
+        cards = new CardDeserializer().getCardList();
         System.out.println("Scegli una carta tra\n");
         for(Integer curr: cardList) {
             System.out.println(curr + ": " + cards.get(curr).getName());
@@ -115,7 +153,7 @@ public class CLI implements ViewInterface {
 
     @Override
     public void chooseCardList(int num) {
-        List<Card> cards = cardDeserializer.getCardList();
+        List<Card> cards = new CardDeserializer().getCardList();
         List<Integer> chosen = new ArrayList<>();
         System.out.println("Sei il primo giocatore, scegli " + num + " carte tra\n");
         for(int i = 0; i < cards.size(); i++) {
@@ -169,16 +207,14 @@ public class CLI implements ViewInterface {
         updateScreen();
         System.out.print("Posizione iniziale lavoratore 1 (riga, colonna): ");
         pos = verifyPosition(availablePos);
-        movement.put(commands.getPlayer()*2,pos);
-        //move(commands.getPlayer(), pos);
+        movement.put(commands.getPlayer() * 2, pos);
         move(movement);
         updateScreen();
         list.add(pos);
         movement.clear();
         System.out.print("Posizione iniziale lavoratore 2 (riga, colonna): ");
         pos = verifyPosition(availablePos);
-        movement.put(commands.getPlayer()*2+1, pos);
-        //move(commands.getPlayer(), pos);
+        movement.put(commands.getPlayer() * 2 + 1, pos);
         move(movement);
         list.add(pos);
         commands.setInstruction(Instruction.initialPosition);
@@ -201,7 +237,7 @@ public class CLI implements ViewInterface {
      * @return the position chosen by the player and verified
      */
     private Position verifyPosition(List<Position> list) {
-        Position pos = new Position(scanner.nextInt(), scanner.nextInt());
+        Position pos = new Position(scanner.nextInt() - 1, scanner.nextInt() - 1);
         boolean ok = false;
         while(true) {
             for (Position curr : list) {
@@ -215,7 +251,7 @@ public class CLI implements ViewInterface {
                 return pos;
             }
             System.out.print("Scelta non valida, inseriscine un'altra: ");
-            pos = new Position(scanner.nextInt(), scanner.nextInt());
+            pos = new Position(scanner.nextInt() - 1, scanner.nextInt() - 1);
         }
     }
 
@@ -252,12 +288,18 @@ public class CLI implements ViewInterface {
 
     @Override
     public void chooseWorker() {
-//        for(Position curr: workerPos) {
-//            markPosition(curr, 'x');
-//        }
-//        updateScreen();
+        Position posW1 = workerPos.get(commands.getPlayer() * 2);
+        Position posW2 = workerPos.get(commands.getPlayer() * 2 + 1);
+        markPosition(posW1, 'x');
+        markPosition(posW2, 'x');
+        updateScreen();
         System.out.print("Seleziona il worker: ");
-        commands.setPosition(verifyPosition(workerPos));
+        List<Position> temp = new ArrayList<>();
+        temp.add(posW1);
+        temp.add(posW2);
+        commands.setPosition(verifyPosition(temp));
+        markPosition(posW1, ' ');
+        markPosition(posW2, ' ');
         commands.setInstruction(Instruction.chooseWorker);
         socket.send(commands);
     }

@@ -13,6 +13,16 @@ public class Tile {
     private String line3;
     @SerializedName("line4")
     private String line4;
+    private int height = 0;
+
+    public Tile(Tile otherTile) {
+        this.line0 = otherTile.getLine(0);
+        this.line1 = otherTile.getLine(1);
+        this.line2 = otherTile.getLine(2);
+        this.line3 = otherTile.getLine(3);
+        this.line4 = otherTile.getLine(4);
+        this.height = otherTile.getHeight();
+    }
 
     public String getLine(int x) {
         switch (x) {
@@ -27,6 +37,14 @@ public class Tile {
             default:
                 return line4;
         }
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
+    public int getHeight() {
+        return height;
     }
 
     public void setIdentifier(char id) {

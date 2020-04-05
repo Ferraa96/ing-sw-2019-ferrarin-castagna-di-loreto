@@ -118,14 +118,14 @@ public class Build implements Effect {
                 map[chosenCell.getRow()][chosenCell.getColumn()].setHeight(map[chosenCell.getRow()][chosenCell.getColumn()].getHeight() + 2);
                 buildMessage.setInstruction(Instruction.buildBlock);
                 buildMessage.setPosition(chosenCell);
-                buildMessage.setHeight(2);
+                buildMessage.setHeight(map[chosenCell.getRow()][chosenCell.getColumn()].getHeight());
             }
         }
         else {
             map[chosenCell.getRow()][chosenCell.getColumn()].setHeight(map[chosenCell.getRow()][chosenCell.getColumn()].getHeight() + 1);
             buildMessage.setInstruction(Instruction.buildBlock);
             buildMessage.setPosition(chosenCell);
-            buildMessage.setHeight(1);
+            buildMessage.setHeight(map[chosenCell.getRow()][chosenCell.getColumn()].getHeight());
         }
         return buildMessage;
     }
