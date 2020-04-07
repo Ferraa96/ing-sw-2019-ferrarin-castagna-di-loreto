@@ -61,15 +61,30 @@ public class Move implements Effect{
         for(int i = up; i < down; i++) {
             for(int j = left; j < right; j++) {
                 if (map[i][j].getHeight() != 4 && map[i][j].getHeight()-map[row][column].getHeight()<=1) {
-                    if (!(noUp && map[i][j].getHeight() - map[row][column].getHeight() == 1)) {
-                        if (!(i == row && j == column)) {
-                            list.add(new Position(i, j));
-                        }
+                    if (!(i == row && j == column)) {
+                        list.add(new Position(i, j));
                     }
                 }
             }
         }
         return list;
+    }
+
+    /**
+     * remove correct positions if you can't move up
+     * @param target interested worker
+     * @param r row index
+     * @param c column index
+     * @param curr possibleCells current cell
+     * @return index of cell in possibleCells
+     */
+    private int noMoveUp(Worker target, int r, int c, int curr) {
+        if (noUp)
+            if (map[r][c].getHeight() - map[target.getPosition().getRow()][target.getPosition().getColumn()].getHeight() == 1) {
+                possibleCells.remove(possibleCells.get(curr));
+                curr--;
+            }
+        return curr;
     }
 
     /**
@@ -158,11 +173,14 @@ public class Move implements Effect{
         for (int i = 0; i < possibleCells.size(); i++) {
             r = possibleCells.get(i).getRow();
             c = possibleCells.get(i).getColumn();
-            int j=i;
-            i = people(target, r, c, i);
-            if (i==j) {
-                i = knockable(target, r, c, i);
-                i = specific(target, r, c, i);
+            int j = i;
+            i = noMoveUp(target, r, c, i);
+            if (i == j) {
+                i = people(target, r, c, i);
+                if (i == j) {
+                    i = knockable(target, r, c, i);
+                    i = specific(target, r, c, i);
+                }
             }
         }
         return possibleCells;
