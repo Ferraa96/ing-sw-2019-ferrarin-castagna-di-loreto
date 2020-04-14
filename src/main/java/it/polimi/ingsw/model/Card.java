@@ -179,7 +179,8 @@ public class Card {
         Commands actionMessage;
         if (!activePower) {
             actionMessage = standardRoutine.get(i).executeAction(chosenCell, target);
-            checkMoveUp(standardRoutine.get(i).getDownUp());
+            if (i == 0)
+                checkMoveUp(standardRoutine.get(i).getDownUp());
         }
         else {
             setParameters(i, chosenCell, target);
