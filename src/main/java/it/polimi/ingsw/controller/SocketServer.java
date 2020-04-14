@@ -25,6 +25,9 @@ public class SocketServer implements ControllerInterface {
         addClients();
     }
 
+    /**
+     * instanciate a ServerThread for all the clients that connect
+     */
     private void addClients() {
         int actualNum = 0;
         int min = 2;
@@ -95,5 +98,20 @@ public class SocketServer implements ControllerInterface {
     @Override
     public void sendTo(int clientID, Commands commands) {
         observers.get(clientID).send(commands);
+    }
+
+    /**
+     * sort all the players in the same order of the game loaded
+     * @param playerMap maps the actual order to the game loaded order
+     */
+    public void sortPlayers(Map<Integer, Integer> playerMap) {
+        List<ServerThread> temp = new ArrayList<>();
+        for(int i = 0; i < observers.size(); i++) {
+            temp.add(observers.get(playerMap.get(i)));
+        }
+        observers = temp;
+        for(ServerThread curr: observers) {
+            System.out.println(curr);
+        }
     }
 }

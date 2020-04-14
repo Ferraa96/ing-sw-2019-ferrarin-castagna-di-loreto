@@ -4,10 +4,7 @@ import it.polimi.ingsw.controller.Commands;
 import it.polimi.ingsw.controller.Instruction;
 import it.polimi.ingsw.controller.SocketServer;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * handle all the turns
@@ -19,14 +16,14 @@ public class Turn implements ModelInterface {
     private List<Card> cardList;
     private Commands commands;
     private Board board;
-    private CardDeserializer cardDeserializer = new CardDeserializer();
+    private IOHandler ioHandler = new IOHandler();
     private SaveState saveState;
-    private Map<Integer, String> names;
     private int totalEffects;
     private int currEffect = 0;
     private Worker currWorker;
     private boolean powerUsed;
     private boolean stopGame = false;
+    private List<PlayerInfo> players;
 
     public Turn(SocketServer socket, int numPlayer) {
         this.socket = socket;
@@ -34,8 +31,8 @@ public class Turn implements ModelInterface {
         saveState = new SaveState();
         cardList = new ArrayList<>();
         commands = new Commands();
-        names = new HashMap<>();
         board = new Board();
+        players = new ArrayList<>();
         askName();
     }
 
@@ -53,14 +50,77 @@ public class Turn implements ModelInterface {
      * @param nameList save all player's names
      */
     public void setPlayerName(int playerID, List<String> nameList) {
-        names.put(playerID, nameList.get(0));
+        players.add(new PlayerInfo(nameList.get(0)));
         nextTurn();
         if(actualPlayer == 0) {
+            nameList.clear();
+            for(PlayerInfo curr: players) {
+                nameList.add(curr.getPlayerName());
+            }
+            if(ioHandler.verifyFileExistance(saveState.generateName(nameList))) {
+                commands.setInstruction(Instruction.askReloadState);
+                socket.sendTo(actualPlayer, commands);
+                return;
+            }
             initialChoose();
         } else {
             commands.getStringList().add(nameList.get(0));
             askName();
         }
+    }
+
+    /**
+     * lets the players resume a saved game
+     * @param reload true if player 1 choose to load the game
+     */
+    public void loadState(boolean reload) {
+        if(reload) {
+            saveState = ioHandler.getSaveState();
+            board.setMap(saveState.getGameMap());
+            for(PlayerInfo currPlayer: saveState.getPlayers()) {
+                addCardToGame(currPlayer.getChosenCard());
+                cardList.get(actualPlayer).firstPositioning(currPlayer.getWorkerPos().get(0), currPlayer.getWorkerPos().get(1));
+                nextTurn();
+            }
+            setEnemiesLists();
+            commands.setInstruction(Instruction.reloadState);
+            commands.setMap(board.getMap());
+            socket.sendTo(0, commands);
+            socket.sendToAllExcept(0, commands);
+            socket.sortPlayers(mapPlayers(saveState));
+            actualPlayer = saveState.getActualPlayer();
+            if(saveState.getActualEffect() == 0) {
+                game();
+            } else {
+                if(saveState.getChosenWorker() % 2 == 0) {
+                    currWorker = cardList.get(actualPlayer).getWorker1();
+                } else {
+                    currWorker = cardList.get(actualPlayer).getWorker2();
+                }
+                currEffect = saveState.getActualEffect();
+                providePosition(saveState.isGodPower());
+            }
+        } else {
+            initialChoose();
+        }
+    }
+
+    /**
+     * puts all the players in the same order of the game loaded
+     * @param state the file with all the configurations saved
+     * @return maps the actual players order to the saved game order
+     */
+    private Map<Integer, Integer> mapPlayers(SaveState state) {
+        Map<Integer, Integer> playerMap = new HashMap<>();
+        for(int i = 0; i < numPlayer; i++) {
+            for(int j = 0; j < numPlayer; j++) {
+                if(players.get(i).getPlayerName().equals(state.getPlayers().get(j).getPlayerName())) {
+                    playerMap.put(j, i);
+                    break;
+                }
+            }
+        }
+        return playerMap;
     }
 
     /**
@@ -95,13 +155,10 @@ public class Turn implements ModelInterface {
      */
     @Override
     public void setCards(int chosenCard) {
-        Card card = cardDeserializer.getSelectedCardFlags().get(chosenCard);
-        card.setCard(board.getBoard(), actualPlayer);
-        cardList.add(card);
+        addCardToGame(chosenCard);
         commands.removeCard(chosenCard);
         if(!commands.getCardList().isEmpty()) {
             nextTurn();
-            System.out.println("Invio a player " + actualPlayer);
             commands.setInstruction(Instruction.setCard);
             socket.sendTo(actualPlayer, commands);
         } else {
@@ -113,9 +170,21 @@ public class Turn implements ModelInterface {
     }
 
     /**
+     * instanciate the card chosen
+     * @param chosenCard the index of the card chosen
+     */
+    private void addCardToGame(int chosenCard) {
+        players.get(actualPlayer).setChosenCard(chosenCard);
+        Card card = ioHandler.getSelectedCardFlags().get(chosenCard);
+        card.setCard(board.getMap(), actualPlayer);
+        cardList.add(card);
+    }
+
+    /**
      * it send to actualPlayer the list of all the positions available for the first positioning
      */
     private void firstPositioning() {
+        saveState.setPlayers(players);
         commands.setInstruction(Instruction.initialPosition);
         commands.setAvailablePos(cardList.get(actualPlayer).availableFirstPositioning());
         commands.setPlayer(actualPlayer);
@@ -133,8 +202,8 @@ public class Turn implements ModelInterface {
         cardList.get(actualPlayer).firstPositioning(w1, w2);
         commands.setInstruction(Instruction.move);
         commands.getMovement().clear();
-        commands.getMovement().put(cardList.get(actualPlayer).getWorker1().getWorkerID(),w1);
-        commands.getMovement().put(cardList.get(actualPlayer).getWorker2().getWorkerID(),w2);
+        commands.getMovement().put(cardList.get(actualPlayer).getWorker1().getWorkerID(), w1);
+        commands.getMovement().put(cardList.get(actualPlayer).getWorker2().getWorkerID(), w2);
         commands.setPlayer(actualPlayer);
         socket.sendToAllExcept(actualPlayer, commands);
         nextTurn();
@@ -165,12 +234,12 @@ public class Turn implements ModelInterface {
     }
 
     /**
-     * select the correct worker
+     * select the worker to play the turn
      * @param pos position of one of the two player's workers
      */
     @Override
     public void selectCorrectWorker(Position pos) {
-        if(cardList.get(actualPlayer).getWorker1().getPosition().isEqual(pos)) {
+        if(cardList.get(actualPlayer).getWorker1().getPosition().equals(pos)) {
             verifyPower(cardList.get(actualPlayer).getWorker1());
         } else {
             verifyPower(cardList.get(actualPlayer).getWorker2());
@@ -183,12 +252,10 @@ public class Turn implements ModelInterface {
      */
     private void verifyPower(Worker worker) {
         currWorker = worker;
-        System.out.println("Selected worker: " + currWorker.getPosition().getRow() + " " + currWorker.getPosition().getColumn());
         if(cardList.get(actualPlayer).checkCardActivation(worker)) {
             commands.setInstruction(Instruction.usePower);
             socket.sendTo(actualPlayer, commands);
         } else {
-            System.out.println("Power not available");
             providePosition(false);
         }
     }
@@ -241,6 +308,7 @@ public class Turn implements ModelInterface {
             }
         }
         //else blocca tutto
+        saveGame();
     }
 
     /**
@@ -262,5 +330,37 @@ public class Turn implements ModelInterface {
         } else {
             actualPlayer = 0;
         }
+    }
+
+    /**
+     * save the game to a file
+     */
+    private void saveGame() {
+        List<Position> positions;
+        for(int i = 0; i < players.size(); i++) {
+            positions = new ArrayList<>();
+            positions.add(cardList.get(i).getWorker1().getPosition());
+            positions.add(cardList.get(i).getWorker2().getPosition());
+            players.get(i).setWorkerPos(positions);
+        }
+        saveState.setActualPlayer(actualPlayer);
+        saveState.setGameMap(board.getMap());
+        saveState.setActualEffect(currEffect);
+        saveState.setChosenWorker(currWorker.getWorkerID());
+        saveState.setGodPower(powerUsed);
+        ioHandler.save(saveState);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder string = new StringBuilder();
+        for(Card card: cardList) {
+            string.append(card.getPlayerId()).append(": ").append(card.getName()).append("\n");
+            string.append("\t").append(card.getWorker1().getWorkerID()).append(": ").append(card.getWorker1().getPosition()).append("\n");
+            string.append("\t").append(card.getWorker2().getWorkerID()).append(": ").append(card.getWorker2().getPosition()).append("\n");
+        }
+        string.append("Actual player: ").append(actualPlayer).append("\n");
+        string.append(board).append("\n");
+        return string.toString();
     }
 }

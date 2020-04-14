@@ -1,5 +1,6 @@
 package it.polimi.ingsw.controller;
 
+import it.polimi.ingsw.model.Board;
 import it.polimi.ingsw.view.ViewInterface;
 
 /**
@@ -59,6 +60,12 @@ public class ClientViewUpdater {
                 break;
             case choosePosition:
                 view.choosePosition(commands.getAvailablePos());
+                break;
+            case askReloadState:
+                view.askForReloadState();
+                break;
+            case reloadState:
+                view.reloadState(commands.getMap());
                 break;
             default:
                 System.out.println("Ricevuto " + commands.getInstruction());

@@ -41,6 +41,16 @@ public class GUI implements ViewInterface {
     }
 
     @Override
+    public void askForReloadState() {
+
+    }
+
+    @Override
+    public void reloadState(Cell[][] map) {
+
+    }
+
+    @Override
     public void chooseCard(List<Integer> cardList) {
 
     }

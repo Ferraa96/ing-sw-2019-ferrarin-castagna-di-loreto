@@ -10,7 +10,7 @@ public class CellTest {
 
     @Test
     public void checkMapEasy() {
-        map=board.getBoard();
+        map=board.getMap();
         map[2][2].setWorkerID(11);
         assertEquals(0,map[2][2].getHeight());
         assertEquals(0,map[3][3].getHeight());

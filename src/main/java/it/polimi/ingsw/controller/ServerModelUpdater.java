@@ -41,6 +41,9 @@ public class ServerModelUpdater {
             case choosePosition:
                 turn.apply(commands.getPosition());
                 break;
+            case reloadState:
+                turn.loadState(commands.isAnswer());
+                break;
             default:
                 System.out.println("Ricevuto " + commands.getInstruction());
         }

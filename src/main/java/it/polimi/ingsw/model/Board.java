@@ -18,7 +18,25 @@ public class Board {
         }
     }
 
-    public Cell[][] getBoard() {
+    public Cell[][] getMap() {
         return map;
+    }
+
+    public void setMap(Cell[][] map) {
+        this.map = map;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder string = new StringBuilder();
+        string.append("-----------------------------------------\n");
+        for(int raw = 0; raw < 5; raw++) {
+            for(int column = 0; column < 5; column++) {
+                string.append("|").append(map[raw][column].getWorkerID()).append(" ").append(map[raw][column].getHeight()).append("\t");
+            }
+            string.append("|\n");
+        }
+        string.append("-----------------------------------------\n");
+        return string.toString();
     }
 }

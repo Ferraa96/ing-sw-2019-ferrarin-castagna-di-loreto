@@ -11,8 +11,8 @@ public class BoardTest {
         Board board = new Board();
         for(int row = 0; row < 5; row++) {
             for(int column = 0; column < 5; column++) {
-                assertEquals(0, board.getBoard()[row][column].getWorkerID());
-                assertEquals(0, board.getBoard()[row][column].getHeight());
+                assertEquals(0, board.getMap()[row][column].getWorkerID());
+                assertEquals(0, board.getMap()[row][column].getHeight());
             }
         }
     }

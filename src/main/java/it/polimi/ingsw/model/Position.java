@@ -22,7 +22,17 @@ public class Position implements Serializable {
         return column;
     }
 
-    public boolean isEqual(Position position) {
-        return (this.row == position.getRow() && this.column == position.getColumn());
+    @Override
+    public boolean equals(Object position) {
+        if(!(position instanceof Position)) {
+            return false;
+        }
+        Position pos = (Position) position;
+        return (this.row == pos.getRow() && this.column == pos.getColumn());
+    }
+
+    @Override
+    public String toString() {
+        return "row: " + row + " column: " + column;
     }
 }

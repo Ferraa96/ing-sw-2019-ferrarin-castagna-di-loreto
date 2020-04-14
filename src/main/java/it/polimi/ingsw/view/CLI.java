@@ -3,10 +3,7 @@ package it.polimi.ingsw.view;
 import it.polimi.ingsw.controller.Commands;
 import it.polimi.ingsw.controller.Instruction;
 import it.polimi.ingsw.controller.SocketClient;
-import it.polimi.ingsw.model.Card;
-import it.polimi.ingsw.model.CardDeserializer;
-import it.polimi.ingsw.model.Cell;
-import it.polimi.ingsw.model.Position;
+import it.polimi.ingsw.model.*;
 
 import java.util.*;
 
@@ -56,21 +53,32 @@ public class CLI implements ViewInterface {
     @Override
     public void move(Map<Integer, Position> movement) {
         for(Integer key: movement.keySet()) {
+            System.out.println("-----\nDestinazione: " + movement.get(key));
             int height;
             Position pos = movement.get(key);
-            if(workerPos.size() > key) {
-                Position oldPos = workerPos.get(key);
-                height = gameMap[oldPos.getRow()][oldPos.getColumn()].getHeight();
-                gameMap[oldPos.getRow()][oldPos.getColumn()] = tileGetter.getTile(0, height, false);
-            }
+            removeFromPreviousPosition(key);
             height = gameMap[pos.getRow()][pos.getColumn()].getHeight();
-            System.out.println("GetTile(1, " + height + ", false)");
             gameMap[pos.getRow()][pos.getColumn()] = tileGetter.getTile(1, height, false);
-            if(workerPos.containsKey(key)) {
-                workerPos.replace(key, pos);
-            } else {
-                workerPos.put(key, pos);
+            workerPos.put(key, pos);
+        }
+    }
+
+    /**
+     * remove the player from the previous position
+     * @param key the workerID
+     */
+    private void removeFromPreviousPosition(int key) {
+        if(workerPos.containsKey(key)) {
+            Position oldPos = workerPos.get(key);
+            workerPos.remove(key);
+            for(Map.Entry<Integer, Position> entry: workerPos.entrySet()) {
+                System.out.println(entry.getValue() + " " + oldPos);
+                if(entry.getValue().equals(oldPos)) {
+                    return;
+                }
             }
+            int height = gameMap[oldPos.getRow()][oldPos.getColumn()].getHeight();
+            gameMap[oldPos.getRow()][oldPos.getColumn()] = tileGetter.getTile(0, height, false);
         }
     }
 
@@ -118,6 +126,39 @@ public class CLI implements ViewInterface {
         }
     }
 
+    @Override
+    public void askForReloadState() {
+        System.out.print("E' presente un salvataggio, caricarlo? S/N ");
+        commands.setInstruction(Instruction.reloadState);
+        commands.setAnswer(verifyBoolean());
+        socket.send(commands);
+    }
+
+    @Override
+    public void reloadState(Cell[][] map) {
+        Map<Integer, Position> workers = new HashMap<>();
+        for(int row = 0; row < 5; row++) {
+            for(int column = 0; column < 5; column++) {
+                int height = map[row][column].getHeight();
+                if(height > 0) {
+                    if(map[row][column].isDome()) {
+                        buildDome(new Position(row, column), height);
+                    } else {
+                        buildBlock(new Position(row, column), height);
+                    }
+                }
+                int workerID = map[row][column].getWorkerID();
+                if(workerID != -1) {
+                    workers.put(workerID, new Position(row, column));
+                }
+            }
+        }
+        move(workers);
+        updateScreen();
+        Board board = new Board();
+        board.setMap(map);
+    }
+
     /**
      * lets the player select the position
      * @param list the list of all possible positions
@@ -140,7 +181,7 @@ public class CLI implements ViewInterface {
     @Override
     public void chooseCard(List<Integer> cardList) {
         List<Card> cards;
-        cards = new CardDeserializer().getCardList();
+        cards = new IOHandler().getCardList();
         System.out.println("Scegli una carta tra\n");
         for(Integer curr: cardList) {
             System.out.println(curr + ": " + cards.get(curr).getName());
@@ -153,7 +194,7 @@ public class CLI implements ViewInterface {
 
     @Override
     public void chooseCardList(int num) {
-        List<Card> cards = new CardDeserializer().getCardList();
+        List<Card> cards = new IOHandler().getCardList();
         List<Integer> chosen = new ArrayList<>();
         System.out.println("Sei il primo giocatore, scegli " + num + " carte tra\n");
         for(int i = 0; i < cards.size(); i++) {

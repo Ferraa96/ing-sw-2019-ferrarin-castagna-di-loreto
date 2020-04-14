@@ -2,6 +2,7 @@ package it.polimi.ingsw.controller;
 
 import it.polimi.ingsw.model.Cell;
 import it.polimi.ingsw.model.Position;
+import it.polimi.ingsw.model.SaveState;
 
 import java.io.Serializable;
 import java.util.ArrayList;

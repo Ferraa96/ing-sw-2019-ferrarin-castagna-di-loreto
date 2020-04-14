@@ -9,10 +9,10 @@ import static org.junit.Assert.*;
 public class BuildTest {
     Board board = new Board();
     Cell[][] map;
-    Build standardBuild = new Build(board.getBoard(),true,false);
-    Build hephaestusBuild = new Build(board.getBoard(),false,true);
-    Build atlasBuild = new Build(board.getBoard(),false,false);
-    Build demeterBuild = new Build(board.getBoard(),true,true);
+    Build standardBuild = new Build(board.getMap(),true,false);
+    Build hephaestusBuild = new Build(board.getMap(),false,true);
+    Build atlasBuild = new Build(board.getMap(),false,false);
+    Build demeterBuild = new Build(board.getMap(),true,true);
     Position position = new Position(2,2);
     Worker target = new Worker(1,0);
 
@@ -27,7 +27,7 @@ public class BuildTest {
 
     @Test
     public void checkPeople() {
-        map=board.getBoard();
+        map=board.getMap();
         target.setPosition(position);
         for (int i = 1; i < 4; i++) {
             for (int j = 1; j < 4; j++) {
@@ -64,7 +64,7 @@ public class BuildTest {
 
     @Test
     public void fullMap() {
-        map = board.getBoard();
+        map = board.getMap();
         target.setPosition(position);
         map[2][2].setHeight(1);
         map[4][0].setWorkerID(12);
@@ -104,7 +104,7 @@ public class BuildTest {
 
     @Test
     public void edge() {
-        map=board.getBoard();
+        map=board.getMap();
         target.setPosition(new Position(0,0));
         List<Position> availablePos = standardBuild.availableWithGod(target);
         assertEquals(3,availablePos.size());
@@ -122,7 +122,7 @@ public class BuildTest {
     public void realMove() {
         int i;
         Position mossa= new Position(1,2);
-        map=board.getBoard();
+        map=board.getMap();
         target.setPosition(position);
         map[2][2].setWorkerID(11);
         map[2][2].setHeight(1);

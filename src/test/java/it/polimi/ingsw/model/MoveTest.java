@@ -12,13 +12,13 @@ import static org.junit.Assert.*;
 public class MoveTest {
     Board board = new Board();
     Cell[][] map;
-    Move standardMove = new Move(board.getBoard(),false,false,false,false);
-    Move apolloMove = new Move(board.getBoard(),false,true,false,false);
-    Move minoMove = new Move(board.getBoard(),true,true,false,false);
-    Move prometheusMove = new Move(board.getBoard(),false,false,true,false);
-    Move artemisMove = new Move(board.getBoard(),false,false,true,true);
-    Move minoReturn = new Move(board.getBoard(),true,true,false,false);
-    Move apolloReturn = new Move(board.getBoard(),false,true,false,false);
+    Move standardMove = new Move(board.getMap(),false,false,false,false);
+    Move apolloMove = new Move(board.getMap(),false,true,false,false);
+    Move minoMove = new Move(board.getMap(),true,true,false,false);
+    Move prometheusMove = new Move(board.getMap(),false,false,true,false);
+    Move artemisMove = new Move(board.getMap(),false,false,true,true);
+    Move minoReturn = new Move(board.getMap(),true,true,false,false);
+    Move apolloReturn = new Move(board.getMap(),false,true,false,false);
     Position position = new Position(2,2);
     Worker target = new Worker(1,0);
     Worker enemy1 = new Worker(0,0);
@@ -42,7 +42,7 @@ public class MoveTest {
 
     @Test
     public void checkPeopleNotPeople() {
-        map=board.getBoard();
+        map=board.getMap();
         target.setPosition(position);
         for (int i = 1; i < 4; i++) {
             for (int j = 1; j < 4; j++) {
@@ -88,7 +88,7 @@ public class MoveTest {
 
     @Test
     public void checkMateNotMate() {
-        map=board.getBoard();
+        map=board.getMap();
         target.setPosition(position);
         for (int i = 1; i < 4; i++) {
             for (int j = 1; j < 4; j++) {
@@ -118,7 +118,7 @@ public class MoveTest {
 
     @Test
     public void fullMap() {
-        map=board.getBoard();
+        map=board.getMap();
         target.setPosition(position);
         map[2][2].setHeight(1);
         map[4][0].setWorkerID(3);
@@ -164,7 +164,7 @@ public class MoveTest {
     public void realMove() {
         int i;
         Position mossa= new Position(1,2);
-        map=board.getBoard();
+        map=board.getMap();
         target.setPosition(position);
         map[2][2].setHeight(1);
         map[4][0].setWorkerID(3);
@@ -207,7 +207,7 @@ public class MoveTest {
 
     @Test
     public void edgeKnock() {
-        map=board.getBoard();
+        map=board.getMap();
         target.setPosition(new Position(0,0));
         List<Position> availablePos = standardMove.availableWithGod(target);
         assertEquals(3,availablePos.size());
