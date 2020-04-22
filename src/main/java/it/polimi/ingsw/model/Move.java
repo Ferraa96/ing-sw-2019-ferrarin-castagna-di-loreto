@@ -1,10 +1,11 @@
 package it.polimi.ingsw.model;
 
-import it.polimi.ingsw.controller.Commands;
-import it.polimi.ingsw.controller.Instruction;
+import it.polimi.ingsw.controller.Instructions.MoveInstr;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * type of effect: give worker permission to move in other cell
@@ -19,7 +20,6 @@ public class Move implements Effect{
     private boolean notBefore;
     private Position lastMoveInitialPosition;
     private List<Position> possibleCells;
-    private Commands moveMessage = new Commands();
     private int downUp;
 
     public Move(Cell[][] map, boolean knock, boolean searchPeople, boolean specificMovetype, boolean notBefore) {
@@ -193,14 +193,14 @@ public class Move implements Effect{
      * @return message you have to send to view
      */
     @Override
-    public Commands executeAction(Position chosenCell, Worker worker) {
+    public MoveInstr executeAction(Position chosenCell, Worker worker) {
         downUp=map[chosenCell.getRow()][chosenCell.getColumn()].getHeight()-map[worker.getPosition().getRow()][worker.getPosition().getColumn()].getHeight();
         map[worker.getPosition().getRow()][worker.getPosition().getColumn()].setWorkerID(-1);
         map[chosenCell.getRow()][chosenCell.getColumn()].setWorkerID(worker.getWorkerID());
         worker.setPosition( new Position(chosenCell.getRow(),chosenCell.getColumn()));
-        moveMessage.setInstruction(Instruction.move);
-        moveMessage.getMovement().put(worker.getWorkerID(),chosenCell);
-        return moveMessage;
+        Map<Integer, Position> movements = new HashMap<>();
+        movements.put(worker.getWorkerID(), chosenCell);
+        return new MoveInstr(movements);
     }
 
     /**
@@ -209,21 +209,22 @@ public class Move implements Effect{
      * @return message you have to send to view
      */
     @Override
-    public Commands executeAutoAction(Worker enemy) {
+    public MoveInstr executeAutoAction(Worker enemy) {
+        Map<Integer, Position> movements = new HashMap<>();
         int r, c;
         if (!knock) {
             enemy.setPosition(lastMoveInitialPosition);
             map[enemy.getPosition().getRow()][enemy.getPosition().getColumn()].setWorkerID(enemy.getWorkerID());
-            moveMessage.getMovement().put(enemy.getWorkerID(),lastMoveInitialPosition);
+            movements.put(enemy.getWorkerID(), lastMoveInitialPosition);
         }
         else {
             r = 2 * enemy.getPosition().getRow() - lastMoveInitialPosition.getRow();
             c = 2 * enemy.getPosition().getColumn() - lastMoveInitialPosition.getColumn();
             enemy.setPosition(new Position(r, c));
             map[r][c].setWorkerID(enemy.getWorkerID());
-            moveMessage.getMovement().put(enemy.getWorkerID(),enemy.getPosition());
+            movements.put(enemy.getWorkerID(), enemy.getPosition());
         }
-        return moveMessage;
+        return new MoveInstr(movements);
     }
 
     /**

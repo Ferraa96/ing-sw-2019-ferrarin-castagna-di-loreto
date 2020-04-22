@@ -30,10 +30,6 @@ public class ServerThread extends Thread {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Commands commands = new Commands();
-        commands.setPlayer(playerID);
-        commands.setInstruction(Instruction.setPlayerID);
-        send(commands);
     }
 
     /**
@@ -41,14 +37,10 @@ public class ServerThread extends Thread {
      */
     @Override
     public void run() {
-        Commands commands;
         try {
-            do {
-                commands = (Commands) inStream.readObject();
-                serverModelUpdater.receive(commands);
-            } while(commands.getInstruction() != Instruction.endGame);
-            inStream.close();
-            socket.close();
+            while(true) {
+                serverModelUpdater.receive(inStream.readObject());
+            }
         } catch(IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
@@ -58,7 +50,7 @@ public class ServerThread extends Thread {
      * send the command to the client
      * @param commands the command to send
      */
-    public void send(Commands commands) {
+    public void send(Object commands) {
         try {
             outStream.writeObject(commands);
             outStream.reset();

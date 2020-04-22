@@ -29,14 +29,15 @@ public class Board {
     @Override
     public String toString() {
         StringBuilder string = new StringBuilder();
-        string.append("-----------------------------------------\n");
+        string.append("-------------------------------------------\n");
         for(int raw = 0; raw < 5; raw++) {
+            System.out.println("\t\t");
             for(int column = 0; column < 5; column++) {
-                string.append("|").append(map[raw][column].getWorkerID()).append(" ").append(map[raw][column].getHeight()).append("\t");
+                string.append("| ").append(map[raw][column].getWorkerID()).append("\t").append(map[raw][column].getHeight());
             }
-            string.append("|\n");
+            string.append(" |\n");
         }
-        string.append("-----------------------------------------\n");
+        string.append("-------------------------------------------\n");
         return string.toString();
     }
 }

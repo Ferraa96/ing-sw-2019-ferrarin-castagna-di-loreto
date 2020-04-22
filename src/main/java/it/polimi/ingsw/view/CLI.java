@@ -1,7 +1,6 @@
 package it.polimi.ingsw.view;
 
-import it.polimi.ingsw.controller.Commands;
-import it.polimi.ingsw.controller.Instruction;
+import it.polimi.ingsw.controller.Instructions.*;
 import it.polimi.ingsw.controller.SocketClient;
 import it.polimi.ingsw.model.*;
 
@@ -11,12 +10,12 @@ import java.util.*;
  * the CLI
  */
 public class CLI implements ViewInterface {
-    private Commands commands;
-    private SocketClient socket;
-    private Tile[][] gameMap;
-    private Scanner scanner = new Scanner(System.in);
-    private Map<Integer, Position> workerPos;
-    private TileGetter tileGetter;
+    private final SocketClient socket;
+    private final Tile[][] gameMap;
+    private final Scanner scanner = new Scanner(System.in);
+    private final Map<Integer, Position> workerPos;
+    private final TileGetter tileGetter;
+    private int playerID;
 
     /**
      * creates the CLI
@@ -24,7 +23,6 @@ public class CLI implements ViewInterface {
      */
     public CLI(SocketClient socket) {
         this.socket = socket;
-        commands = new Commands();
         gameMap = new Tile[5][5];
         tileGetter = new TileGetter();
         for(int i = 0; i < 5; i++) {
@@ -37,23 +35,13 @@ public class CLI implements ViewInterface {
     }
 
     /**
-     * set the player ID
-     * @param playerID the player ID
-     */
-    @Override
-    public void setPlayerID(int playerID) {
-        commands.setPlayer(playerID);
-        System.out.println("Sono il giocatore " + playerID);
-    }
-
-    /**
      * change the position of all players in movement
      * @param movement workerId and position of the movement
      */
     @Override
     public void move(Map<Integer, Position> movement) {
         for(Integer key: movement.keySet()) {
-            System.out.println("-----\nDestinazione: " + movement.get(key));
+            System.out.println("WorkerID: " + key);
             int height;
             Position pos = movement.get(key);
             removeFromPreviousPosition(key);
@@ -72,7 +60,6 @@ public class CLI implements ViewInterface {
             Position oldPos = workerPos.get(key);
             workerPos.remove(key);
             for(Map.Entry<Integer, Position> entry: workerPos.entrySet()) {
-                System.out.println(entry.getValue() + " " + oldPos);
                 if(entry.getValue().equals(oldPos)) {
                     return;
                 }
@@ -129,9 +116,7 @@ public class CLI implements ViewInterface {
     @Override
     public void askForReloadState() {
         System.out.print("E' presente un salvataggio, caricarlo? S/N ");
-        commands.setInstruction(Instruction.reloadState);
-        commands.setAnswer(verifyBoolean());
-        socket.send(commands);
+        socket.send(new AskForReloadStateInstr(verifyBoolean()));
     }
 
     @Override
@@ -170,12 +155,10 @@ public class CLI implements ViewInterface {
         }
         updateScreen();
         System.out.print("Scegli la posizione (riga, colonna): ");
-        commands.setInstruction(Instruction.choosePosition);
-        commands.setPosition(verifyPosition(list));
         for(Position pos: list) {
             markPosition(pos, ' ');
         }
-        socket.send(commands);
+        socket.send(new ChoosePosInstr(verifyPosition(list)));
     }
 
     @Override
@@ -187,9 +170,7 @@ public class CLI implements ViewInterface {
             System.out.println(curr + ": " + cards.get(curr).getName());
             System.out.println(cards.get(curr).getDescription() + "\n");
         }
-        commands.setInstruction(Instruction.setCard);
-        commands.setChosenCard(verifyCard(cardList));
-        socket.send(commands);
+        socket.send(new ChooseCardInstr(verifyCard(cardList)));
     }
 
     @Override
@@ -200,7 +181,6 @@ public class CLI implements ViewInterface {
         for(int i = 0; i < cards.size(); i++) {
             System.out.println(i + ": " + cards.get(i).getName() + "\n" + cards.get(i).getDescription() + "\n");
         }
-        commands.setInstruction(Instruction.initialCardChoose);
         List<Integer> tempList = new ArrayList<>();
         for(int i = 0; i < cards.size(); i++) {
             tempList.add(i);
@@ -209,8 +189,7 @@ public class CLI implements ViewInterface {
             System.out.print("Carta " + (i + 1) + ": ");
             chosen.add(verifyCard(tempList));
         }
-        commands.setCardList(chosen);
-        socket.send(commands);
+        socket.send(new ChooseCardListInstr(chosen));
     }
 
     /**
@@ -248,28 +227,21 @@ public class CLI implements ViewInterface {
         updateScreen();
         System.out.print("Posizione iniziale lavoratore 1 (riga, colonna): ");
         pos = verifyPosition(availablePos);
-        movement.put(commands.getPlayer() * 2, pos);
+        movement.put(playerID * 2, pos);
         move(movement);
         updateScreen();
         list.add(pos);
         movement.clear();
         System.out.print("Posizione iniziale lavoratore 2 (riga, colonna): ");
         pos = verifyPosition(availablePos);
-        movement.put(commands.getPlayer() * 2 + 1, pos);
+        movement.put(playerID * 2 + 1, pos);
         move(movement);
         list.add(pos);
-        commands.setInstruction(Instruction.initialPosition);
-        commands.setAvailablePos(list);
-        socket.send(commands);
+        socket.send(new FirstPositioningInstr(list));
         for(Position currPos: availablePos) {
             markPosition(currPos, ' ');
         }
         updateScreen();
-    }
-
-    @Override
-    public void resumeGame(Cell[][] cells) {
-
     }
 
     /**
@@ -301,11 +273,10 @@ public class CLI implements ViewInterface {
     }
 
     @Override
-    public void setName(List<String> stringList) {
+    public void setName(List<String> stringList, int playerID) {
+        this.playerID = playerID;
         System.out.print("Imposta il nome: ");
-        commands.setInstruction(Instruction.setName);
-        commands.getStringList().add(0, verifyName(stringList));
-        socket.send(commands);
+        socket.send(new SetNameInstr(verifyName(stringList)));
     }
 
     private String verifyName(List<String> alreadyChosen) {
@@ -329,8 +300,8 @@ public class CLI implements ViewInterface {
 
     @Override
     public void chooseWorker() {
-        Position posW1 = workerPos.get(commands.getPlayer() * 2);
-        Position posW2 = workerPos.get(commands.getPlayer() * 2 + 1);
+        Position posW1 = workerPos.get(playerID * 2);
+        Position posW2 = workerPos.get(playerID * 2 + 1);
         markPosition(posW1, 'x');
         markPosition(posW2, 'x');
         updateScreen();
@@ -338,19 +309,15 @@ public class CLI implements ViewInterface {
         List<Position> temp = new ArrayList<>();
         temp.add(posW1);
         temp.add(posW2);
-        commands.setPosition(verifyPosition(temp));
         markPosition(posW1, ' ');
         markPosition(posW2, ' ');
-        commands.setInstruction(Instruction.chooseWorker);
-        socket.send(commands);
+        socket.send(new ChooseWorkerInstr(verifyPosition(temp)));
     }
 
     @Override
     public void choosePower() {
         System.out.print("Attivare il potere della carta? S/N ");
-        commands.setInstruction(Instruction.usePower);
-        commands.setAnswer(verifyBoolean());
-        socket.send(commands);
+        socket.send(new SetPowerInstr(verifyBoolean()));
     }
 
     private boolean verifyBoolean() {

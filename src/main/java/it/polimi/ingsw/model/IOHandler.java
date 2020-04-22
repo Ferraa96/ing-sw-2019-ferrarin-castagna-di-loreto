@@ -95,7 +95,7 @@ public class IOHandler {
             output = gson.toJson(state);
             printWriter.print(output);
             printWriter.close();
-            System.out.println("Salvato in " + saveStatePath);
+            System.out.println("Saved in " + saveStatePath);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -108,7 +108,7 @@ public class IOHandler {
      */
     public boolean verifyFileExistance(String fileName) {
         saveStatePath = path + "\\" + fileName + ".json";
-        System.out.println("Controlling in " + saveStatePath);
+        System.out.println("Checking for savestate file in " + saveStatePath);
         File file = new File(saveStatePath);
         return file.exists();
     }

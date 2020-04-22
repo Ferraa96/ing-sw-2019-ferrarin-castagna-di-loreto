@@ -82,7 +82,7 @@ public class SocketServer implements ControllerInterface {
      * @param commands the command to send
      */
     @Override
-    public void sendToAllExcept(int excludedClient, Commands commands) {
+    public void sendToAllExcept(int excludedClient, Object commands) {
         for(int i = 0; i < observers.size(); i++) {
             if(i != excludedClient) {
                 observers.get(i).send(commands);
@@ -96,7 +96,7 @@ public class SocketServer implements ControllerInterface {
      * @param commands the command to send
      */
     @Override
-    public void sendTo(int clientID, Commands commands) {
+    public void sendTo(int clientID, Object commands) {
         observers.get(clientID).send(commands);
     }
 

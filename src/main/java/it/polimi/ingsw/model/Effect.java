@@ -1,8 +1,5 @@
 package it.polimi.ingsw.model;
 
-import it.polimi.ingsw.controller.Commands;
-
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -23,7 +20,7 @@ public interface Effect {
      * @param worker target of action
      * @return message to send to view
      */
-    Commands executeAction(Position chosenCell, Worker worker);
+    Object executeAction(Position chosenCell, Worker worker);
 
     /**
      * set last move
@@ -42,7 +39,7 @@ public interface Effect {
      * @param enemy worker forced by mino/apollo
      * @return message to send to view
      */
-    Commands executeAutoAction(Worker enemy);
+    Object executeAutoAction(Worker enemy);
 
     /**
      * set last build

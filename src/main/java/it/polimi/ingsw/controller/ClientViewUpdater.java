@@ -1,6 +1,7 @@
 package it.polimi.ingsw.controller;
 
-import it.polimi.ingsw.model.Board;
+import it.polimi.ingsw.controller.Instructions.*;
+import it.polimi.ingsw.model.Cell;
 import it.polimi.ingsw.view.ViewInterface;
 
 /**
@@ -21,54 +22,39 @@ public class ClientViewUpdater {
      * translates the command from the server to call to methods in the client
      * @param commands the command sent by the server
      */
-    public void receive(Commands commands) {
-        switch (commands.getInstruction()) {
-            case move:
-                view.move(commands.getMovement());
-                view.updateScreen();
-                break;
-            case buildBlock:
-                view.buildBlock(commands.getPosition(), commands.getHeight());
-                view.updateScreen();
-                break;
-            case buildDome:
-                view.buildDome(commands.getPosition(), commands.getHeight());
-                view.updateScreen();
-                break;
-            case setCard:
-                view.chooseCard(commands.getCardList());
-                break;
-            case setPlayerID:
-                view.setPlayerID(commands.getPlayer());
-                break;
-            case initialCardChoose:
-                view.chooseCardList(commands.getPlayer());
-                break;
-            case initialPosition:
-                view.firstPositioning(commands.getAvailablePos());
-                break;
-            case resumeGame:
-                break;
-            case setName:
-                view.setName(commands.getStringList());
-                break;
-            case chooseWorker:
-                view.chooseWorker();
-                break;
-            case usePower:
-                view.choosePower();
-                break;
-            case choosePosition:
-                view.choosePosition(commands.getAvailablePos());
-                break;
-            case askReloadState:
-                view.askForReloadState();
-                break;
-            case reloadState:
-                view.reloadState(commands.getMap());
-                break;
-            default:
-                System.out.println("Ricevuto " + commands.getInstruction());
+    public void receive(Object commands) {
+        if(commands instanceof MoveInstr) {
+            view.move(((MoveInstr) commands).getMovements());
+            view.updateScreen();
+        } else if(commands instanceof BuildInstr) {
+            if(!((BuildInstr) commands).isDome()) {
+                view.buildBlock(((BuildInstr) commands).getPos(), ((BuildInstr) commands).getHeight());
+            } else {
+                view.buildDome(((BuildInstr) commands).getPos(), ((BuildInstr) commands).getHeight());
+            }
+            view.updateScreen();
+        } else if(commands instanceof AskForReloadStateInstr) {
+            view.askForReloadState();
+        } else if(commands instanceof Cell[][]) {
+            view.reloadState((Cell[][]) commands);
+            view.updateScreen();
+        } else if(commands instanceof ChoosePosInstr) {
+            view.choosePosition(((ChoosePosInstr) commands).getAvailablePositions());
+        } else if(commands instanceof ChooseCardInstr) {
+            view.chooseCard(((ChooseCardInstr) commands).getAlreadyChosen());
+        } else if(commands instanceof ChooseCardListInstr) {
+            view.chooseCardList(((ChooseCardListInstr) commands).getNumPlayers());
+        } else if(commands instanceof FirstPositioningInstr) {
+            view.firstPositioning(((FirstPositioningInstr) commands).getPositions());
+        } else if(commands instanceof SetNameInstr) {
+            view.setName(((SetNameInstr) commands).getAllNames(), ((SetNameInstr) commands).getPlayerID());
+        } else if(commands instanceof ChooseWorkerInstr) {
+            view.chooseWorker();
+        } else if(commands instanceof SetPowerInstr) {
+            view.choosePower();
+        }
+        else {
+            System.out.println("Comando non previsto");
         }
     }
 }

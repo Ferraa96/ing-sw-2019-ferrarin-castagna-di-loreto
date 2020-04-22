@@ -1,51 +1,40 @@
 package it.polimi.ingsw.controller;
 
+import it.polimi.ingsw.controller.Instructions.*;
+import it.polimi.ingsw.model.Cell;
+import it.polimi.ingsw.model.ModelInterface;
 import it.polimi.ingsw.model.Turn;
 
 /**
  * handle the messages from the client
  */
 public class ServerModelUpdater {
-    private Turn turn;
+    private ModelInterface turn;
 
     /**
      * translate the commands from the client to call to methods in the server
-     * @param commands the command sent by the client
+     * @param command the command sent by the client
      */
-    public void receive(Commands commands) {
-        switch (commands.getInstruction()) {
-            case move:
-                break;
-            case buildBlock:
-                break;
-            case buildDome:
-                break;
-            case setCard:
-                turn.setCards(commands.getChosenCard());
-                break;
-            case initialCardChoose:
-                turn.setInitialCards(commands.getCardList());
-                break;
-            case initialPosition:
-                turn.setWorkersPosition(commands.getAvailablePos());
-                break;
-            case setName:
-                turn.setPlayerName(commands.getPlayer(), commands.getStringList());
-                break;
-            case chooseWorker:
-                turn.selectCorrectWorker(commands.getPosition());
-                break;
-            case usePower:
-                turn.providePosition(commands.isAnswer());
-                break;
-            case choosePosition:
-                turn.apply(commands.getPosition());
-                break;
-            case reloadState:
-                turn.loadState(commands.isAnswer());
-                break;
-            default:
-                System.out.println("Ricevuto " + commands.getInstruction());
+    public void receive(Object command) {
+        if(command instanceof ChooseCardInstr) {
+            turn.setCards(((ChooseCardInstr) command).getChosenCard());
+        } else if(command instanceof ChooseCardListInstr) {
+            turn.setInitialCards(((ChooseCardListInstr) command).getChosenCards());
+        } else if(command instanceof FirstPositioningInstr) {
+            turn.setWorkersPosition(((FirstPositioningInstr) command).getPositions());
+        } else if(command instanceof SetNameInstr) {
+            turn.setPlayerName(((SetNameInstr) command).getName());
+        } else if(command instanceof ChooseWorkerInstr) {
+            turn.selectCorrectWorker(((ChooseWorkerInstr) command).getPos());
+        } else if(command instanceof SetPowerInstr) {
+            turn.providePosition(((SetPowerInstr) command).isPower());
+        } else if(command instanceof ChoosePosInstr) {
+            turn.apply(((ChoosePosInstr) command).getChosenPos());
+        } else if(command instanceof AskForReloadStateInstr) {
+            turn.loadState(((AskForReloadStateInstr) command).isResponse());
+        }
+        else {
+            System.out.println("Comando non previsto");
         }
     }
 

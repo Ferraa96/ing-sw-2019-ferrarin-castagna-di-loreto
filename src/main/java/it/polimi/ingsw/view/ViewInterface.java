@@ -13,16 +13,10 @@ import java.util.Map;
 public interface ViewInterface {
 
     /**
-     * set the player ID
-     * @param playerID the player ID
-     */
-    void setPlayerID(int playerID);
-
-    /**
      * ask for name
      * @param stringList list to save names
      */
-    void setName(List<String> stringList);
+    void setName(List<String> stringList, int playerID);
 
     /**
      * lets the player choose a card from a list
@@ -41,11 +35,6 @@ public interface ViewInterface {
      * @param availablePos the list of all the available positions
      */
     void firstPositioning(List<Position> availablePos);
-
-    /**
-     * resume the game state
-     */
-    void resumeGame(Cell[][] cells);
 
     /**
      * allows player to select the worker to use in current turn

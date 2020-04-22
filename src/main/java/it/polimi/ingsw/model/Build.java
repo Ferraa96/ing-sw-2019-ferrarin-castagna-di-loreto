@@ -1,7 +1,6 @@
 package it.polimi.ingsw.model;
 
-import it.polimi.ingsw.controller.Commands;
-import it.polimi.ingsw.controller.Instruction;
+import it.polimi.ingsw.controller.Instructions.BuildInstr;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -105,29 +104,23 @@ public class Build implements Effect {
      * @return message to send o view
      */
     @Override
-    public Commands executeAction(Position chosenCell, Worker worker) {
-        Commands buildMessage = new Commands();
+    public BuildInstr executeAction(Position chosenCell, Worker worker) {
+        int height = map[chosenCell.getRow()][chosenCell.getColumn()].getHeight();
         if (!nextBlock) {
             if (!specific) {
-                buildMessage.setInstruction(Instruction.buildDome);
-                buildMessage.setPosition(chosenCell);
-                buildMessage.setHeight(map[chosenCell.getRow()][chosenCell.getColumn()].getHeight());
                 map[chosenCell.getRow()][chosenCell.getColumn()].setHeight(4);
+                return new BuildInstr(chosenCell, height, true);
             }
             else {
-                map[chosenCell.getRow()][chosenCell.getColumn()].setHeight(map[chosenCell.getRow()][chosenCell.getColumn()].getHeight() + 2);
-                buildMessage.setInstruction(Instruction.buildBlock);
-                buildMessage.setPosition(chosenCell);
-                buildMessage.setHeight(map[chosenCell.getRow()][chosenCell.getColumn()].getHeight());
+                height = height + 2;
+                map[chosenCell.getRow()][chosenCell.getColumn()].setHeight(height);
             }
         }
         else {
-            map[chosenCell.getRow()][chosenCell.getColumn()].setHeight(map[chosenCell.getRow()][chosenCell.getColumn()].getHeight() + 1);
-            buildMessage.setInstruction(Instruction.buildBlock);
-            buildMessage.setPosition(chosenCell);
-            buildMessage.setHeight(map[chosenCell.getRow()][chosenCell.getColumn()].getHeight());
+            height++;
+            map[chosenCell.getRow()][chosenCell.getColumn()].setHeight(height);
         }
-        return buildMessage;
+        return new BuildInstr(chosenCell, height, false);
     }
 
     /**
@@ -135,7 +128,7 @@ public class Build implements Effect {
      * @param enemy not used
      * @return nothing
      */
-    public Commands executeAutoAction(Worker enemy) { return null; }
+    public BuildInstr executeAutoAction(Worker enemy) { return null; }
 
     /**
      * not used here

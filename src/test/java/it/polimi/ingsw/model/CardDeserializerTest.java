@@ -10,7 +10,7 @@ public class CardDeserializerTest {
 
     @Test
     public void getCardList() {
-        CardDeserializer cardDeserializer = new CardDeserializer();
+        IOHandler cardDeserializer = new IOHandler();
         List<Card> cardList = cardDeserializer.getCardList();
         assertEquals(9, cardList.size());
         assertEquals("Apollo", cardList.get(0).getName());

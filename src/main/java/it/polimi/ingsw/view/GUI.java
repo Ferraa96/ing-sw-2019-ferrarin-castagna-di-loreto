@@ -16,11 +16,6 @@ public class GUI implements ViewInterface {
     }
 
     @Override
-    public void setPlayerID(int playerID) {
-        this.playerID = playerID;
-    }
-
-    @Override
     public void move(Map<Integer, Position> movement) {
 
     }
@@ -66,12 +61,7 @@ public class GUI implements ViewInterface {
     }
 
     @Override
-    public void resumeGame(Cell[][] cells) {
-
-    }
-
-    @Override
-    public void setName(List<String> stringList) {
+    public void setName(List<String> stringList, int playerID) {
 
     }
 

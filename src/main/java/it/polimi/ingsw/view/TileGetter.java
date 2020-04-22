@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TileGetter {
-    private List<Tile> allTiles;
+    private final List<Tile> allTiles;
 
     public TileGetter() {
         Gson gson = new Gson();

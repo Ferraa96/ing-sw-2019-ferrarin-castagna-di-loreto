@@ -23,9 +23,11 @@ public class SocketClient extends Thread {
     public SocketClient() {
         ViewInterface view;
         Scanner scanner = new Scanner(System.in);
+        System.out.print("IP: ");
+        String ip = scanner.nextLine();
         try {
-            System.out.println("Port: ");
-            socket = new Socket("127.0.0.1", scanner.nextInt());
+            System.out.print("Port: ");
+            socket = new Socket(ip, scanner.nextInt());
             outStream = new ObjectOutputStream(socket.getOutputStream());
             inStream = new ObjectInputStream(socket.getInputStream());
         } catch (IOException e) {
@@ -46,14 +48,10 @@ public class SocketClient extends Thread {
      */
     @Override
     public void run() {
-        Commands commands;
         try {
-            do {
-                commands = (Commands) inStream.readObject();
-                clientViewUpdater.receive(commands);
-            } while(commands.getInstruction() != Instruction.endGame);
-            inStream.close();
-            socket.close();
+            while(true){
+                clientViewUpdater.receive(inStream.readObject());
+            }
         } catch(IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
@@ -63,7 +61,7 @@ public class SocketClient extends Thread {
      * send the command to the server
      * @param commands the command to send
      */
-    public void send(Commands commands) {
+    public void send(Object commands) {
         try {
             outStream.writeObject(commands);
             outStream.reset();

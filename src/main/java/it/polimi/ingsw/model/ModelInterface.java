@@ -9,10 +9,9 @@ public interface ModelInterface {
 
     /**
      * set player name
-     * @param playerID id of current player
-     * @param nameList save all player's names
+     * @param name the name chosen
      */
-    void setPlayerName(int playerID, List<String> nameList);
+    void setPlayerName(String name);
 
     /**
      * called by all the players to set their card
@@ -49,4 +48,10 @@ public interface ModelInterface {
      * @param pos position chosen by player
      */
     void apply(Position pos);
+
+    /**
+     * lets the players resume a saved game
+     * @param reload true if player 1 choose to load the game
+     */
+    public void loadState(boolean reload);
 }
