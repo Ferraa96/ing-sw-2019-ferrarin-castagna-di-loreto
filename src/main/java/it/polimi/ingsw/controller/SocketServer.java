@@ -1,27 +1,23 @@
 package it.polimi.ingsw.controller;
 
-import it.polimi.ingsw.model.Turn;
-
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.util.*;
 
 /**
  * the socket server
  */
-public class SocketServer implements ControllerInterface {
-    private ServerSocket serverSocket;
-    private List<ServerThread> observers;
-    private int port;
-    private ServerModelUpdater serverModelUpdater;
+public class SocketServer {
+    private final int port;
 
     /**
      * creates the server and creates a thread for all the clients
      */
     public SocketServer(int port) {
         this.port = port;
-        observers = new ArrayList<>();
         addClients();
     }
 
@@ -29,89 +25,41 @@ public class SocketServer implements ControllerInterface {
      * instanciate a ServerThread for all the clients that connect
      */
     private void addClients() {
+        int timer = 1000;
+        List<ServerThread> observer;
         int actualNum = 0;
+        int serverNum = 1;
         int min = 2;
         int max = 3;
         try {
-            serverSocket = new ServerSocket(port);
-            serverModelUpdater = new ServerModelUpdater();
-            while (actualNum != max) {
-                Socket socket = serverSocket.accept();
-                ServerThread serverThread = new ServerThread(socket, actualNum, serverModelUpdater);
-                serverThread.start();
-                observers.add(serverThread);
-                actualNum++;
-                System.out.println("Connected: " + socket);
-                if (actualNum == min) {
-                    System.out.println("Timer start");
-                    serverSocket.setSoTimeout(1000);
+            ServerSocket serverSocket = new ServerSocket(port);
+            while (true) {
+                observer = new ArrayList<>();
+                System.out.println("Server " + serverNum + " online");
+                while (actualNum != max) {
+                    try {
+                        Socket socket = serverSocket.accept();
+                        ServerThread serverThread = new ServerThread(socket);
+                        serverThread.setClientID(actualNum);
+                        observer.add(serverThread);
+                        actualNum++;
+                        System.out.println("Connected: " + socket);
+                        if (actualNum == min) {
+                            System.out.println("Timer start, " + timer / 1000 + " seconds left to join");
+                            serverSocket.setSoTimeout(timer);
+                        }
+                    } catch (SocketTimeoutException e) {
+                        System.out.println("Timer timed out, starting game");
+                        break;
+                    }
                 }
+                serverSocket.setSoTimeout(0);
+                new Thread(new GameHandler(observer));
+                actualNum = 0;
+                serverNum++;
             }
         } catch (IOException e) {
-            if(!(e.getMessage().equals("Accept timed out"))) {
-                e.printStackTrace();
-            }
-        }
-        gameStart();
-    }
-
-    private void gameStart() {
-        serverModelUpdater.setTurn(new Turn(this, observers.size()));
-        System.out.println("Game start");
-        for(ServerThread curr: observers) {
-            System.out.println(curr);
-        }
-    }
-
-    /**
-     * closes the server
-     */
-    @Override
-    public void closeServer() {
-        try {
-            serverSocket.close();
-        } catch(IOException e) {
             e.printStackTrace();
-        }
-        System.out.println("Closed: " + serverSocket);
-    }
-
-    /**
-     * send the command to all the clients connected except for excludedClient
-     * @param excludedClient the excluded client
-     * @param commands the command to send
-     */
-    @Override
-    public void sendToAllExcept(int excludedClient, Object commands) {
-        for(int i = 0; i < observers.size(); i++) {
-            if(i != excludedClient) {
-                observers.get(i).send(commands);
-            }
-        }
-    }
-
-    /**
-     * send the command to a specific client
-     * @param clientID the receiver client
-     * @param commands the command to send
-     */
-    @Override
-    public void sendTo(int clientID, Object commands) {
-        observers.get(clientID).send(commands);
-    }
-
-    /**
-     * sort all the players in the same order of the game loaded
-     * @param playerMap maps the actual order to the game loaded order
-     */
-    public void sortPlayers(Map<Integer, Integer> playerMap) {
-        List<ServerThread> temp = new ArrayList<>();
-        for(int i = 0; i < observers.size(); i++) {
-            temp.add(observers.get(playerMap.get(i)));
-        }
-        observers = temp;
-        for(ServerThread curr: observers) {
-            System.out.println(curr);
         }
     }
 }

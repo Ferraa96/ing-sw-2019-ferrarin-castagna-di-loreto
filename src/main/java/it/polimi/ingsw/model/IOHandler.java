@@ -14,56 +14,33 @@ import java.util.List;
  * serialize and deserialize files
  */
 public class IOHandler {
-    private Gson gson;
-    private String path;
+    private final Gson gson;
     private String saveStatePath;
-    private List<Card> cardsFlags;
-    private List<Card> godsList;
+    private static List<Card> godsList;
 
 
     public IOHandler() {
         gson = new GsonBuilder().setPrettyPrinting().create();
         try {
-            path = new File(IOHandler.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
+            saveStatePath = new File(IOHandler.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
     }
 
     /**
-     * converts the json array to a list of cards
+     * converts the json array to a list of cards, implements singleton pattern
      * @return the list generated
      */
     public List<Card> getCardList() {
         if(godsList != null) {
             return godsList;
         }
-        godsList = deserialize("/godsList.json");
-        return godsList;
-    }
-
-    /**
-     * convert the json array to a list of flags
-     * @return the selected card
-     */
-    public List<Card> getSelectedCardFlags() {
-        if(cardsFlags != null) {
-            return cardsFlags;
-        }
-        cardsFlags = deserialize("/godsFlags.json");
-        return cardsFlags;
-    }
-
-    /**
-     * deserialize the file into a list of cards
-     * @param fileName the name of the file that will be deserialized
-     * @return the generated list of card
-     */
-    private List<Card> deserialize(String fileName) {
-        InputStream input = getClass().getResourceAsStream(fileName);
+        InputStream input = getClass().getResourceAsStream("/godsList.json");
         BufferedReader bf = new BufferedReader(new InputStreamReader(input));
         Type selectedCard = new TypeToken<ArrayList<Card>>() {}.getType();
-        return gson.fromJson(bf, selectedCard);
+        godsList = gson.fromJson(bf, selectedCard);
+        return godsList;
     }
 
     /**
@@ -101,13 +78,22 @@ public class IOHandler {
         }
     }
 
+    public void deleteFile() {
+        File toBeDeleted = new File(saveStatePath);
+        if(toBeDeleted.delete()) {
+            System.out.println("Save state deleted");
+        } else {
+            System.out.println("Failed to delete file" + saveStatePath);
+        }
+    }
+
     /**
      * verify the existance of the file
      * @param fileName the name of the file
      * @return true if the file exists
      */
     public boolean verifyFileExistance(String fileName) {
-        saveStatePath = path + "\\" + fileName + ".json";
+        saveStatePath = saveStatePath + "\\" + fileName + ".json";
         System.out.println("Checking for savestate file in " + saveStatePath);
         File file = new File(saveStatePath);
         return file.exists();

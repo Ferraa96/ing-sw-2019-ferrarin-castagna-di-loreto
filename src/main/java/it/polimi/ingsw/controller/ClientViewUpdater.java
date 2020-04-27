@@ -8,7 +8,7 @@ import it.polimi.ingsw.view.ViewInterface;
  * handle the messages from the server
  */
 public class ClientViewUpdater {
-    private ViewInterface view;
+    private final ViewInterface view;
 
     /**
      * adapter server-client
@@ -52,6 +52,8 @@ public class ClientViewUpdater {
             view.chooseWorker();
         } else if(commands instanceof SetPowerInstr) {
             view.choosePower();
+        } else if(commands instanceof String) {
+            view.handleEndGame((String) commands);
         }
         else {
             System.out.println("Comando non previsto");

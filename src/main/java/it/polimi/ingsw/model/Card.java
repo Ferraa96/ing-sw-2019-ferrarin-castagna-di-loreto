@@ -110,7 +110,7 @@ public class Card {
     /**
      * set the correct routine using the god power
      */
-    private void setCardRoutine(){
+    private void setCardRoutine() {
         cardRoutine = new ArrayList<>();
         if (move_1)
             if (search_people_1)
@@ -261,7 +261,6 @@ public class Card {
         this.enemies.removeIf(curr -> curr.getPlayerId() == this.playerId);
     }
 
-    //setter e getter vari
     public String getName() {
         return name;
     }
@@ -286,5 +285,4 @@ public class Card {
     public void setActivePower(boolean activePower) {
         this.activePower = activePower;
     }
-
 }

@@ -7,6 +7,8 @@ import java.util.List;
  */
 public interface ModelInterface {
 
+    void startGame();
+
     /**
      * set player name
      * @param name the name chosen
@@ -53,5 +55,7 @@ public interface ModelInterface {
      * lets the players resume a saved game
      * @param reload true if player 1 choose to load the game
      */
-    public void loadState(boolean reload);
+    void loadState(boolean reload);
+
+    void handleDisconnection(int clientDisconnected);
 }

@@ -46,6 +46,11 @@ public class GUI implements ViewInterface {
     }
 
     @Override
+    public void handleEndGame(String message) {
+
+    }
+
+    @Override
     public void chooseCard(List<Integer> cardList) {
 
     }

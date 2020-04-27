@@ -1,3 +1,4 @@
 Manifest-Version: 1.0
-Main-Class: it.polimi.ingsw.controller.Controller
+Main-Class: it.polimi.ingsw.controller.Client
 
+Bundle-ClassPath: lib/

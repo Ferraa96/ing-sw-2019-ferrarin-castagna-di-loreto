@@ -2,7 +2,6 @@ package it.polimi.ingsw.view;
 
 import it.polimi.ingsw.model.Cell;
 import it.polimi.ingsw.model.Position;
-import it.polimi.ingsw.model.SaveState;
 
 import java.util.List;
 import java.util.Map;
@@ -87,4 +86,6 @@ public interface ViewInterface {
      * @param map contains all the workers and buildings positions and informations
      */
     void reloadState(Cell[][] map);
+
+    void handleEndGame(String message);
 }

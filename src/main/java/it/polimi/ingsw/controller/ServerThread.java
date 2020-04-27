@@ -9,21 +9,19 @@ import java.net.Socket;
  * the thread that handle the client
  */
 public class ServerThread extends Thread {
-    private Socket socket;
     private ObjectOutputStream outStream;
     private ObjectInputStream inStream;
-    private int playerID;
     private ServerModelUpdater serverModelUpdater;
+    private int clientID;
+    private final Socket socket;
+    private boolean running = true;
 
     /**
      * handle the client connected to the server
      * @param socket the socket that represent the client
-     * @param playerID the ID of the client
      */
-    public ServerThread(Socket socket, int playerID, ServerModelUpdater serverModelUpdater) {
+    public ServerThread(Socket socket) {
         this.socket = socket;
-        this.playerID = playerID;
-        this.serverModelUpdater = serverModelUpdater;
         try {
             outStream = new ObjectOutputStream(socket.getOutputStream());
             inStream = new ObjectInputStream(socket.getInputStream());
@@ -38,11 +36,15 @@ public class ServerThread extends Thread {
     @Override
     public void run() {
         try {
-            while(true) {
-                serverModelUpdater.receive(inStream.readObject());
+            while(running) {
+                Object obj = inStream.readObject();
+                serverModelUpdater.receive(obj);
             }
         } catch(IOException | ClassNotFoundException e) {
-            e.printStackTrace();
+            if(running) {
+                serverModelUpdater.receive(clientID);
+            }
+            Thread.currentThread().interrupt();
         }
     }
 
@@ -57,5 +59,22 @@ public class ServerThread extends Thread {
         } catch(IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void setClientID(int clientID) {
+        this.clientID = clientID;
+    }
+
+    public void closeConnection() {
+        running = false;
+        try {
+            socket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void setServerModelUpdater(ServerModelUpdater serverModelUpdater) {
+        this.serverModelUpdater = serverModelUpdater;
     }
 }

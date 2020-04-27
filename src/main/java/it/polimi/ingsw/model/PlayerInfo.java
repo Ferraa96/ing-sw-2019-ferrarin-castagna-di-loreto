@@ -8,7 +8,7 @@ import java.util.List;
  * collect all the info of the player that will be stored in the save file
  */
 public class PlayerInfo implements Serializable {
-    private String playerName;
+    private final String playerName;
     private int chosenCard;
     private List<Position> workerPos;
 
@@ -19,10 +19,6 @@ public class PlayerInfo implements Serializable {
 
     public String getPlayerName() {
         return playerName;
-    }
-
-    public void setPlayerName(String playerName) {
-        this.playerName = playerName;
     }
 
     public int getChosenCard() {

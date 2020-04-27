@@ -4,7 +4,7 @@ package it.polimi.ingsw.model;
  * store worker's informations
  */
 public class Worker {
-    private int workerID;
+    private final int workerID;
     private Position position;
 
     public Worker(int player, int workerNumber) {
@@ -22,5 +22,4 @@ public class Worker {
     public void setPosition(Position position) {
         this.position = position;
     }
-
 }

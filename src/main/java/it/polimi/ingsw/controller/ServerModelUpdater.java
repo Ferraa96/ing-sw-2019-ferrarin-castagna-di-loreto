@@ -1,15 +1,17 @@
 package it.polimi.ingsw.controller;
 
 import it.polimi.ingsw.controller.Instructions.*;
-import it.polimi.ingsw.model.Cell;
 import it.polimi.ingsw.model.ModelInterface;
-import it.polimi.ingsw.model.Turn;
 
 /**
  * handle the messages from the client
  */
 public class ServerModelUpdater {
-    private ModelInterface turn;
+    private final ModelInterface turn;
+
+    public ServerModelUpdater(ModelInterface turn) {
+        this.turn = turn;
+    }
 
     /**
      * translate the commands from the client to call to methods in the server
@@ -32,13 +34,11 @@ public class ServerModelUpdater {
             turn.apply(((ChoosePosInstr) command).getChosenPos());
         } else if(command instanceof AskForReloadStateInstr) {
             turn.loadState(((AskForReloadStateInstr) command).isResponse());
+        } else if(command instanceof Integer) {
+            turn.handleDisconnection((int) command);
         }
         else {
             System.out.println("Comando non previsto");
         }
-    }
-
-    public void setTurn(Turn turn) {
-        this.turn = turn;
     }
 }

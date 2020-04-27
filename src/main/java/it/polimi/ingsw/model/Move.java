@@ -12,12 +12,12 @@ import java.util.Map;
  */
 
 public class Move implements Effect{
-    private Cell[][] map;
-    private boolean searchPeople;
-    private boolean knock;
-    private boolean specificMovetype;
+    private final Cell[][] map;
+    private final boolean searchPeople;
+    private final boolean knock;
+    private final boolean specificMovetype;
     private boolean noUp = false;
-    private boolean notBefore;
+    private final boolean notBefore;
     private Position lastMoveInitialPosition;
     private List<Position> possibleCells;
     private int downUp;

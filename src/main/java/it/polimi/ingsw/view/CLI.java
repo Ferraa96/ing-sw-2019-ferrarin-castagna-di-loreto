@@ -41,7 +41,6 @@ public class CLI implements ViewInterface {
     @Override
     public void move(Map<Integer, Position> movement) {
         for(Integer key: movement.keySet()) {
-            System.out.println("WorkerID: " + key);
             int height;
             Position pos = movement.get(key);
             removeFromPreviousPosition(key);
@@ -330,5 +329,11 @@ public class CLI implements ViewInterface {
                 return false;
             }
         }
+    }
+
+    @Override
+    public void handleEndGame(String message) {
+        System.out.println(message);
+        socket.closeClient();
     }
 }

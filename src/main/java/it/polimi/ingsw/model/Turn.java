@@ -1,7 +1,7 @@
 package it.polimi.ingsw.model;
 
+import it.polimi.ingsw.controller.GameHandler;
 import it.polimi.ingsw.controller.Instructions.*;
-import it.polimi.ingsw.controller.SocketServer;
 
 import java.util.*;
 
@@ -11,7 +11,7 @@ import java.util.*;
 public class Turn implements ModelInterface {
     private final int numPlayer;
     private int actualPlayer = 0;
-    private final SocketServer socket;
+    private final GameHandler socket;
     private final List<Card> cardList;
     private final Board board;
     private final IOHandler ioHandler = new IOHandler();
@@ -25,7 +25,7 @@ public class Turn implements ModelInterface {
     private final List<String> nameList;
     private List<Integer> chosenCards;
 
-    public Turn(SocketServer socket, int numPlayer) {
+    public Turn(GameHandler socket, int numPlayer) {
         this.socket = socket;
         this.numPlayer = numPlayer;
         saveState = new SaveState();
@@ -33,6 +33,9 @@ public class Turn implements ModelInterface {
         board = new Board();
         players = new ArrayList<>();
         nameList = new ArrayList<>();
+    }
+
+    public void startGame() {
         socket.sendTo(actualPlayer, new SetNameInstr(0, nameList));
     }
 
@@ -152,7 +155,7 @@ public class Turn implements ModelInterface {
      */
     private void addCardToGame(int chosenCard) {
         players.get(actualPlayer).setChosenCard(chosenCard);
-        Card card = ioHandler.getSelectedCardFlags().get(chosenCard);
+        Card card = ioHandler.getCardList().get(chosenCard);
         card.setCard(board.getMap(), actualPlayer);
         cardList.add(card);
     }
@@ -258,18 +261,18 @@ public class Turn implements ModelInterface {
                 socket.sendTo(actualPlayer, new ChooseWorkerInstr());
             }
         }
-        //else blocca tutto
         saveGame();
     }
 
     /**
-     * ce fa vede se amo vinto
+     * show the game result to all the players
      */
     private void showWin() {
-        if (!stopGame)
-            System.out.println("Avanti il prossimo");
-        else
-            System.out.println("Colazione finita! GG");
+        if(stopGame) {
+            socket.sendTo(actualPlayer, "Hai vinto");
+            socket.sendToAllExcept(actualPlayer, "Ha vinto " + nameList.get(actualPlayer));
+            ioHandler.deleteFile();
+        }
     }
 
     /**
@@ -300,6 +303,12 @@ public class Turn implements ModelInterface {
         saveState.setChosenWorker(currWorker.getWorkerID());
         saveState.setGodPower(powerUsed);
         ioHandler.save(saveState);
+    }
+
+    public void handleDisconnection(int deadClient) {
+        socket.removeClient(deadClient);
+        System.out.println("Client " + deadClient + " disconnected");
+        socket.closeServer("Il giocatore " + deadClient + " si è disconnesso, la partita è annullata");
     }
 
     @Override

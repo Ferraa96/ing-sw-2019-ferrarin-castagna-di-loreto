@@ -4,13 +4,13 @@ import com.google.gson.annotations.SerializedName;
 
 public class Tile {
     @SerializedName("line0")
-    private String line0;
+    private final String line0;
     @SerializedName("line1")
-    private String line1;
+    private final String line1;
     @SerializedName("line2")
-    private String line2;
+    private final String line2;
     @SerializedName("line3")
-    private String line3;
+    private final String line3;
     @SerializedName("line4")
     private String line4;
     private int height = 0;

@@ -9,9 +9,9 @@ import java.util.List;
  * type of effect: give worker permission to build a block
  */
 public class Build implements Effect {
-    private Cell [][] map;
-    private Boolean nextBlock;
-    private Boolean specific;
+    private final Cell [][] map;
+    private final Boolean nextBlock;
+    private final Boolean specific;
     private Position lastBuildPosition;
     private List<Position> possibleCells;
 
