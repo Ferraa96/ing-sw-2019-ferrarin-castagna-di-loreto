@@ -80,7 +80,7 @@ public class GUI extends Application {
 
         loginbutton.setOnAction(e->{
             playerName = lab1.getText();
-            guiController.setName(players,1);
+            guiController.setName(players);
             chooseCard();
         });
     }

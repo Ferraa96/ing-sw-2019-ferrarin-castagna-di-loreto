@@ -7,10 +7,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class GameHandler extends Thread {
+public class LobbyHandler extends Thread {
     private List<ServerThread> observer;
 
-    public GameHandler(List<ServerThread> observer) {
+    public LobbyHandler(List<ServerThread> observer) {
         this.observer = observer;
         start();
     }

@@ -47,9 +47,9 @@ public class ClientViewUpdater {
         } else if(commands instanceof FirstPositioningInstr) {
             view.firstPositioning(((FirstPositioningInstr) commands).getPositions());
         } else if(commands instanceof SetNameInstr) {
-            view.setName(((SetNameInstr) commands).getAllNames(), ((SetNameInstr) commands).getPlayerID());
+            view.setName(((SetNameInstr) commands).getAllNames());
         } else if(commands instanceof ChooseWorkerInstr) {
-            view.chooseWorker();
+            view.chooseWorker(((ChooseWorkerInstr) commands).getAvailableWorkers());
         } else if(commands instanceof SetPowerInstr) {
             view.choosePower();
         } else if(commands instanceof String) {

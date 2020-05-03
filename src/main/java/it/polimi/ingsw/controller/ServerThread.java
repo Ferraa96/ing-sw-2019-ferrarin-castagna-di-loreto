@@ -13,18 +13,18 @@ public class ServerThread extends Thread {
     private ObjectInputStream inStream;
     private ServerModelUpdater serverModelUpdater;
     private int clientID;
-    private final Socket socket;
+    private final Socket socketClient;
     private boolean running = true;
 
     /**
      * handle the client connected to the server
-     * @param socket the socket that represent the client
+     * @param socketClient the socket that represent the client
      */
-    public ServerThread(Socket socket) {
-        this.socket = socket;
+    public ServerThread(Socket socketClient) {
+        this.socketClient = socketClient;
         try {
-            outStream = new ObjectOutputStream(socket.getOutputStream());
-            inStream = new ObjectInputStream(socket.getInputStream());
+            outStream = new ObjectOutputStream(socketClient.getOutputStream());
+            inStream = new ObjectInputStream(socketClient.getInputStream());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -68,7 +68,7 @@ public class ServerThread extends Thread {
     public void closeConnection() {
         running = false;
         try {
-            socket.close();
+            socketClient.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

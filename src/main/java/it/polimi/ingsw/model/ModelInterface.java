@@ -35,9 +35,9 @@ public interface ModelInterface {
 
     /**
      * select the correct worker
-     * @param pos position of one of the two player's workers
+     * @param chosenWorker the worker chosen by the player
      */
-    void selectCorrectWorker(Position pos);
+    void selectCorrectWorker(Position chosenWorker);
 
     /**
      * send player available positions

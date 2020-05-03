@@ -78,6 +78,9 @@ public class IOHandler {
         }
     }
 
+    /**
+     * called when the game ends, it deletes the save file
+     */
     public void deleteFile() {
         File toBeDeleted = new File(saveStatePath);
         if(toBeDeleted.delete()) {

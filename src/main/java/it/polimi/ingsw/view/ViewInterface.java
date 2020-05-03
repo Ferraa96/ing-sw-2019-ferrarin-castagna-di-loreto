@@ -1,6 +1,7 @@
 package it.polimi.ingsw.view;
 
 import it.polimi.ingsw.model.Cell;
+import it.polimi.ingsw.model.Movement;
 import it.polimi.ingsw.model.Position;
 
 import java.util.List;
@@ -15,7 +16,7 @@ public interface ViewInterface {
      * ask for name
      * @param stringList list to save names
      */
-    void setName(List<String> stringList, int playerID);
+    void setName(List<String> stringList);
 
     /**
      * lets the player choose a card from a list
@@ -38,7 +39,7 @@ public interface ViewInterface {
     /**
      * allows player to select the worker to use in current turn
      */
-    void chooseWorker();
+    void chooseWorker(List<Position> availableWorkers);
 
     /**
      * allows player to choose for power activation
@@ -53,9 +54,9 @@ public interface ViewInterface {
 
     /**
      * move player to position
-     * @param movement workerId and position of the movement
+     * @param movements workerId and position of the movement
      */
-    void move(Map<Integer,Position> movement);
+    void move(List<Movement> movements);
 
     /**
      * build a block in position

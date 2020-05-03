@@ -3,17 +3,25 @@ package it.polimi.ingsw.controller.Instructions;
 import it.polimi.ingsw.model.Position;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class ChooseWorkerInstr implements Serializable {
-    private Position pos;
+    private Position chosenWorker;
+    private List<Position> availableWorkers;
 
-    public ChooseWorkerInstr() {}
-
-    public ChooseWorkerInstr(Position pos) {
-        this.pos = pos;
+    public ChooseWorkerInstr(List<Position> availableWorkers) {
+        this.availableWorkers = availableWorkers;
     }
 
-    public Position getPos() {
-        return pos;
+    public ChooseWorkerInstr(Position chosenWorker) {
+        this.chosenWorker = chosenWorker;
+    }
+
+    public Position getChosenWorker() {
+        return chosenWorker;
+    }
+
+    public List<Position> getAvailableWorkers() {
+        return availableWorkers;
     }
 }

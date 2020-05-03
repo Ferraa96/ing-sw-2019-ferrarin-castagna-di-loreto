@@ -197,9 +197,9 @@ public class Move implements Effect{
         downUp=map[chosenCell.getRow()][chosenCell.getColumn()].getHeight()-map[worker.getPosition().getRow()][worker.getPosition().getColumn()].getHeight();
         map[worker.getPosition().getRow()][worker.getPosition().getColumn()].setWorkerID(-1);
         map[chosenCell.getRow()][chosenCell.getColumn()].setWorkerID(worker.getWorkerID());
+        List<Movement> movements = new ArrayList<>();
+        movements.add(new Movement(worker.getPosition(), chosenCell));
         worker.setPosition( new Position(chosenCell.getRow(),chosenCell.getColumn()));
-        Map<Integer, Position> movements = new HashMap<>();
-        movements.put(worker.getWorkerID(), chosenCell);
         return new MoveInstr(movements);
     }
 
@@ -210,19 +210,20 @@ public class Move implements Effect{
      */
     @Override
     public MoveInstr executeAutoAction(Worker enemy) {
-        Map<Integer, Position> movements = new HashMap<>();
+        List<Movement> movements = new ArrayList<>();
         int r, c;
         if (!knock) {
+            movements.add(new Movement(enemy.getPosition(), lastMoveInitialPosition));
             enemy.setPosition(lastMoveInitialPosition);
             map[enemy.getPosition().getRow()][enemy.getPosition().getColumn()].setWorkerID(enemy.getWorkerID());
-            movements.put(enemy.getWorkerID(), lastMoveInitialPosition);
         }
         else {
             r = 2 * enemy.getPosition().getRow() - lastMoveInitialPosition.getRow();
             c = 2 * enemy.getPosition().getColumn() - lastMoveInitialPosition.getColumn();
-            enemy.setPosition(new Position(r, c));
+            Position newPos = new Position(r, c);
+            movements.add(new Movement(enemy.getPosition(), newPos));
+            enemy.setPosition(newPos);
             map[r][c].setWorkerID(enemy.getWorkerID());
-            movements.put(enemy.getWorkerID(), enemy.getPosition());
         }
         return new MoveInstr(movements);
     }

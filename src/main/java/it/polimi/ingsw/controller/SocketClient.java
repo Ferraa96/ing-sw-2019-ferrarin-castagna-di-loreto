@@ -1,7 +1,7 @@
 package it.polimi.ingsw.controller;
 
 import it.polimi.ingsw.view.CLI;
-import it.polimi.ingsw.view.GUI;
+import it.polimi.ingsw.view.GUIController;
 import it.polimi.ingsw.view.ViewInterface;
 
 import java.io.*;
@@ -14,13 +14,17 @@ import java.util.Scanner;
 public class SocketClient extends Thread {
     private ObjectOutputStream outStream;
     private ObjectInputStream inStream;
-    private final ClientViewUpdater clientViewUpdater;
+    private ClientViewUpdater clientViewUpdater;
     private Socket socket;
 
     /**
      * creates a client and instantiate the view
      */
     public SocketClient() {
+        connect();
+    }
+
+    private void connect() {
         int port = 59898;
         ViewInterface view;
         Scanner scanner = new Scanner(System.in);
@@ -30,17 +34,18 @@ public class SocketClient extends Thread {
             socket = new Socket(ip, port);
             outStream = new ObjectOutputStream(socket.getOutputStream());
             inStream = new ObjectInputStream(socket.getInputStream());
+            System.out.println("1: CLI\n2: GUI");
+            if(scanner.nextInt() == 1) {
+                view = new CLI(this);
+            } else {
+                view = new GUIController(this);
+            }
+            clientViewUpdater = new ClientViewUpdater(view);
+            start();
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Server non trovato");
+            connect();
         }
-        System.out.println("1: CLI\n2: GUI");
-        if(scanner.nextInt() == 1) {
-            view = new CLI(this);
-        } else {
-            view = new GUI(this);
-        }
-        clientViewUpdater = new ClientViewUpdater(view);
-        start();
     }
 
     /**

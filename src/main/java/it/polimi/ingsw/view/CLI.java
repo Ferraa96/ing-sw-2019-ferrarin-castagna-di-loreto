@@ -13,9 +13,7 @@ public class CLI implements ViewInterface {
     private final SocketClient socket;
     private final Tile[][] gameMap;
     private final Scanner scanner = new Scanner(System.in);
-    private final Map<Integer, Position> workerPos;
     private final TileGetter tileGetter;
-    private int playerID;
 
     /**
      * creates the CLI
@@ -30,41 +28,25 @@ public class CLI implements ViewInterface {
                 gameMap[i][j] = tileGetter.getTile(0, 0, false);
             }
         }
-        updateScreen();
-        workerPos = new HashMap<>();
+        printLogo();
     }
 
     /**
      * change the position of all players in movement
-     * @param movement workerId and position of the movement
+     * @param movements the old and new position of the worker
      */
     @Override
-    public void move(Map<Integer, Position> movement) {
-        for(Integer key: movement.keySet()) {
+    public void move(List<Movement> movements) {
+        for(Movement currMove: movements) {
             int height;
-            Position pos = movement.get(key);
-            removeFromPreviousPosition(key);
-            height = gameMap[pos.getRow()][pos.getColumn()].getHeight();
-            gameMap[pos.getRow()][pos.getColumn()] = tileGetter.getTile(1, height, false);
-            workerPos.put(key, pos);
-        }
-    }
-
-    /**
-     * remove the player from the previous position
-     * @param key the workerID
-     */
-    private void removeFromPreviousPosition(int key) {
-        if(workerPos.containsKey(key)) {
-            Position oldPos = workerPos.get(key);
-            workerPos.remove(key);
-            for(Map.Entry<Integer, Position> entry: workerPos.entrySet()) {
-                if(entry.getValue().equals(oldPos)) {
-                    return;
-                }
+            Position oldPos = currMove.getOldPos();
+            Position newPos = currMove.getNewPos();
+            if(oldPos != null) {
+                height = gameMap[oldPos.getRow()][oldPos.getColumn()].getHeight();
+                gameMap[oldPos.getRow()][oldPos.getColumn()] = tileGetter.getTile(0, height, false);
             }
-            int height = gameMap[oldPos.getRow()][oldPos.getColumn()].getHeight();
-            gameMap[oldPos.getRow()][oldPos.getColumn()] = tileGetter.getTile(0, height, false);
+            height = gameMap[newPos.getRow()][newPos.getColumn()].getHeight();
+            gameMap[newPos.getRow()][newPos.getColumn()] = tileGetter.getTile(1, height, false);
         }
     }
 
@@ -120,7 +102,7 @@ public class CLI implements ViewInterface {
 
     @Override
     public void reloadState(Cell[][] map) {
-        Map<Integer, Position> workers = new HashMap<>();
+        List<Movement> workers = new ArrayList<>();
         for(int row = 0; row < 5; row++) {
             for(int column = 0; column < 5; column++) {
                 int height = map[row][column].getHeight();
@@ -131,16 +113,12 @@ public class CLI implements ViewInterface {
                         buildBlock(new Position(row, column), height);
                     }
                 }
-                int workerID = map[row][column].getWorkerID();
-                if(workerID != -1) {
-                    workers.put(workerID, new Position(row, column));
+                if(map[row][column].getWorkerID() != -1) {
+                    workers.add(new Movement(null, new Position(row, column)));
                 }
             }
         }
         move(workers);
-        updateScreen();
-        Board board = new Board();
-        board.setMap(map);
     }
 
     /**
@@ -164,7 +142,7 @@ public class CLI implements ViewInterface {
     public void chooseCard(List<Integer> cardList) {
         List<Card> cards;
         cards = new IOHandler().getCardList();
-        System.out.println("Scegli una carta tra\n");
+        System.out.println("\nScegli una carta tra\n");
         for(Integer curr: cardList) {
             System.out.println(curr + ": " + cards.get(curr).getName());
             System.out.println(cards.get(curr).getDescription() + "\n");
@@ -176,7 +154,7 @@ public class CLI implements ViewInterface {
     public void chooseCardList(int num) {
         List<Card> cards = new IOHandler().getCardList();
         List<Integer> chosen = new ArrayList<>();
-        System.out.println("Sei il primo giocatore, scegli " + num + " carte tra\n");
+        System.out.println("\nSei il primo giocatore, scegli " + num + " carte tra\n");
         for(int i = 0; i < cards.size(); i++) {
             System.out.println(i + ": " + cards.get(i).getName() + "\n" + cards.get(i).getDescription() + "\n");
         }
@@ -218,7 +196,7 @@ public class CLI implements ViewInterface {
     @Override
     public void firstPositioning(List<Position> availablePos) {
         List<Position> list = new ArrayList<>();
-        Map<Integer, Position> movement = new HashMap<>();
+        List<Movement> movements = new ArrayList<>();
         Position pos;
         for(Position currPos: availablePos) {
             markPosition(currPos, 'x');
@@ -226,15 +204,15 @@ public class CLI implements ViewInterface {
         updateScreen();
         System.out.print("Posizione iniziale lavoratore 1 (riga, colonna): ");
         pos = verifyPosition(availablePos);
-        movement.put(playerID * 2, pos);
-        move(movement);
+        movements.add(new Movement(null, pos));
+        move(movements);
         updateScreen();
         list.add(pos);
-        movement.clear();
+        movements.clear();
         System.out.print("Posizione iniziale lavoratore 2 (riga, colonna): ");
         pos = verifyPosition(availablePos);
-        movement.put(playerID * 2 + 1, pos);
-        move(movement);
+        movements.add(new Movement(null, pos));
+        move(movements);
         list.add(pos);
         socket.send(new FirstPositioningInstr(list));
         for(Position currPos: availablePos) {
@@ -255,7 +233,6 @@ public class CLI implements ViewInterface {
             for (Position curr : list) {
                 if (pos.getRow() == curr.getRow() && pos.getColumn() == curr.getColumn()) {
                     ok = true;
-                    list.remove(curr);
                     break;
                 }
             }
@@ -272,8 +249,7 @@ public class CLI implements ViewInterface {
     }
 
     @Override
-    public void setName(List<String> stringList, int playerID) {
-        this.playerID = playerID;
+    public void setName(List<String> stringList) {
         System.out.print("Imposta il nome: ");
         socket.send(new SetNameInstr(verifyName(stringList)));
     }
@@ -298,19 +274,17 @@ public class CLI implements ViewInterface {
     }
 
     @Override
-    public void chooseWorker() {
-        Position posW1 = workerPos.get(playerID * 2);
-        Position posW2 = workerPos.get(playerID * 2 + 1);
-        markPosition(posW1, 'x');
-        markPosition(posW2, 'x');
+    public void chooseWorker(List<Position> availableWorkers) {
+        for(Position pos: availableWorkers) {
+            markPosition(pos, 'x');
+        }
         updateScreen();
         System.out.print("Seleziona il worker: ");
-        List<Position> temp = new ArrayList<>();
-        temp.add(posW1);
-        temp.add(posW2);
-        markPosition(posW1, ' ');
-        markPosition(posW2, ' ');
-        socket.send(new ChooseWorkerInstr(verifyPosition(temp)));
+        Position chosen = verifyPosition(availableWorkers);
+        for(Position pos: availableWorkers) {
+            markPosition(pos, ' ');
+        }
+        socket.send(new ChooseWorkerInstr(chosen));
     }
 
     @Override
@@ -335,5 +309,16 @@ public class CLI implements ViewInterface {
     public void handleEndGame(String message) {
         System.out.println(message);
         socket.closeClient();
+    }
+
+    private void printLogo() {
+        String santoriniLogo = "   _____ ___    _   ____________  ____  _____   ______\n" +
+                "  / ___//   |  / | / /_  __/ __ \\/ __ \\/  _/ | / /  _/\n" +
+                "  \\__ \\/ /| | /  |/ / / / / / / / /_/ // //  |/ // /  \n" +
+                " ___/ / ___ |/ /|  / / / / /_/ / _, _// // /|  // /   \n" +
+                "/____/_/  |_/_/ |_/ /_/  \\____/_/ |_/___/_/ |_/___/   \n" +
+                "                                                      \n" +
+                "Welcome to Santorini Board Game made by Alberto Ferrarin, Filiberto Castagna and Luigi di Loreto.\n";
+        System.out.println(santoriniLogo);
     }
 }

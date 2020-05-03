@@ -27,39 +27,47 @@ public class SocketServer {
     private void addClients() {
         int timer = 1000;
         List<ServerThread> observer;
+        ServerSocket serverSocket;
         int actualNum = 0;
         int serverNum = 1;
         int min = 2;
         int max = 3;
         try {
-            ServerSocket serverSocket = new ServerSocket(port);
-            while (true) {
-                observer = new ArrayList<>();
-                System.out.println("Server " + serverNum + " online");
-                while (actualNum != max) {
-                    try {
-                        Socket socket = serverSocket.accept();
-                        ServerThread serverThread = new ServerThread(socket);
-                        serverThread.setClientID(actualNum);
-                        observer.add(serverThread);
-                        actualNum++;
-                        System.out.println("Connected: " + socket);
-                        if (actualNum == min) {
-                            System.out.println("Timer start, " + timer / 1000 + " seconds left to join");
-                            serverSocket.setSoTimeout(timer);
-                        }
-                    } catch (SocketTimeoutException e) {
-                        System.out.println("Timer timed out, starting game");
-                        break;
-                    }
-                }
-                serverSocket.setSoTimeout(0);
-                new Thread(new GameHandler(observer));
-                actualNum = 0;
-                serverNum++;
-            }
+            serverSocket = new ServerSocket(port);
         } catch (IOException e) {
             e.printStackTrace();
+            return;
+        }
+        while (true) {
+            observer = new ArrayList<>();
+            System.out.println("Server " + serverNum + " online");
+            while (actualNum != max) {
+                try {
+                    Socket socketClient = serverSocket.accept();
+                    ServerThread serverThread = new ServerThread(socketClient);
+                    serverThread.setClientID(actualNum);
+                    observer.add(serverThread);
+                    actualNum++;
+                    System.out.println("Connected: " + socketClient);
+                    if (actualNum == min) {
+                        System.out.println("Timer start, " + timer / 1000 + " seconds left to join");
+                        serverSocket.setSoTimeout(timer);
+                    }
+                } catch (SocketTimeoutException e) {
+                    System.out.println("Timer timed out, starting game");
+                    break;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            try {
+                serverSocket.setSoTimeout(0);
+            } catch (SocketException e) {
+                e.printStackTrace();
+            }
+            new Thread(new LobbyHandler(observer));
+            actualNum = 0;
+            serverNum++;
         }
     }
 }

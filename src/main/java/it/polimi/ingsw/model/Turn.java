@@ -1,6 +1,6 @@
 package it.polimi.ingsw.model;
 
-import it.polimi.ingsw.controller.GameHandler;
+import it.polimi.ingsw.controller.LobbyHandler;
 import it.polimi.ingsw.controller.Instructions.*;
 
 import java.util.*;
@@ -11,7 +11,7 @@ import java.util.*;
 public class Turn implements ModelInterface {
     private final int numPlayer;
     private int actualPlayer = 0;
-    private final GameHandler socket;
+    private final LobbyHandler socket;
     private final List<Card> cardList;
     private final Board board;
     private final IOHandler ioHandler = new IOHandler();
@@ -25,7 +25,7 @@ public class Turn implements ModelInterface {
     private final List<String> nameList;
     private List<Integer> chosenCards;
 
-    public Turn(GameHandler socket, int numPlayer) {
+    public Turn(LobbyHandler socket, int numPlayer) {
         this.socket = socket;
         this.numPlayer = numPlayer;
         saveState = new SaveState();
@@ -36,7 +36,7 @@ public class Turn implements ModelInterface {
     }
 
     public void startGame() {
-        socket.sendTo(actualPlayer, new SetNameInstr(0, nameList));
+        socket.sendTo(actualPlayer, new SetNameInstr(nameList));
     }
 
     /**
@@ -58,7 +58,7 @@ public class Turn implements ModelInterface {
             //initial cards choose
             socket.sendTo(actualPlayer, new ChooseCardListInstr(numPlayer));
         } else {
-            socket.sendTo(actualPlayer, new SetNameInstr(actualPlayer, nameList));
+            socket.sendTo(actualPlayer, new SetNameInstr(nameList));
         }
     }
 
@@ -83,7 +83,7 @@ public class Turn implements ModelInterface {
             actualPlayer = saveState.getActualPlayer();
             if(saveState.getActualEffect() == 0) {
                 System.out.println("Start turn player" + " " + actualPlayer);
-                socket.sendTo(actualPlayer, new ChooseWorkerInstr());
+                askWhichWorker();
             } else {
                 if(saveState.getChosenWorker() % 2 == 0) {
                     currWorker = cardList.get(actualPlayer).getWorker1();
@@ -97,6 +97,13 @@ public class Turn implements ModelInterface {
             //initial cards choose
             socket.sendTo(actualPlayer, new ChooseCardListInstr(numPlayer));
         }
+    }
+
+    private void askWhichWorker() {
+        List<Position> availableWorkers = new ArrayList<>();
+        availableWorkers.add(cardList.get(actualPlayer).getWorker1().getPosition());
+        availableWorkers.add(cardList.get(actualPlayer).getWorker2().getPosition());
+        socket.sendTo(actualPlayer, new ChooseWorkerInstr(availableWorkers));
     }
 
     /**
@@ -166,18 +173,21 @@ public class Turn implements ModelInterface {
      */
     @Override
     public void setWorkersPosition(List<Position> positions) {
-        Map<Integer, Position> movements = new HashMap<>();
+        List<Movement> movements = new ArrayList<>();
         Position w1 = positions.get(0);
         Position w2 = positions.get(1);
         cardList.get(actualPlayer).firstPositioning(w1, w2);
-        movements.put(actualPlayer * 2, w1);
-        movements.put(actualPlayer * 2 + 1, w2);
+        movements.add(new Movement(null, w1));
+        movements.add(new Movement(null, w2));
         socket.sendToAllExcept(actualPlayer, new MoveInstr(movements));
         nextTurn();
         if(actualPlayer == 0) {
             setEnemiesLists();
             System.out.println("Start turn player " + actualPlayer);
-            socket.sendTo(actualPlayer, new ChooseWorkerInstr());
+            List<Position> availableWorkers = new ArrayList<>();
+            availableWorkers.add(cardList.get(actualPlayer).getWorker1().getPosition());
+            availableWorkers.add(cardList.get(actualPlayer).getWorker2().getPosition());
+            socket.sendTo(actualPlayer, new ChooseWorkerInstr(availableWorkers));
         } else {
             //first positioning
             saveState.setPlayers(players);
@@ -196,11 +206,11 @@ public class Turn implements ModelInterface {
 
     /**
      * select the worker to play the turn
-     * @param pos position of one of the two player's workers
+     * @param chosenWorker the worker chosen by the player
      */
     @Override
-    public void selectCorrectWorker(Position pos) {
-        if(cardList.get(actualPlayer).getWorker1().getPosition().equals(pos)) {
+    public void selectCorrectWorker(Position chosenWorker) {
+        if(chosenWorker.equals(cardList.get(actualPlayer).getWorker1().getPosition())) {
             verifyPower(cardList.get(actualPlayer).getWorker1());
         } else {
             verifyPower(cardList.get(actualPlayer).getWorker2());
@@ -258,7 +268,7 @@ public class Turn implements ModelInterface {
                 currEffect = 0;
                 nextTurn();
                 System.out.println("Start turn player" + " " + actualPlayer);
-                socket.sendTo(actualPlayer, new ChooseWorkerInstr());
+                askWhichWorker();
             }
         }
         saveGame();
@@ -270,7 +280,7 @@ public class Turn implements ModelInterface {
     private void showWin() {
         if(stopGame) {
             socket.sendTo(actualPlayer, "Hai vinto");
-            socket.sendToAllExcept(actualPlayer, "Ha vinto " + nameList.get(actualPlayer));
+            socket.sendToAllExcept(actualPlayer, "Ha vinto il giocatore " + nameList.get(actualPlayer));
             ioHandler.deleteFile();
         }
     }

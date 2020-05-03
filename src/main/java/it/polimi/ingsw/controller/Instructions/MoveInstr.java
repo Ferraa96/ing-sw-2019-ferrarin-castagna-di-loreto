@@ -1,18 +1,18 @@
 package it.polimi.ingsw.controller.Instructions;
 
-import it.polimi.ingsw.model.Position;
+import it.polimi.ingsw.model.Movement;
 
 import java.io.Serializable;
-import java.util.Map;
+import java.util.List;
 
 public class MoveInstr implements Serializable {
-    private final Map<Integer, Position> movements;
+    private final List<Movement> movements;
 
-    public MoveInstr(Map<Integer, Position> movements) {
+    public MoveInstr(List<Movement> movements) {
         this.movements = movements;
     }
 
-    public Map<Integer, Position> getMovements() {
+    public List<Movement> getMovements() {
         return movements;
     }
 }

@@ -27,10 +27,11 @@ public class ServerModelUpdater {
         } else if(command instanceof SetNameInstr) {
             turn.setPlayerName(((SetNameInstr) command).getName());
         } else if(command instanceof ChooseWorkerInstr) {
-            turn.selectCorrectWorker(((ChooseWorkerInstr) command).getPos());
+            turn.selectCorrectWorker(((ChooseWorkerInstr) command).getChosenWorker());
         } else if(command instanceof SetPowerInstr) {
             turn.providePosition(((SetPowerInstr) command).isPower());
         } else if(command instanceof ChoosePosInstr) {
+            System.out.println("Scelta la posizione\n" + ((ChoosePosInstr) command).getChosenPos());
             turn.apply(((ChoosePosInstr) command).getChosenPos());
         } else if(command instanceof AskForReloadStateInstr) {
             turn.loadState(((AskForReloadStateInstr) command).isResponse());
