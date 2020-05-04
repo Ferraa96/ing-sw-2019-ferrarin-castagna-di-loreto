@@ -352,7 +352,7 @@ public class GUI extends Application {
             default:
                 throw new IllegalStateException("Unexpected value: " + god);
         }
-         return number;
+        return number;
     }
 
     private String integerToGod(int key){
