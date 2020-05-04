@@ -133,7 +133,6 @@ public class GUI extends Application {
         String god2 = integerToGod(godNames.get(1));
         String god3 = integerToGod(godNames.get(2));
 
-
         ChoiceBox<String> bc = new ChoiceBox<>();
         bc.getItems().addAll(god1,god2,god3);
         VBox choice = new VBox(20);

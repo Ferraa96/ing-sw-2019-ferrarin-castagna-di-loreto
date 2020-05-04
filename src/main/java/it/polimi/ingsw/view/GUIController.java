@@ -82,7 +82,7 @@ public class GUIController implements ViewInterface {
             }
             if(ok) {
                 return card;
-            } //in teoria non arriva mai fuori dall'if se faccio controllo in gui, da vedere
+            } //in teoria non arriva mai fuori dall'if se faccio controllo in gui,da vedere
             System.out.print("Carta non valida, selezionane un'altra: ");
             card = scanner.nextInt();
         }
