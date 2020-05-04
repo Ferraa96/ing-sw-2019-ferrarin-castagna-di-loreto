@@ -47,6 +47,7 @@ public class GUIController implements ViewInterface {
             for(String curr: alreadyChosen) {
                 if(curr.equals(name)) {
                     ok = false;
+
                     break;
                 }
             }
