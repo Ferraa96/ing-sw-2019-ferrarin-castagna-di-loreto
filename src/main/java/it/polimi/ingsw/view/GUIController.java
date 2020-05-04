@@ -1,14 +1,16 @@
 package it.polimi.ingsw.view;
 
 import it.polimi.ingsw.controller.Instructions.*;
+import it.polimi.ingsw.controller.ServerThread;
 import it.polimi.ingsw.controller.SocketClient;
-import it.polimi.ingsw.model.Card;
-import it.polimi.ingsw.model.Cell;
-import it.polimi.ingsw.model.IOHandler;
-import it.polimi.ingsw.model.Position;
+import it.polimi.ingsw.model.*;
 
 import java.util.*;
 
+/**
+ * Class that verify everything that is done in the GUI
+ * and takes care of communicate those information
+ */
 public class GUIController implements ViewInterface {
 
     private final SocketClient socketClient;
@@ -17,6 +19,8 @@ public class GUIController implements ViewInterface {
     private Map<Integer, Position> workerPos;
     private int playerID;
     private GUI gui;
+    private String playername;
+
 
     public GUIController(SocketClient socketClient) {
         this.socketClient = socketClient;
@@ -31,8 +35,7 @@ public class GUIController implements ViewInterface {
     }
 
     @Override
-    public void setName(List<String> stringList, int playerID) {
-        this.playerID = playerID;
+    public void setName(List<String> stringList) {
         socketClient.send(new SetNameInstr(verifyName(stringList)));
     }
 
@@ -40,7 +43,7 @@ public class GUIController implements ViewInterface {
         String name;
         boolean ok = true;
         while (true) {
-            name = scanner.nextLine();
+            name = GUI.setName();
             for(String curr: alreadyChosen) {
                 if(curr.equals(name)) {
                     ok = false;
@@ -51,25 +54,23 @@ public class GUIController implements ViewInterface {
             if(ok) {
                 return name;
             }
-            //System.out.print("Nome " + name + " già preso, scegline un altro: ");
+            GUI.nameChosen();
             ok = true;
         }
     }
 
     @Override
+    public void chooseCardList(int num) {
+        socketClient.send(new ChooseCardListInstr(GUI.setCards()));
+    }
+
+    @Override
     public void chooseCard(List<Integer> cardList) {
-        List<Card> cards;
-        cards = new IOHandler().getCardList();
-        System.out.println("Scegli una carta tra\n");
-        for(Integer curr: cardList) {
-            System.out.println(curr + ": " + cards.get(curr).getName());
-            System.out.println(cards.get(curr).getDescription() + "\n");
-        }
         socketClient.send(new ChooseCardInstr(verifyCard(cardList)));
     }
 
     private int verifyCard(List<Integer> list) {
-        int card = scanner.nextInt();
+        int card = GUI.setCard();
         boolean ok = false;
         while(true) {
             for (Integer i : list) {
@@ -81,54 +82,47 @@ public class GUIController implements ViewInterface {
             }
             if(ok) {
                 return card;
-            }
+            } //in teoria non arriva mai fuori dall'if se faccio controllo in gui, da vedere
             System.out.print("Carta non valida, selezionane un'altra: ");
             card = scanner.nextInt();
         }
     }
 
     @Override
-    public void chooseCardList(int num) {
-
-    }
-
-    @Override
-    public void firstPositioning(List<Position> availablePos) {
+    public void firstPositioning(List<Position> availablePos) {   //LO FANNO TUTTI I GIOCATORI
         List<Position> list = new ArrayList<>();
         Map<Integer, Position> movement = new HashMap<>();
         Position pos;
         updateScreen();                                             //DA USARE PER SELEZIONARE POSIZIONI DISPONIBILI
-        //System.out.print("Posizione iniziale lavoratore 1 (riga, colonna): ");  VEDERE SE BOX O A GRAFICA
+        //System.out.print("Posizione iniziale lavoratore 1 (riga, colonna): ");  
         pos = verifyPosition(availablePos);
         movement.put(playerID * 2, pos);
-        move(movement);
+        move((List<Movement>) movement);
         updateScreen();
         list.add(pos);
         movement.clear();
         //System.out.print("Posizione iniziale lavoratore 2 (riga, colonna): ");
         pos = verifyPosition(availablePos);
         movement.put(playerID * 2 + 1, pos);
-        move(movement);
+        move((List<Movement>) movement);
         list.add(pos);
-        socketClient.send(new FirstPositioningInstr(list));
-        updateScreen();                                            //DA USARE PER MOSTRARE LE SCELTE
+        socketClient.send(new FirstPositioningInstr(list));    //PASSA LISTA AL TURNO
+        updateScreen();
 
     }
 
     @Override
-    public void chooseWorker() {
-        Position posW1 = workerPos.get(playerID * 2);
-        Position posW2 = workerPos.get(playerID * 2 + 1);
-        /*markPosition(posW1, 'x');
-        markPosition(posW2, 'x');*/
+    public void chooseWorker(List<Position> availableWorkers) {
+        for(Position pos: availableWorkers) {
+            //markPosition(pos, 'x');
+        }
         updateScreen();
-        //System.out.print("Seleziona il worker: ");
-        List<Position> temp = new ArrayList<>();
-        temp.add(posW1);
-        temp.add(posW2);
-        /*markPosition(posW1, ' ');
-        markPosition(posW2, ' ');*/
-        socketClient.send(new ChooseWorkerInstr(verifyPosition(temp)));
+        System.out.print("Seleziona il worker: ");
+        Position chosen = verifyPosition(availableWorkers);
+        for(Position pos: availableWorkers) {
+            //markPosition(pos, ' ');
+        }
+        socketClient.send(new ChooseWorkerInstr(chosen));
     }
 
     @Override
@@ -137,7 +131,7 @@ public class GUIController implements ViewInterface {
     }
 
     @Override
-    public void choosePosition(List<Position> list) {
+    public void choosePosition(List<Position> list) {  //EFFETTUI LA MOSSA 
         for(Position pos: list) {
             //markPosition(pos, 'x');
         }
@@ -150,8 +144,34 @@ public class GUIController implements ViewInterface {
     }
 
     @Override
-    public void move(Map<Integer, Position> movement) {
+    public void move(List<Movement> movements) {
+        for(Movement currMove: movements) {
+            int height;
+            Position oldPos = currMove.getOldPos();
+            Position newPos = currMove.getNewPos();
+            TileGetter tileGetter = null;
+            if(oldPos != null) {
+                height = gameMap[oldPos.getRow()][oldPos.getColumn()].getHeight();
+                gameMap[oldPos.getRow()][oldPos.getColumn()] = tileGetter.getTile(0, height, false);
+            }
+            height = gameMap[newPos.getRow()][newPos.getColumn()].getHeight();
+            gameMap[newPos.getRow()][newPos.getColumn()] = tileGetter.getTile(1, height, false);
+        }
+    }
 
+    private void removeFromPreviousPosition(int key) {
+        if(workerPos.containsKey(key)) {
+            Position oldPos = workerPos.get(key);
+            workerPos.remove(key);
+            for(Map.Entry<Integer, Position> entry: workerPos.entrySet()) {
+                if(entry.getValue().equals(oldPos)) {
+                    return;
+                }
+            }
+            int height = gameMap[oldPos.getRow()][oldPos.getColumn()].getHeight();
+            TileGetter tileGetter = null;
+            gameMap[oldPos.getRow()][oldPos.getColumn()] = tileGetter.getTile(0, height, false);
+        }
     }
 
     @Override
@@ -166,7 +186,22 @@ public class GUIController implements ViewInterface {
 
     @Override
     public void updateScreen() {
-
+        System.out.println(String.format("%11d" + "%14d" + "%14d" + "%14d" + "%14d", 1, 2, 3, 4, 5));
+        System.out.println("    -----------------------------------------------------------------------");
+        for(int raw = 0; raw < 5; raw++) {
+            for(int line = 0; line < 5; line++) {
+                if(line == 2) {
+                    System.out.print(" " + (raw + 1) + "  ");
+                } else {
+                    System.out.print("    ");
+                }
+                for(int column = 0; column < 5; column++) {
+                    System.out.print("|" + gameMap[raw][column].getLine(line));  //COSTRUISCE I WORKER/BUILD
+                }
+                System.out.print("|\n");
+            }
+            System.out.println("    -----------------------------------------------------------------------");
+        }
     }
 
     private static Position verifyPosition(List<Position> temp) {
