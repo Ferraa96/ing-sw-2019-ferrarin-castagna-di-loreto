@@ -5,7 +5,7 @@ import it.polimi.ingsw.model.Position;
 import java.io.Serializable;
 import java.util.List;
 
-public class ChooseWorkerInstr implements Serializable {
+public class ChooseWorkerInstr implements Serializable, MessageInterface {
     private Position chosenWorker;
     private List<Position> availableWorkers;
 
@@ -23,5 +23,10 @@ public class ChooseWorkerInstr implements Serializable {
 
     public List<Position> getAvailableWorkers() {
         return availableWorkers;
+    }
+
+    @Override
+    public void accept(MessageVisitor v) {
+        v.visit(this);
     }
 }

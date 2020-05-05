@@ -1,6 +1,7 @@
 package it.polimi.ingsw.model;
 
 import com.google.gson.annotations.SerializedName;
+import it.polimi.ingsw.controller.Instructions.MessageInterface;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -174,8 +175,8 @@ public class Card {
      * @param chosenCell cell chosen by player
      * @return command to send to view
      */
-    public Object applyEffect(int i, Worker target, Position chosenCell) {
-        Object actionMessage;
+    public MessageInterface applyEffect(int i, Worker target, Position chosenCell) {
+        MessageInterface actionMessage;
         if (!activePower) {
             actionMessage = standardRoutine.get(i).executeAction(chosenCell, target);
             if (i == 0)

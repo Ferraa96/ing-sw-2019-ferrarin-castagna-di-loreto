@@ -3,7 +3,7 @@ package it.polimi.ingsw.controller.Instructions;
 import java.io.Serializable;
 import java.util.List;
 
-public class ChooseCardListInstr implements Serializable {
+public class ChooseCardListInstr implements Serializable, MessageInterface {
     private int numPlayers;
     private List<Integer> chosenCards;
 
@@ -21,5 +21,10 @@ public class ChooseCardListInstr implements Serializable {
 
     public List<Integer> getChosenCards() {
         return chosenCards;
+    }
+
+    @Override
+    public void accept(MessageVisitor v) {
+        v.visit(this);
     }
 }

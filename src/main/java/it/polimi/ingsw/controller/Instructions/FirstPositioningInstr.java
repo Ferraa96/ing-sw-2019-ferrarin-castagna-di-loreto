@@ -5,7 +5,7 @@ import it.polimi.ingsw.model.Position;
 import java.io.Serializable;
 import java.util.List;
 
-public class FirstPositioningInstr implements Serializable {
+public class FirstPositioningInstr implements Serializable, MessageInterface {
     private final List<Position> positions;
 
     public FirstPositioningInstr(List<Position> positions) {
@@ -14,5 +14,10 @@ public class FirstPositioningInstr implements Serializable {
 
     public List<Position> getPositions() {
         return positions;
+    }
+
+    @Override
+    public void accept(MessageVisitor v) {
+        v.visit(this);
     }
 }

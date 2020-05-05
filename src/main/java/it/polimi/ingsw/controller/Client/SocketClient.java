@@ -1,5 +1,7 @@
-package it.polimi.ingsw.controller;
+package it.polimi.ingsw.controller.Client;
 
+import it.polimi.ingsw.controller.Instructions.MessageInterface;
+import it.polimi.ingsw.controller.Instructions.MessageVisitor;
 import it.polimi.ingsw.view.CLI;
 import it.polimi.ingsw.view.GUIController;
 import it.polimi.ingsw.view.ViewInterface;
@@ -14,7 +16,7 @@ import java.util.Scanner;
 public class SocketClient extends Thread {
     private ObjectOutputStream outStream;
     private ObjectInputStream inStream;
-    private ClientViewUpdater clientViewUpdater;
+    private MessageVisitor clientUpdater;
     private Socket socket;
 
     /**
@@ -40,7 +42,7 @@ public class SocketClient extends Thread {
             } else {
                 view = new GUIController(this);
             }
-            clientViewUpdater = new ClientViewUpdater(view);
+            clientUpdater = new ClientUpdater(view);
             start();
         } catch (IOException e) {
             System.out.println("Server non trovato");
@@ -55,7 +57,8 @@ public class SocketClient extends Thread {
     public void run() {
         try {
             while(true){
-                clientViewUpdater.receive(inStream.readObject());
+                MessageInterface msg = (MessageInterface) inStream.readObject();
+                msg.accept(clientUpdater);
             }
         } catch(IOException | ClassNotFoundException e) {
             System.out.println("Server offline");
@@ -81,7 +84,7 @@ public class SocketClient extends Thread {
      * send the command to the server
      * @param commands the command to send
      */
-    public void send(Object commands) {
+    public void send(MessageInterface commands) {
         try {
             outStream.writeObject(commands);
             outStream.reset();

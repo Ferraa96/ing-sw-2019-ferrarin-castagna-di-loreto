@@ -1,4 +1,7 @@
-package it.polimi.ingsw.controller;
+package it.polimi.ingsw.controller.Server;
+
+import it.polimi.ingsw.controller.Instructions.MessageInterface;
+import it.polimi.ingsw.controller.Instructions.MessageVisitor;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -11,7 +14,7 @@ import java.net.Socket;
 public class ServerThread extends Thread {
     private ObjectOutputStream outStream;
     private ObjectInputStream inStream;
-    private ServerModelUpdater serverModelUpdater;
+    private MessageVisitor modelUpdater;
     private int clientID;
     private final Socket socketClient;
     private boolean running = true;
@@ -37,13 +40,10 @@ public class ServerThread extends Thread {
     public void run() {
         try {
             while(running) {
-                Object obj = inStream.readObject();
-                serverModelUpdater.receive(obj);
+                MessageInterface msg = (MessageInterface) inStream.readObject();
+                msg.accept(modelUpdater);
             }
         } catch(IOException | ClassNotFoundException e) {
-            if(running) {
-                serverModelUpdater.receive(clientID);
-            }
             Thread.currentThread().interrupt();
         }
     }
@@ -52,7 +52,7 @@ public class ServerThread extends Thread {
      * send the command to the client
      * @param commands the command to send
      */
-    public void send(Object commands) {
+    public void send(MessageInterface commands) {
         try {
             outStream.writeObject(commands);
             outStream.reset();
@@ -74,7 +74,7 @@ public class ServerThread extends Thread {
         }
     }
 
-    public void setServerModelUpdater(ServerModelUpdater serverModelUpdater) {
-        this.serverModelUpdater = serverModelUpdater;
+    public void setModelUpdater(MessageVisitor modelUpdater) {
+        this.modelUpdater = modelUpdater;
     }
 }

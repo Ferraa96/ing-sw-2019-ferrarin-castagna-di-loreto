@@ -1,7 +1,7 @@
 package it.polimi.ingsw.view;
 
 import it.polimi.ingsw.controller.Instructions.*;
-import it.polimi.ingsw.controller.SocketClient;
+import it.polimi.ingsw.controller.Client.SocketClient;
 import it.polimi.ingsw.model.*;
 
 import java.util.*;
@@ -102,6 +102,7 @@ public class CLI implements ViewInterface {
 
     @Override
     public void reloadState(Cell[][] map) {
+        System.out.println("Caricamento partita in corso...");
         List<Movement> workers = new ArrayList<>();
         for(int row = 0; row < 5; row++) {
             for(int column = 0; column < 5; column++) {
@@ -115,6 +116,7 @@ public class CLI implements ViewInterface {
                 }
                 if(map[row][column].getWorkerID() != -1) {
                     workers.add(new Movement(null, new Position(row, column)));
+                    System.out.println("Worker trovato: " + row + " " + column);
                 }
             }
         }

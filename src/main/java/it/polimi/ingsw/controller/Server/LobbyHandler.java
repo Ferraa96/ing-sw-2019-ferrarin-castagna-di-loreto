@@ -1,5 +1,7 @@
-package it.polimi.ingsw.controller;
+package it.polimi.ingsw.controller.Server;
 
+import it.polimi.ingsw.controller.Instructions.MessageInterface;
+import it.polimi.ingsw.controller.Instructions.MessageVisitor;
 import it.polimi.ingsw.model.ModelInterface;
 import it.polimi.ingsw.model.Turn;
 
@@ -7,20 +9,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class LobbyHandler extends Thread {
+public class LobbyHandler {
     private List<ServerThread> observer;
 
     public LobbyHandler(List<ServerThread> observer) {
         this.observer = observer;
-        start();
+        createLobby();
     }
 
-    @Override
-    public void run() {
+    private void createLobby() {
         ModelInterface turn = new Turn(this, observer.size());
-        ServerModelUpdater serverModelUpdater = new ServerModelUpdater(turn);
+        MessageVisitor modelUpdater = new ModelUpdater(turn);
         for(ServerThread currThread: observer) {
-            currThread.setServerModelUpdater(serverModelUpdater);
+            currThread.setModelUpdater(modelUpdater);
             currThread.start();
         }
         turn.startGame();
@@ -29,7 +30,7 @@ public class LobbyHandler extends Thread {
     /**
      * closes the server
      */
-    public void closeServer(String message) {
+    public void closeServer(MessageInterface message) {
         for(ServerThread curr: observer) {
             curr.send(message);
             curr.closeConnection();
@@ -41,7 +42,7 @@ public class LobbyHandler extends Thread {
      * @param excludedClient the excluded client
      * @param commands the command to send
      */
-    public void sendToAllExcept(int excludedClient, Object commands) {
+    public void sendToAllExcept(int excludedClient, MessageInterface commands) {
         for(int i = 0; i < observer.size(); i++) {
             if(i != excludedClient) {
                 observer.get(i).send(commands);
@@ -54,7 +55,7 @@ public class LobbyHandler extends Thread {
      * @param clientID the receiver client
      * @param commands the command to send
      */
-    public void sendTo(int clientID, Object commands) {
+    public void sendTo(int clientID, MessageInterface commands) {
         observer.get(clientID).send(commands);
     }
 

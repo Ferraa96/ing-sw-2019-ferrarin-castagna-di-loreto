@@ -4,7 +4,7 @@ import it.polimi.ingsw.model.Position;
 
 import java.io.Serializable;
 
-public class BuildInstr implements Serializable {
+public class BuildInstr implements Serializable, MessageInterface {
     private final Position pos;
     private final int height;
     private final boolean isDome;
@@ -25,5 +25,10 @@ public class BuildInstr implements Serializable {
 
     public boolean isDome() {
         return isDome;
+    }
+
+    @Override
+    public void accept(MessageVisitor v) {
+        v.visit(this);
     }
 }

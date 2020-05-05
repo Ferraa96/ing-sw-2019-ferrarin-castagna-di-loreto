@@ -1,5 +1,7 @@
 package it.polimi.ingsw.model;
 
+import it.polimi.ingsw.controller.Instructions.MessageInterface;
+
 import java.util.List;
 
 /**
@@ -20,7 +22,7 @@ public interface Effect {
      * @param worker target of action
      * @return message to send to view
      */
-    Object executeAction(Position chosenCell, Worker worker);
+    MessageInterface executeAction(Position chosenCell, Worker worker);
 
     /**
      * set last move
@@ -39,7 +41,7 @@ public interface Effect {
      * @param enemy worker forced by mino/apollo
      * @return message to send to view
      */
-    Object executeAutoAction(Worker enemy);
+    MessageInterface executeAutoAction(Worker enemy);
 
     /**
      * set last build

@@ -1,4 +1,4 @@
-package it.polimi.ingsw.controller;
+package it.polimi.ingsw.controller.Server;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -65,7 +65,7 @@ public class SocketServer {
             } catch (SocketException e) {
                 e.printStackTrace();
             }
-            new Thread(new LobbyHandler(observer));
+            new LobbyHandler(observer);
             actualNum = 0;
             serverNum++;
         }

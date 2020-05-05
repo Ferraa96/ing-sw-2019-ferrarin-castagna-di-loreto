@@ -1,6 +1,6 @@
 package it.polimi.ingsw.model;
 
-import it.polimi.ingsw.controller.LobbyHandler;
+import it.polimi.ingsw.controller.Server.LobbyHandler;
 import it.polimi.ingsw.controller.Instructions.*;
 
 import java.util.*;
@@ -35,8 +35,10 @@ public class Turn implements ModelInterface {
         nameList = new ArrayList<>();
     }
 
+    @Override
     public void startGame() {
         socket.sendTo(actualPlayer, new SetNameInstr(nameList));
+        System.out.println("Richiesta nome inviata");
     }
 
     /**
@@ -77,8 +79,9 @@ public class Turn implements ModelInterface {
                 nextTurn();
             }
             setEnemiesLists();
-            socket.sendTo(0, board.getMap());
-            socket.sendToAllExcept(0, board.getMap());
+            LoadGameInstr oldState = new LoadGameInstr(board.getMap());
+            socket.sendTo(0, oldState);
+            socket.sendToAllExcept(0, oldState);
             socket.sortPlayers(mapPlayers(saveState));
             actualPlayer = saveState.getActualPlayer();
             if(saveState.getActualEffect() == 0) {
@@ -254,11 +257,10 @@ public class Turn implements ModelInterface {
      */
     @Override
     public void apply(Position pos) {
-        Object command = cardList.get(actualPlayer).applyEffect(currEffect, currWorker, pos);
+        MessageInterface command = cardList.get(actualPlayer).applyEffect(currEffect, currWorker, pos);
         socket.sendTo(actualPlayer, command);
         socket.sendToAllExcept(actualPlayer, command);
-        if (command instanceof MoveInstr)
-            stopGame = cardList.get(actualPlayer).checkWin(currEffect, pos);
+        stopGame = cardList.get(actualPlayer).checkWin(currEffect, pos);
         showWin();
         if (!stopGame) {
             if (currEffect < totalEffects - 1) {
@@ -279,8 +281,11 @@ public class Turn implements ModelInterface {
      */
     private void showWin() {
         if(stopGame) {
-            socket.sendTo(actualPlayer, "Hai vinto");
-            socket.sendToAllExcept(actualPlayer, "Ha vinto il giocatore " + nameList.get(actualPlayer));
+            HandleEndGameInstr gameEnd = new HandleEndGameInstr();
+            gameEnd.setMessage("Hai vinto");
+            socket.sendTo(actualPlayer, gameEnd);
+            gameEnd.setMessage("Ha vinto il giocatore " + nameList.get(actualPlayer));
+            socket.sendToAllExcept(actualPlayer, gameEnd);
             ioHandler.deleteFile();
         }
     }
@@ -318,7 +323,9 @@ public class Turn implements ModelInterface {
     public void handleDisconnection(int deadClient) {
         socket.removeClient(deadClient);
         System.out.println("Client " + deadClient + " disconnected");
-        socket.closeServer("Il giocatore " + deadClient + " si è disconnesso, la partita è annullata");
+        HandleEndGameInstr gameEnd = new HandleEndGameInstr();
+        gameEnd.setMessage("Il giocatore " + deadClient + " si è disconnesso, la partita è annullata");
+        socket.closeServer(gameEnd);
     }
 
     @Override

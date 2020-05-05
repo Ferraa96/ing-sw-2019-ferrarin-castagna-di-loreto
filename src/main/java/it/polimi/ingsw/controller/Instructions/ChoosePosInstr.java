@@ -5,7 +5,7 @@ import it.polimi.ingsw.model.Position;
 import java.io.Serializable;
 import java.util.List;
 
-public class ChoosePosInstr implements Serializable {
+public class ChoosePosInstr implements Serializable, MessageInterface {
     private List<Position> availablePositions;
     private Position chosenPos;
 
@@ -23,5 +23,10 @@ public class ChoosePosInstr implements Serializable {
 
     public Position getChosenPos() {
         return chosenPos;
+    }
+
+    @Override
+    public void accept(MessageVisitor v) {
+        v.visit(this);
     }
 }

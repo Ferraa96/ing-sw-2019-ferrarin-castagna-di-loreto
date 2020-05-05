@@ -3,7 +3,7 @@ package it.polimi.ingsw.controller.Instructions;
 import java.io.Serializable;
 import java.util.List;
 
-public class SetNameInstr implements Serializable {
+public class SetNameInstr implements Serializable, MessageInterface {
     private List<String> allNames;
     private String name;
 
@@ -21,5 +21,10 @@ public class SetNameInstr implements Serializable {
 
     public String getName() {
         return name;
+    }
+
+    @Override
+    public void accept(MessageVisitor v) {
+        v.visit(this);
     }
 }
