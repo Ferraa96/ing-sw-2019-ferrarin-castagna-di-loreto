@@ -2,6 +2,9 @@ package it.polimi.ingsw.controller.Instructions;
 
 import java.io.Serializable;
 
+/**
+ * allows the player activate the power of his card
+ */
 public class SetPowerInstr implements Serializable, MessageInterface {
     private boolean isPower;
 

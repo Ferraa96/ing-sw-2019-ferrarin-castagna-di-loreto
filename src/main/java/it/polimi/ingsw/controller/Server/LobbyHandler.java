@@ -71,8 +71,4 @@ public class LobbyHandler {
         }
         observer = temp;
     }
-
-    public void removeClient(int clientID) {
-        observer.remove(clientID);
-    }
 }

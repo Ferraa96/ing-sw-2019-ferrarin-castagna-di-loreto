@@ -2,6 +2,9 @@ package it.polimi.ingsw.controller.Instructions;
 
 import java.io.Serializable;
 
+/**
+ * notify the disconnection of one client, the game end
+ */
 public class HandleEndGameInstr implements Serializable, MessageInterface {
     private String message;
     int clientID;

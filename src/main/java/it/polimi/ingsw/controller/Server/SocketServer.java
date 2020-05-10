@@ -25,7 +25,8 @@ public class SocketServer {
      * instanciate a ServerThread for all the clients that connect
      */
     private void addClients() {
-        int timer = 1000;
+        int maxLobbies = 100;
+        int timer = 100000;
         List<ServerThread> observer;
         ServerSocket serverSocket;
         int actualNum = 0;
@@ -38,7 +39,7 @@ public class SocketServer {
             e.printStackTrace();
             return;
         }
-        while (true) {
+        while (serverNum < maxLobbies) {
             observer = new ArrayList<>();
             System.out.println("Server " + serverNum + " online");
             while (actualNum != max) {

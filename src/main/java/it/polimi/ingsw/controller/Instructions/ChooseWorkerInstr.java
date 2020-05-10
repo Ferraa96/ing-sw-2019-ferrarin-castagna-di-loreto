@@ -5,6 +5,9 @@ import it.polimi.ingsw.model.Position;
 import java.io.Serializable;
 import java.util.List;
 
+/**
+ * lets the player choose which worker he wants to play with
+ */
 public class ChooseWorkerInstr implements Serializable, MessageInterface {
     private Position chosenWorker;
     private List<Position> availableWorkers;

@@ -5,6 +5,9 @@ import it.polimi.ingsw.model.Position;
 import java.io.Serializable;
 import java.util.List;
 
+/**
+ * lets the player choose where he wants to position his workers in the first turn
+ */
 public class FirstPositioningInstr implements Serializable, MessageInterface {
     private final List<Position> positions;
 

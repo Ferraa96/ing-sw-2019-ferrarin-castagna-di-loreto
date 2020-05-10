@@ -1,5 +1,8 @@
 package it.polimi.ingsw.controller.Instructions;
 
+/**
+ * interface implemented by the messages handler, implements the visitor pattern
+ */
 public interface MessageVisitor {
 
     void visit(AskForReloadStateInstr msg);

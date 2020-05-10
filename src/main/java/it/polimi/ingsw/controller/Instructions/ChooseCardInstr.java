@@ -3,20 +3,23 @@ package it.polimi.ingsw.controller.Instructions;
 import java.io.Serializable;
 import java.util.List;
 
+/**
+ * lets the player choose a card
+ */
 public class ChooseCardInstr implements Serializable, MessageInterface {
-    private List<Integer> alreadyChosen;
+    private List<Integer> availableCards;
     private int chosenCard;
 
     public ChooseCardInstr(int chosenCard) {
         this.chosenCard = chosenCard;
     }
 
-    public ChooseCardInstr(List<Integer> alreadyChosen) {
-        this.alreadyChosen = alreadyChosen;
+    public ChooseCardInstr(List<Integer> availableCards) {
+        this.availableCards = availableCards;
     }
 
-    public List<Integer> getAlreadyChosen() {
-        return alreadyChosen;
+    public List<Integer> getAvailableCards() {
+        return availableCards;
     }
 
     public int getChosenCard() {

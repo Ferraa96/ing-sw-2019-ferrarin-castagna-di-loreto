@@ -5,6 +5,9 @@ import it.polimi.ingsw.model.Movement;
 import java.io.Serializable;
 import java.util.List;
 
+/**
+ * notify to the player a move performed by another client
+ */
 public class MoveInstr implements Serializable, MessageInterface {
     private final List<Movement> movements;
 

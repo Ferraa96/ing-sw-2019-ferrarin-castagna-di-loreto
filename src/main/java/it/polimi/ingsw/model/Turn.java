@@ -38,7 +38,6 @@ public class Turn implements ModelInterface {
     @Override
     public void startGame() {
         socket.sendTo(actualPlayer, new SetNameInstr(nameList));
-        System.out.println("Richiesta nome inviata");
     }
 
     /**
@@ -321,7 +320,6 @@ public class Turn implements ModelInterface {
     }
 
     public void handleDisconnection(int deadClient) {
-        socket.removeClient(deadClient);
         System.out.println("Client " + deadClient + " disconnected");
         HandleEndGameInstr gameEnd = new HandleEndGameInstr();
         gameEnd.setMessage("Il giocatore " + deadClient + " si è disconnesso, la partita è annullata");

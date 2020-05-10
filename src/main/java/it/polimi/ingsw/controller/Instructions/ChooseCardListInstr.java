@@ -3,6 +3,9 @@ package it.polimi.ingsw.controller.Instructions;
 import java.io.Serializable;
 import java.util.List;
 
+/**
+ * lets the first player choose all the card that will be in the game
+ */
 public class ChooseCardListInstr implements Serializable, MessageInterface {
     private int numPlayers;
     private List<Integer> chosenCards;

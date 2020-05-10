@@ -4,6 +4,9 @@ import it.polimi.ingsw.model.Position;
 
 import java.io.Serializable;
 
+/**
+ * notify to the client a build move done by a player
+ */
 public class BuildInstr implements Serializable, MessageInterface {
     private final Position pos;
     private final int height;

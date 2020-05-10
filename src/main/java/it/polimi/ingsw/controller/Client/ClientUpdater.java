@@ -34,7 +34,7 @@ public class ClientUpdater implements MessageVisitor {
 
     @Override
     public void visit(ChooseCardInstr msg) {
-        view.chooseCard(msg.getAlreadyChosen());
+        view.chooseCard(msg.getAvailableCards());
     }
 
     @Override
