@@ -41,7 +41,7 @@ public interface Effect {
      * @param enemy worker forced by mino/apollo
      * @return message to send to view
      */
-    MessageInterface executeAutoAction(Worker enemy);
+    MessageInterface executeAutoAction(Worker enemy, Position pos, Worker worker);
 
     /**
      * set last build

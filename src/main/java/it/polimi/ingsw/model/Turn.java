@@ -70,15 +70,18 @@ public class Turn implements ModelInterface {
     @Override
     public void loadState(boolean reload) {
         if(reload) {
+            List<String> godNames = new ArrayList<>();
             saveState = ioHandler.getSaveState();
             board.setMap(saveState.getGameMap());
             for(PlayerInfo currPlayer: saveState.getPlayers()) {
+                godNames.add(ioHandler.getCardList().get(currPlayer.getChosenCard()).getName());
                 addCardToGame(currPlayer.getChosenCard());
                 cardList.get(actualPlayer).firstPositioning(currPlayer.getWorkerPos().get(0), currPlayer.getWorkerPos().get(1));
                 nextTurn();
             }
             setEnemiesLists();
             LoadGameInstr oldState = new LoadGameInstr(board.getMap());
+            oldState.setGodNames(godNames);
             socket.sendTo(0, oldState);
             socket.sendToAllExcept(0, oldState);
             socket.sortPlayers(mapPlayers(saveState));
@@ -154,7 +157,8 @@ public class Turn implements ModelInterface {
             cardList.add(0, temp);
             //first positioning
             saveState.setPlayers(players);
-            socket.sendTo(actualPlayer, new FirstPositioningInstr(cardList.get(actualPlayer).availableFirstPositioning()));
+            String godName = cardList.get(actualPlayer).getName();
+            socket.sendTo(actualPlayer, new FirstPositioningInstr(cardList.get(actualPlayer).availableFirstPositioning(), godName, true));
         }
     }
 
@@ -175,13 +179,11 @@ public class Turn implements ModelInterface {
      */
     @Override
     public void setWorkersPosition(List<Position> positions) {
-        List<Movement> movements = new ArrayList<>();
+        String godName = cardList.get(actualPlayer).getName();
         Position w1 = positions.get(0);
         Position w2 = positions.get(1);
         cardList.get(actualPlayer).firstPositioning(w1, w2);
-        movements.add(new Movement(null, w1));
-        movements.add(new Movement(null, w2));
-        socket.sendToAllExcept(actualPlayer, new MoveInstr(movements));
+        socket.sendToAllExcept(actualPlayer, new FirstPositioningInstr(positions, godName, false));
         nextTurn();
         if(actualPlayer == 0) {
             setEnemiesLists();
@@ -193,7 +195,8 @@ public class Turn implements ModelInterface {
         } else {
             //first positioning
             saveState.setPlayers(players);
-            socket.sendTo(actualPlayer, new FirstPositioningInstr(cardList.get(actualPlayer).availableFirstPositioning()));
+            godName = cardList.get(actualPlayer).getName();
+            socket.sendTo(actualPlayer, new FirstPositioningInstr(cardList.get(actualPlayer).availableFirstPositioning(), godName, true));
         }
     }
 

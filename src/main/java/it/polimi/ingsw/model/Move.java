@@ -209,11 +209,12 @@ public class Move implements Effect{
      * @return message you have to send to view
      */
     @Override
-    public MoveInstr executeAutoAction(Worker enemy) {
-        List<Movement> movements = new ArrayList<>();
+    public MoveInstr executeAutoAction(Worker enemy, Position pos, Worker worker) {
+        Movement movement;
         int r, c;
+        MoveInstr move = executeAction(pos, worker);
         if (!knock) {
-            movements.add(new Movement(enemy.getPosition(), lastMoveInitialPosition));
+            movement = new Movement(enemy.getPosition(), lastMoveInitialPosition);
             enemy.setPosition(lastMoveInitialPosition);
             map[enemy.getPosition().getRow()][enemy.getPosition().getColumn()].setWorkerID(enemy.getWorkerID());
         }
@@ -221,11 +222,12 @@ public class Move implements Effect{
             r = 2 * enemy.getPosition().getRow() - lastMoveInitialPosition.getRow();
             c = 2 * enemy.getPosition().getColumn() - lastMoveInitialPosition.getColumn();
             Position newPos = new Position(r, c);
-            movements.add(new Movement(enemy.getPosition(), newPos));
+            movement = new Movement(enemy.getPosition(), newPos);
             enemy.setPosition(newPos);
             map[r][c].setWorkerID(enemy.getWorkerID());
         }
-        return new MoveInstr(movements);
+        move.getMovements().add(movement);
+        return move;
     }
 
     /**

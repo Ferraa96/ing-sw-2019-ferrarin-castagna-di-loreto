@@ -2,7 +2,7 @@ package it.polimi.ingsw.controller.Client;
 
 import it.polimi.ingsw.controller.Instructions.MessageInterface;
 import it.polimi.ingsw.controller.Instructions.MessageVisitor;
-import it.polimi.ingsw.view.CLI;
+import it.polimi.ingsw.view.Cli.CLI;
 import it.polimi.ingsw.view.GUIController;
 import it.polimi.ingsw.view.ViewInterface;
 

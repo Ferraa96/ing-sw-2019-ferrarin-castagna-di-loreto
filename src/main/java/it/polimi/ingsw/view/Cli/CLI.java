@@ -1,8 +1,9 @@
-package it.polimi.ingsw.view;
+package it.polimi.ingsw.view.Cli;
 
 import it.polimi.ingsw.controller.Instructions.*;
 import it.polimi.ingsw.controller.Client.SocketClient;
 import it.polimi.ingsw.model.*;
+import it.polimi.ingsw.view.ViewInterface;
 
 import java.util.*;
 
@@ -37,17 +38,28 @@ public class CLI implements ViewInterface {
      */
     @Override
     public void move(List<Movement> movements) {
+        int height;
+        List<String> godNames;
+        //remove old positions
+        godNames = new ArrayList<>();
         for(Movement currMove: movements) {
-            int height;
             Position oldPos = currMove.getOldPos();
-            Position newPos = currMove.getNewPos();
-            if(oldPos != null) {
-                height = gameMap[oldPos.getRow()][oldPos.getColumn()].getHeight();
-                gameMap[oldPos.getRow()][oldPos.getColumn()] = tileGetter.getTile(0, height, false);
-            }
-            height = gameMap[newPos.getRow()][newPos.getColumn()].getHeight();
-            gameMap[newPos.getRow()][newPos.getColumn()] = tileGetter.getTile(1, height, false);
+            godNames.add(gameMap[oldPos.getRow()][oldPos.getColumn()].getGodName());
+            height = gameMap[oldPos.getRow()][oldPos.getColumn()].getHeight();
+            gameMap[oldPos.getRow()][oldPos.getColumn()] = tileGetter.getTile(0, height, false);
         }
+        //add the new positions
+        for(int i = 0; i < movements.size(); i++) {
+            Position newPos = movements.get(i).getNewPos();
+            addPosition(newPos, godNames.get(i));
+        }
+    }
+
+    private void addPosition(Position pos, String godName) {
+        int height;
+        height = gameMap[pos.getRow()][pos.getColumn()].getHeight();
+        gameMap[pos.getRow()][pos.getColumn()] = tileGetter.getTile(1, height, false);
+        gameMap[pos.getRow()][pos.getColumn()].setPlayerInfo(godName);
     }
 
     /**
@@ -76,7 +88,7 @@ public class CLI implements ViewInterface {
      */
     @Override
     public void updateScreen() {
-        System.out.println(String.format("%11d" + "%14d" + "%14d" + "%14d" + "%14d", 1, 2, 3, 4, 5));
+        System.out.println(String.format("\n%11d" + "%14d" + "%14d" + "%14d" + "%14d", 1, 2, 3, 4, 5));
         System.out.println("    -----------------------------------------------------------------------");
         for(int raw = 0; raw < 5; raw++) {
             for(int line = 0; line < 5; line++) {
@@ -101,9 +113,9 @@ public class CLI implements ViewInterface {
     }
 
     @Override
-    public void reloadState(Cell[][] map) {
+    public void reloadState(Cell[][] map, List<String> godNames) {
+        HashMap<Integer, Position> workerPos = new HashMap<>();
         System.out.println("Caricamento partita in corso...");
-        List<Movement> workers = new ArrayList<>();
         for(int row = 0; row < 5; row++) {
             for(int column = 0; column < 5; column++) {
                 int height = map[row][column].getHeight();
@@ -115,12 +127,16 @@ public class CLI implements ViewInterface {
                     }
                 }
                 if(map[row][column].getWorkerID() != -1) {
-                    workers.add(new Movement(null, new Position(row, column)));
-                    System.out.println("Worker trovato: " + row + " " + column);
+                    workerPos.put(map[row][column].getWorkerID(), new Position(row, column));
                 }
             }
         }
-        move(workers);
+        for(int i = 0; i < godNames.size(); i++) {
+            List<Position> myWorker = new ArrayList<>();
+            myWorker.add(workerPos.get(i * 2));
+            myWorker.add(workerPos.get(i * 2 + 1));
+            firstPositioning(myWorker, godNames.get(i), false);
+        }
     }
 
     /**
@@ -130,12 +146,12 @@ public class CLI implements ViewInterface {
     @Override
     public void choosePosition(List<Position> list) {
         for(Position pos: list) {
-            markPosition(pos, 'x');
+            gameMap[pos.getRow()][pos.getColumn()].setIdentifier('x');
         }
         updateScreen();
         System.out.print("Scegli la posizione (riga, colonna): ");
         for(Position pos: list) {
-            markPosition(pos, ' ');
+            gameMap[pos.getRow()][pos.getColumn()].setIdentifier(' ');
         }
         socket.send(new ChoosePosInstr(verifyPosition(list)));
     }
@@ -196,29 +212,32 @@ public class CLI implements ViewInterface {
     }
 
     @Override
-    public void firstPositioning(List<Position> availablePos) {
-        List<Position> list = new ArrayList<>();
-        List<Movement> movements = new ArrayList<>();
-        Position pos;
-        for(Position currPos: availablePos) {
-            markPosition(currPos, 'x');
-        }
-        updateScreen();
-        System.out.print("Posizione iniziale lavoratore 1 (riga, colonna): ");
-        pos = verifyPosition(availablePos);
-        movements.add(new Movement(null, pos));
-        move(movements);
-        updateScreen();
-        list.add(pos);
-        movements.clear();
-        System.out.print("Posizione iniziale lavoratore 2 (riga, colonna): ");
-        pos = verifyPosition(availablePos);
-        movements.add(new Movement(null, pos));
-        move(movements);
-        list.add(pos);
-        socket.send(new FirstPositioningInstr(list));
-        for(Position currPos: availablePos) {
-            markPosition(currPos, ' ');
+    public void firstPositioning(List<Position> availablePos, String godName, boolean isMyTurn) {
+        if(isMyTurn) {
+            List<Position> list = new ArrayList<>();
+            Position pos;
+            for (Position currPos : availablePos) {
+                gameMap[currPos.getRow()][currPos.getColumn()].setIdentifier('x');
+            }
+            updateScreen();
+            System.out.print("Posizione iniziale lavoratore 1 (riga, colonna): ");
+            pos = verifyPosition(availablePos);
+            addPosition(pos, godName);
+            updateScreen();
+            list.add(pos);
+            System.out.print("Posizione iniziale lavoratore 2 (riga, colonna): ");
+            pos = verifyPosition(availablePos);
+            addPosition(pos, godName);
+            gameMap[pos.getRow()][pos.getColumn()].setPlayerInfo(godName);
+            list.add(pos);
+            socket.send(new FirstPositioningInstr(list));
+            for (Position currPos : availablePos) {
+                gameMap[currPos.getRow()][currPos.getColumn()].setIdentifier(' ');
+            }
+        } else {
+            for(Position currPos: availablePos) {
+                addPosition(currPos, godName);
+            }
         }
         updateScreen();
     }
@@ -244,10 +263,6 @@ public class CLI implements ViewInterface {
             System.out.print("Scelta non valida, inseriscine un'altra: ");
             pos = new Position(scanner.nextInt() - 1, scanner.nextInt() - 1);
         }
-    }
-
-    private void markPosition(Position pos, char mark) {
-        gameMap[pos.getRow()][pos.getColumn()].setIdentifier(mark);
     }
 
     @Override
@@ -278,13 +293,13 @@ public class CLI implements ViewInterface {
     @Override
     public void chooseWorker(List<Position> availableWorkers) {
         for(Position pos: availableWorkers) {
-            markPosition(pos, 'x');
+            gameMap[pos.getRow()][pos.getColumn()].setIdentifier('x');
         }
         updateScreen();
         System.out.print("Seleziona il worker: ");
         Position chosen = verifyPosition(availableWorkers);
         for(Position pos: availableWorkers) {
-            markPosition(pos, ' ');
+            gameMap[pos.getRow()][pos.getColumn()].setIdentifier(' ');
         }
         socket.send(new ChooseWorkerInstr(chosen));
     }

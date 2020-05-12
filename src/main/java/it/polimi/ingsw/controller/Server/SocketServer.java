@@ -26,7 +26,7 @@ public class SocketServer {
      */
     private void addClients() {
         int maxLobbies = 100;
-        int timer = 100000;
+        int timer = 1000;
         List<ServerThread> observer;
         ServerSocket serverSocket;
         int actualNum = 0;

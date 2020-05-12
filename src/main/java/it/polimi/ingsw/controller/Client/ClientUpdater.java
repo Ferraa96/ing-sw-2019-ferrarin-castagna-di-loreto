@@ -54,7 +54,7 @@ public class ClientUpdater implements MessageVisitor {
 
     @Override
     public void visit(FirstPositioningInstr msg) {
-        view.firstPositioning(msg.getPositions());
+        view.firstPositioning(msg.getPositions(), msg.getGodName(), msg.isMyTurn());
     }
 
     @Override
@@ -80,7 +80,7 @@ public class ClientUpdater implements MessageVisitor {
 
     @Override
     public void visit(LoadGameInstr msg) {
-        view.reloadState(msg.getMap());
+        view.reloadState(msg.getMap(), msg.getGodNames());
         view.updateScreen();
     }
 }

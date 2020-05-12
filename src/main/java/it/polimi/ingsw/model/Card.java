@@ -185,8 +185,8 @@ public class Card {
         else {
             setParameters(i, chosenCell, target);
             if (map[chosenCell.getRow()][chosenCell.getColumn()].getWorkerID() != -1) {
-                cardRoutine.get(i).executeAction(chosenCell, target);
-                actionMessage = cardRoutine.get(i).executeAutoAction(enemy);
+                //cardRoutine.get(i).executeAction(chosenCell, target);   ///////////////////////////////////////////////////
+                actionMessage = cardRoutine.get(i).executeAutoAction(enemy, chosenCell, target);
             }
             else
                 actionMessage = cardRoutine.get(i).executeAction(chosenCell, target);

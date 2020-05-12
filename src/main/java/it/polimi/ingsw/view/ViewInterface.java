@@ -5,7 +5,6 @@ import it.polimi.ingsw.model.Movement;
 import it.polimi.ingsw.model.Position;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * handle the view
@@ -34,7 +33,7 @@ public interface ViewInterface {
      * lets the player choose the initial position of his workers
      * @param availablePos the list of all the available positions
      */
-    void firstPositioning(List<Position> availablePos);
+    void firstPositioning(List<Position> availablePos, String godName, boolean isMyTurn);
 
     /**
      * allows player to select the worker to use in current turn
@@ -86,7 +85,7 @@ public interface ViewInterface {
      * loads the saved game
      * @param map contains all the workers and buildings positions and informations
      */
-    void reloadState(Cell[][] map);
+    void reloadState(Cell[][] map, List<String> godNames);
 
     void handleEndGame(String message);
 }

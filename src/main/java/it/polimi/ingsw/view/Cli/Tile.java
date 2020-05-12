@@ -1,4 +1,4 @@
-package it.polimi.ingsw.view;
+package it.polimi.ingsw.view.Cli;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -13,7 +13,7 @@ public class Tile {
     private final String line3;
     @SerializedName("line4")
     private String line4;
-    private int height = 0;
+    private int height;
 
     public Tile(Tile otherTile) {
         this.line0 = otherTile.getLine(0);
@@ -51,5 +51,15 @@ public class Tile {
         String line = line4;
         line = line.substring(0, 12);
         line4 = line + id;
+    }
+
+    public void setPlayerInfo(String godName) {
+        String line = line4;
+        line = line.substring(3, 13);
+        line4 = godName.substring(0, 3) + line;
+    }
+
+    public String getGodName() {
+        return line4.substring(0, 3);
     }
 }
