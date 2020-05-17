@@ -11,11 +11,12 @@ import java.util.List;
  */
 public interface ViewInterface {
 
+    void setID(int clientID);
+
     /**
      * ask for name
-     * @param stringList list to save names
      */
-    void setName(List<String> stringList);
+    void setName();
 
     /**
      * lets the player choose a card from a list
@@ -87,5 +88,11 @@ public interface ViewInterface {
      */
     void reloadState(Cell[][] map, List<String> godNames);
 
-    void handleEndGame(String message);
+    void handleDisconnection(int playerDisconnected);
+
+    void notificationForOtherClient(String message);
+
+    void elimination(boolean elim, String eliminatedPlayer);
+
+    void win(boolean win, String winnerName);
 }

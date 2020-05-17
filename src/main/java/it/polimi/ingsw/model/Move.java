@@ -1,11 +1,9 @@
 package it.polimi.ingsw.model;
 
-import it.polimi.ingsw.controller.Instructions.MoveInstr;
+import it.polimi.ingsw.controller.Instructions.MoveNotification;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * type of effect: give worker permission to move in other cell
@@ -193,14 +191,14 @@ public class Move implements Effect{
      * @return message you have to send to view
      */
     @Override
-    public MoveInstr executeAction(Position chosenCell, Worker worker) {
+    public MoveNotification executeAction(Position chosenCell, Worker worker) {
         downUp=map[chosenCell.getRow()][chosenCell.getColumn()].getHeight()-map[worker.getPosition().getRow()][worker.getPosition().getColumn()].getHeight();
         map[worker.getPosition().getRow()][worker.getPosition().getColumn()].setWorkerID(-1);
         map[chosenCell.getRow()][chosenCell.getColumn()].setWorkerID(worker.getWorkerID());
         List<Movement> movements = new ArrayList<>();
         movements.add(new Movement(worker.getPosition(), chosenCell));
         worker.setPosition( new Position(chosenCell.getRow(),chosenCell.getColumn()));
-        return new MoveInstr(movements);
+        return new MoveNotification(movements);
     }
 
     /**
@@ -209,10 +207,10 @@ public class Move implements Effect{
      * @return message you have to send to view
      */
     @Override
-    public MoveInstr executeAutoAction(Worker enemy, Position pos, Worker worker) {
+    public MoveNotification executeAutoAction(Worker enemy, Position pos, Worker worker) {
         Movement movement;
         int r, c;
-        MoveInstr move = executeAction(pos, worker);
+        MoveNotification move = executeAction(pos, worker);
         if (!knock) {
             movement = new Movement(enemy.getPosition(), lastMoveInitialPosition);
             enemy.setPosition(lastMoveInitialPosition);

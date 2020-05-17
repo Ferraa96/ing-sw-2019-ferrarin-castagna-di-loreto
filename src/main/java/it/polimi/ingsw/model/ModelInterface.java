@@ -7,13 +7,11 @@ import java.util.List;
  */
 public interface ModelInterface {
 
-    void startGame();
-
     /**
      * set player name
      * @param name the name chosen
      */
-    void setPlayerName(String name);
+    void setPlayerName(String name, int id);
 
     /**
      * called by all the players to set their card
@@ -57,5 +55,9 @@ public interface ModelInterface {
      */
     void loadState(boolean reload);
 
+    /**
+     * handle the disconnection of a client
+     * @param clientDisconnected the id of the disconnected client
+     */
     void handleDisconnection(int clientDisconnected);
 }

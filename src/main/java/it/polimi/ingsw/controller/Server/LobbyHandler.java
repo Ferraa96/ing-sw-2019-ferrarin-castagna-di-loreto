@@ -14,49 +14,40 @@ public class LobbyHandler {
 
     public LobbyHandler(List<ServerThread> observer) {
         this.observer = observer;
-        createLobby();
-    }
-
-    private void createLobby() {
         ModelInterface turn = new Turn(this, observer.size());
         MessageVisitor modelUpdater = new ModelUpdater(turn);
         for(ServerThread currThread: observer) {
             currThread.setModelUpdater(modelUpdater);
             currThread.start();
         }
-        turn.startGame();
     }
 
     /**
      * closes the server
      */
-    public void closeServer(MessageInterface message) {
+    public void closeServer() {
         for(ServerThread curr: observer) {
-            curr.send(message);
             curr.closeConnection();
         }
     }
 
     /**
-     * send the command to all the clients connected except for excludedClient
-     * @param excludedClient the excluded client
-     * @param commands the command to send
+     * send the command to a specific client
+     * @param clientID the ID of the client
+     * @param command the command to send
      */
-    public void sendToAllExcept(int excludedClient, MessageInterface commands) {
-        for(int i = 0; i < observer.size(); i++) {
-            if(i != excludedClient) {
-                observer.get(i).send(commands);
-            }
-        }
+    public void sendTo(int clientID, MessageInterface command) {
+        observer.get(clientID).send(command);
     }
 
     /**
-     * send the command to a specific client
-     * @param clientID the receiver client
-     * @param commands the command to send
+     * broadcasts the command to all the clients
+     * @param command the command to be sent to all the clients
      */
-    public void sendTo(int clientID, MessageInterface commands) {
-        observer.get(clientID).send(commands);
+    public void broadcast(MessageInterface command) {
+        for(ServerThread currClient: observer) {
+            currClient.send(command);
+        }
     }
 
     /**
@@ -70,5 +61,14 @@ public class LobbyHandler {
             temp.get(i).setClientID(i);
         }
         observer = temp;
+    }
+
+    /**
+     * remove a disconnected client
+     * @param clientID the id of the client
+     */
+    public void removeObserver(int clientID) {
+        observer.get(clientID).closeConnection();
+        observer.remove(clientID);
     }
 }

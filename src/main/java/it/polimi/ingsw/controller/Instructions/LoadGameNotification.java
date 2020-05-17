@@ -8,11 +8,12 @@ import java.util.List;
 /**
  * contains all the informations that allow the client to reload a saved game
  */
-public class LoadGameInstr implements Serializable, MessageInterface {
+public class LoadGameNotification implements Serializable, MessageInterface {
+    private int clientID;
     private final Cell[][] map;
     private List<String> godNames;
 
-    public LoadGameInstr(Cell[][] map) {
+    public LoadGameNotification(Cell[][] map) {
         this.map = map;
     }
 
@@ -31,5 +32,15 @@ public class LoadGameInstr implements Serializable, MessageInterface {
     @Override
     public void accept(MessageVisitor v) {
         v.visit(this);
+    }
+
+    @Override
+    public void setClientID(int clientID) {
+        this.clientID = clientID;
+    }
+
+    @Override
+    public int getClientID() {
+        return clientID;
     }
 }

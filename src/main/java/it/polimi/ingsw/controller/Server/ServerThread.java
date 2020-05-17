@@ -1,6 +1,6 @@
 package it.polimi.ingsw.controller.Server;
 
-import it.polimi.ingsw.controller.Instructions.HandleEndGameInstr;
+import it.polimi.ingsw.controller.Instructions.DisconnectionNotification;
 import it.polimi.ingsw.controller.Instructions.MessageInterface;
 import it.polimi.ingsw.controller.Instructions.MessageVisitor;
 
@@ -43,10 +43,11 @@ public class ServerThread extends Thread {
         try {
             while(running) {
                 MessageInterface msg = (MessageInterface) inStream.readObject();
+                msg.setClientID(clientID);
                 msg.accept(modelUpdater);
             }
         } catch(IOException | ClassNotFoundException e) {
-            HandleEndGameInstr disconnection = new HandleEndGameInstr();
+            DisconnectionNotification disconnection = new DisconnectionNotification();
             disconnection.setClientID(clientID);
             disconnection.accept(modelUpdater);
             Thread.currentThread().interrupt();
@@ -61,7 +62,7 @@ public class ServerThread extends Thread {
         try {
             outStream.writeObject(commands);
             outStream.reset();
-        } catch (SocketException ignored) {
+//        } catch (SocketException ignored) {
         } catch(IOException e) {
             e.printStackTrace();
         }
@@ -75,6 +76,7 @@ public class ServerThread extends Thread {
         running = false;
         try {
             socketClient.close();
+            interrupt();
         } catch (IOException e) {
             e.printStackTrace();
         }

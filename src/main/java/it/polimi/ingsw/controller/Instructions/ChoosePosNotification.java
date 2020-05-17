@@ -8,16 +8,18 @@ import java.util.List;
 /**
  * lets the player choose the position of the move / build
  */
-public class ChoosePosInstr implements Serializable, MessageInterface {
+public class ChoosePosNotification implements Serializable, MessageInterface {
+    private int clientID;
     private List<Position> availablePositions;
     private Position chosenPos;
 
-    public ChoosePosInstr(Position chosenPos) {
+    public ChoosePosNotification(Position chosenPos) {
         this.chosenPos = chosenPos;
     }
 
-    public ChoosePosInstr(List<Position> availablePositions) {
+    public ChoosePosNotification(List<Position> availablePositions, int clientID) {
         this.availablePositions = availablePositions;
+        this.clientID = clientID;
     }
 
     public List<Position> getAvailablePositions() {
@@ -31,5 +33,15 @@ public class ChoosePosInstr implements Serializable, MessageInterface {
     @Override
     public void accept(MessageVisitor v) {
         v.visit(this);
+    }
+
+    @Override
+    public void setClientID(int clientID) {
+        this.clientID = clientID;
+    }
+
+    @Override
+    public int getClientID() {
+        return clientID;
     }
 }

@@ -14,62 +14,72 @@ public class ModelUpdater implements MessageVisitor {
     }
 
     @Override
-    public void visit(AskForReloadStateInstr msg) {
+    public void visit(AskForReloadStateNotification msg) {
         turn.loadState(msg.isResponse());
     }
 
     @Override
-    public void visit(BuildInstr msg) {
+    public void visit(BuildNotification msg) {
 
     }
 
     @Override
-    public void visit(ChooseCardInstr msg) {
+    public void visit(ChooseCardNotification msg) {
         turn.setCards(msg.getChosenCard());
     }
 
     @Override
-    public void visit(ChooseCardListInstr msg) {
+    public void visit(ChooseCardListNotification msg) {
         turn.setInitialCards(msg.getChosenCards());
     }
 
     @Override
-    public void visit(ChoosePosInstr msg) {
+    public void visit(ChoosePosNotification msg) {
         turn.apply(msg.getChosenPos());
     }
 
     @Override
-    public void visit(ChooseWorkerInstr msg) {
+    public void visit(ChooseWorkerNotification msg) {
         turn.selectCorrectWorker(msg.getChosenWorker());
     }
 
     @Override
-    public void visit(FirstPositioningInstr msg) {
+    public void visit(FirstPositioningNotification msg) {
         turn.setWorkersPosition(msg.getPositions());
     }
 
     @Override
-    public void visit(MoveInstr msg) {
+    public void visit(MoveNotification msg) {
 
     }
 
     @Override
-    public void visit(SetNameInstr msg) {
-        turn.setPlayerName(msg.getName());
+    public void visit(SetNameNotification msg) {
+        turn.setPlayerName(msg.getName(), msg.getClientID());
     }
 
     @Override
-    public void visit(SetPowerInstr msg) {
+    public void visit(SetPowerNotification msg) {
         turn.providePosition(msg.isPower());
     }
 
     @Override
-    public void visit(HandleEndGameInstr msg) {
+    public void visit(DisconnectionNotification msg) {
         turn.handleDisconnection(msg.getClientID());
     }
 
     @Override
-    public void visit(LoadGameInstr msg) {
+    public void visit(LoadGameNotification msg) {
+
+    }
+
+    @Override
+    public void visit(EliminationNotification msg) {
+
+    }
+
+    @Override
+    public void visit(WinNotification msg) {
 
     }
 }

@@ -8,6 +8,7 @@ import it.polimi.ingsw.view.ViewInterface;
  */
 public class ClientUpdater implements MessageVisitor {
     private final ViewInterface view;
+    private int playerID;
 
     /**
      * adapter server-client
@@ -18,12 +19,16 @@ public class ClientUpdater implements MessageVisitor {
     }
 
     @Override
-    public void visit(AskForReloadStateInstr msg) {
-        view.askForReloadState();
+    public void visit(AskForReloadStateNotification msg) {
+        if(msg.getClientID() == playerID) {
+            view.askForReloadState();
+        } else {
+            view.notificationForOtherClient("Il giocatore " + msg.getClientID() + " sta scegliendo se caricare la partita");
+        }
     }
 
     @Override
-    public void visit(BuildInstr msg) {
+    public void visit(BuildNotification msg) {
         if(!msg.isDome()) {
             view.buildBlock(msg.getPos(), msg.getHeight());
         } else {
@@ -33,54 +38,97 @@ public class ClientUpdater implements MessageVisitor {
     }
 
     @Override
-    public void visit(ChooseCardInstr msg) {
-        view.chooseCard(msg.getAvailableCards());
+    public void visit(ChooseCardNotification msg) {
+        if(msg.getClientID() == playerID) {
+            view.chooseCard(msg.getAvailableCards());
+        } else {
+            view.notificationForOtherClient("Il giocatore " + msg.getClientID() + " sta scegliendo la carta");
+        }
     }
 
     @Override
-    public void visit(ChooseCardListInstr msg) {
-        view.chooseCardList(msg.getNumPlayers());
+    public void visit(ChooseCardListNotification msg) {
+        if(msg.getClientID() == playerID) {
+            view.chooseCardList(msg.getNumPlayers());
+        } else {
+            view.notificationForOtherClient("Scelta delle carte di gioco...");
+        }
     }
 
     @Override
-    public void visit(ChoosePosInstr msg) {
-        view.choosePosition(msg.getAvailablePositions());
+    public void visit(ChoosePosNotification msg) {
+        if(msg.getClientID() == playerID) {
+            view.choosePosition(msg.getAvailablePositions());
+        } else {
+            view.notificationForOtherClient("Il giocatore " + msg.getClientID() + " sta scegliendo la posizione");
+        }
     }
 
     @Override
-    public void visit(ChooseWorkerInstr msg) {
-        view.chooseWorker(msg.getAvailableWorkers());
+    public void visit(ChooseWorkerNotification msg) {
+        if(msg.getClientID() == playerID) {
+            view.chooseWorker(msg.getAvailableWorkers());
+        } else {
+            view.notificationForOtherClient("Il giocatore " + msg.getClientID() + " sta scegliendo il lavoratore");
+        }
     }
 
     @Override
-    public void visit(FirstPositioningInstr msg) {
-        view.firstPositioning(msg.getPositions(), msg.getGodName(), msg.isMyTurn());
+    public void visit(FirstPositioningNotification msg) {
+        if(msg.getClientID() == playerID) {
+            if(!msg.isLoadPos()) {
+                view.firstPositioning(msg.getPositions(), msg.getGodName(), true);
+            }
+        } else {
+            if(msg.isLoadPos()) {
+                view.firstPositioning(msg.getPositions(), msg.getGodName(), false);
+            } else {
+                view.notificationForOtherClient("Il giocatore " + msg.getClientID() + " sta posizionando i lavoratori");
+            }
+        }
     }
 
     @Override
-    public void visit(MoveInstr msg) {
+    public void visit(MoveNotification msg) {
         view.move(msg.getMovements());
         view.updateScreen();
     }
 
     @Override
-    public void visit(SetNameInstr msg) {
-        view.setName(msg.getAllNames());
+    public void visit(SetNameNotification msg) {
+        playerID = msg.getClientID();
+        if(!msg.isOk()) {
+            view.setName();
+        }
     }
 
     @Override
-    public void visit(SetPowerInstr msg) {
-        view.choosePower();
+    public void visit(SetPowerNotification msg) {
+        if(msg.getClientID() == playerID) {
+            view.choosePower();
+        } else {
+            view.notificationForOtherClient("Il giocatore " + msg.getClientID() + " sta scegliendo il potere");
+        }
     }
 
     @Override
-    public void visit(HandleEndGameInstr msg) {
-        view.handleEndGame(msg.getMessage());
+    public void visit(DisconnectionNotification msg) {
+        view.handleDisconnection(msg.getClientID());
     }
 
     @Override
-    public void visit(LoadGameInstr msg) {
+    public void visit(LoadGameNotification msg) {
         view.reloadState(msg.getMap(), msg.getGodNames());
         view.updateScreen();
+    }
+
+    @Override
+    public void visit(EliminationNotification msg) {
+        view.elimination(msg.getClientID() == playerID, msg.getPlayerName());
+    }
+
+    @Override
+    public void visit(WinNotification msg) {
+        view.win(msg.getClientID() == playerID, msg.getPlayerName());
     }
 }

@@ -8,10 +8,11 @@ import java.util.List;
 /**
  * notify to the player a move performed by another client
  */
-public class MoveInstr implements Serializable, MessageInterface {
+public class MoveNotification implements Serializable, MessageInterface {
+    private int clientID;
     private final List<Movement> movements;
 
-    public MoveInstr(List<Movement> movements) {
+    public MoveNotification(List<Movement> movements) {
         this.movements = movements;
     }
 
@@ -22,5 +23,15 @@ public class MoveInstr implements Serializable, MessageInterface {
     @Override
     public void accept(MessageVisitor v) {
         v.visit(this);
+    }
+
+    @Override
+    public void setClientID(int clientID) {
+        this.clientID = clientID;
+    }
+
+    @Override
+    public int getClientID() {
+        return clientID;
     }
 }

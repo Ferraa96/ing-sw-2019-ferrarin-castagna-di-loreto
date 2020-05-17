@@ -7,12 +7,13 @@ import java.io.Serializable;
 /**
  * notify to the client a build move done by a player
  */
-public class BuildInstr implements Serializable, MessageInterface {
+public class BuildNotification implements Serializable, MessageInterface {
+    private int clientID;
     private final Position pos;
     private final int height;
     private final boolean isDome;
 
-    public BuildInstr(Position pos, int height, boolean isDome) {
+    public BuildNotification(Position pos, int height, boolean isDome) {
         this.pos = pos;
         this.height = height;
         this.isDome = isDome;
@@ -33,5 +34,15 @@ public class BuildInstr implements Serializable, MessageInterface {
     @Override
     public void accept(MessageVisitor v) {
         v.visit(this);
+    }
+
+    @Override
+    public void setClientID(int clientID) {
+        this.clientID = clientID;
+    }
+
+    @Override
+    public int getClientID() {
+        return clientID;
     }
 }

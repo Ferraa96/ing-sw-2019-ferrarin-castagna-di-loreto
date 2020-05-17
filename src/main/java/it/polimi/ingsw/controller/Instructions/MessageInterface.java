@@ -6,4 +6,6 @@ package it.polimi.ingsw.controller.Instructions;
 public interface MessageInterface {
 
     void accept(MessageVisitor v);
+    void setClientID(int clientID);
+    int getClientID();
 }

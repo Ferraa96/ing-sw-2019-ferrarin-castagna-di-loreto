@@ -8,15 +8,17 @@ import java.util.List;
 /**
  * lets the player choose which worker he wants to play with
  */
-public class ChooseWorkerInstr implements Serializable, MessageInterface {
+public class ChooseWorkerNotification implements Serializable, MessageInterface {
+    private int clientID;
     private Position chosenWorker;
     private List<Position> availableWorkers;
 
-    public ChooseWorkerInstr(List<Position> availableWorkers) {
+    public ChooseWorkerNotification(List<Position> availableWorkers, int clientID) {
         this.availableWorkers = availableWorkers;
+        this.clientID = clientID;
     }
 
-    public ChooseWorkerInstr(Position chosenWorker) {
+    public ChooseWorkerNotification(Position chosenWorker) {
         this.chosenWorker = chosenWorker;
     }
 
@@ -31,5 +33,15 @@ public class ChooseWorkerInstr implements Serializable, MessageInterface {
     @Override
     public void accept(MessageVisitor v) {
         v.visit(this);
+    }
+
+    @Override
+    public void setClientID(int clientID) {
+        this.clientID = clientID;
+    }
+
+    @Override
+    public int getClientID() {
+        return clientID;
     }
 }

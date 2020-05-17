@@ -6,16 +6,18 @@ import java.util.List;
 /**
  * lets the player choose a card
  */
-public class ChooseCardInstr implements Serializable, MessageInterface {
+public class ChooseCardNotification implements Serializable, MessageInterface {
+    private int clientID;
     private List<Integer> availableCards;
     private int chosenCard;
 
-    public ChooseCardInstr(int chosenCard) {
+    public ChooseCardNotification(int chosenCard) {
         this.chosenCard = chosenCard;
     }
 
-    public ChooseCardInstr(List<Integer> availableCards) {
+    public ChooseCardNotification(List<Integer> availableCards, int clientID) {
         this.availableCards = availableCards;
+        this.clientID = clientID;
     }
 
     public List<Integer> getAvailableCards() {
@@ -29,5 +31,15 @@ public class ChooseCardInstr implements Serializable, MessageInterface {
     @Override
     public void accept(MessageVisitor v) {
         v.visit(this);
+    }
+
+    @Override
+    public void setClientID(int clientID) {
+        this.clientID = clientID;
+    }
+
+    @Override
+    public int getClientID() {
+        return clientID;
     }
 }

@@ -15,6 +15,7 @@ public class CLI implements ViewInterface {
     private final Tile[][] gameMap;
     private final Scanner scanner = new Scanner(System.in);
     private final TileGetter tileGetter;
+    private int clientID;
 
     /**
      * creates the CLI
@@ -30,6 +31,7 @@ public class CLI implements ViewInterface {
             }
         }
         printLogo();
+        setName();
     }
 
     /**
@@ -109,7 +111,7 @@ public class CLI implements ViewInterface {
     @Override
     public void askForReloadState() {
         System.out.print("E' presente un salvataggio, caricarlo? S/N ");
-        socket.send(new AskForReloadStateInstr(verifyBoolean()));
+        socket.send(new AskForReloadStateNotification(verifyBoolean()));
     }
 
     @Override
@@ -153,7 +155,7 @@ public class CLI implements ViewInterface {
         for(Position pos: list) {
             gameMap[pos.getRow()][pos.getColumn()].setIdentifier(' ');
         }
-        socket.send(new ChoosePosInstr(verifyPosition(list)));
+        socket.send(new ChoosePosNotification(verifyPosition(list)));
     }
 
     @Override
@@ -165,7 +167,7 @@ public class CLI implements ViewInterface {
             System.out.println(curr + ": " + cards.get(curr).getName());
             System.out.println(cards.get(curr).getDescription() + "\n");
         }
-        socket.send(new ChooseCardInstr(verifyCard(cardList)));
+        socket.send(new ChooseCardNotification(verifyCard(cardList)));
     }
 
     @Override
@@ -184,7 +186,7 @@ public class CLI implements ViewInterface {
             System.out.print("Carta " + (i + 1) + ": ");
             chosen.add(verifyCard(tempList));
         }
-        socket.send(new ChooseCardListInstr(chosen));
+        socket.send(new ChooseCardListNotification(chosen));
     }
 
     /**
@@ -193,21 +195,18 @@ public class CLI implements ViewInterface {
      * @return the card index chosen and verified
      */
     private int verifyCard(List<Integer> list) {
-        int card = scanner.nextInt();
-        boolean ok = false;
+        int card;
         while(true) {
-            for (Integer i : list) {
-                if (i == card) {
-                    ok = true;
-                    list.remove(i);
-                    break;
+            if(scanner.hasNextInt()) {
+                card = scanner.nextInt();
+                for (Integer i : list) {
+                    if (i == card) {
+                        return card;
+                    }
                 }
             }
-            if(ok) {
-                return card;
-            }
+            scanner.nextLine();
             System.out.print("Carta non valida, selezionane un'altra: ");
-            card = scanner.nextInt();
         }
     }
 
@@ -230,7 +229,7 @@ public class CLI implements ViewInterface {
             addPosition(pos, godName);
             gameMap[pos.getRow()][pos.getColumn()].setPlayerInfo(godName);
             list.add(pos);
-            socket.send(new FirstPositioningInstr(list));
+            socket.send(new FirstPositioningNotification(list));
             for (Position currPos : availablePos) {
                 gameMap[currPos.getRow()][currPos.getColumn()].setIdentifier(' ');
             }
@@ -248,9 +247,10 @@ public class CLI implements ViewInterface {
      * @return the position chosen by the player and verified
      */
     private Position verifyPosition(List<Position> list) {
-        Position pos = new Position(scanner.nextInt() - 1, scanner.nextInt() - 1);
         boolean ok = false;
+        Position pos;
         while(true) {
+            pos = controlTwoInt();
             for (Position curr : list) {
                 if (pos.getRow() == curr.getRow() && pos.getColumn() == curr.getColumn()) {
                     ok = true;
@@ -261,32 +261,40 @@ public class CLI implements ViewInterface {
                 return pos;
             }
             System.out.print("Scelta non valida, inseriscine un'altra: ");
-            pos = new Position(scanner.nextInt() - 1, scanner.nextInt() - 1);
+        }
+    }
+
+    private Position controlTwoInt() {
+        int x, y;
+        while (true) {
+            if(scanner.hasNextInt()) {
+                x = scanner.nextInt();
+                if(scanner.hasNextInt()) {
+                    y = scanner.nextInt();
+                    return new Position(x - 1, y - 1);
+                }
+            }
+            scanner.nextLine();
+            System.out.print("Inserisci una posizione valida: ");
         }
     }
 
     @Override
-    public void setName(List<String> stringList) {
-        System.out.print("Imposta il nome: ");
-        socket.send(new SetNameInstr(verifyName(stringList)));
+    public void setID(int clientID) {
+        this.clientID = clientID;
     }
 
-    private String verifyName(List<String> alreadyChosen) {
+    @Override
+    public void setName() {
         String name;
-        boolean ok = true;
-        while (true) {
+        System.out.print("Imposta il nome: ");
+        if(scanner.hasNextLine()) {
             name = scanner.nextLine();
-            for(String curr: alreadyChosen) {
-                if(curr.equals(name)) {
-                    ok = false;
-                    break;
-                }
+            if(name.length() > 0) {
+                socket.send(new SetNameNotification(name, clientID));
+            } else {
+                System.out.print("Nome " + name + " non valido, scegline un altro: ");
             }
-            if(ok) {
-                return name;
-            }
-            System.out.print("Nome " + name + " già preso, scegline un altro: ");
-            ok = true;
         }
     }
 
@@ -301,13 +309,13 @@ public class CLI implements ViewInterface {
         for(Position pos: availableWorkers) {
             gameMap[pos.getRow()][pos.getColumn()].setIdentifier(' ');
         }
-        socket.send(new ChooseWorkerInstr(chosen));
+        socket.send(new ChooseWorkerNotification(chosen));
     }
 
     @Override
     public void choosePower() {
         System.out.print("Attivare il potere della carta? S/N ");
-        socket.send(new SetPowerInstr(verifyBoolean()));
+        socket.send(new SetPowerNotification(verifyBoolean()));
     }
 
     private boolean verifyBoolean() {
@@ -323,8 +331,32 @@ public class CLI implements ViewInterface {
     }
 
     @Override
-    public void handleEndGame(String message) {
+    public void handleDisconnection(int playerDisconnected) {
+        System.out.println("Il giocatore " + playerDisconnected + " si è disconnesso, la partita è annullata");
+        socket.closeClient();
+    }
+
+    @Override
+    public void notificationForOtherClient(String message) {
         System.out.println(message);
+    }
+
+    @Override
+    public void elimination(boolean elim, String eliminatedPlayer) {
+        if(elim) {
+            System.out.println("Hai perso");
+        } else {
+            System.out.println(eliminatedPlayer + " ha perso");
+        }
+    }
+
+    @Override
+    public void win(boolean win, String winnerName) {
+        if(win) {
+            System.out.println("Hai vinto");
+        } else {
+            System.out.println("Ha vinto " + winnerName);
+        }
         socket.closeClient();
     }
 

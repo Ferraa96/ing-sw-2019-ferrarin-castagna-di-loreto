@@ -1,6 +1,6 @@
 package it.polimi.ingsw.model;
 
-import it.polimi.ingsw.controller.Instructions.BuildInstr;
+import it.polimi.ingsw.controller.Instructions.BuildNotification;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -104,12 +104,12 @@ public class Build implements Effect {
      * @return message to send o view
      */
     @Override
-    public BuildInstr executeAction(Position chosenCell, Worker worker) {
+    public BuildNotification executeAction(Position chosenCell, Worker worker) {
         int height = map[chosenCell.getRow()][chosenCell.getColumn()].getHeight();
         if (!nextBlock) {
             if (!specific) {
                 map[chosenCell.getRow()][chosenCell.getColumn()].setHeight(4);
-                return new BuildInstr(chosenCell, height, true);
+                return new BuildNotification(chosenCell, height, true);
             }
             else {
                 height = height + 2;
@@ -120,7 +120,7 @@ public class Build implements Effect {
             height++;
             map[chosenCell.getRow()][chosenCell.getColumn()].setHeight(height);
         }
-        return new BuildInstr(chosenCell, height, false);
+        return new BuildNotification(chosenCell, height, false);
     }
 
     /**
@@ -128,7 +128,7 @@ public class Build implements Effect {
      * @param enemy not used
      * @return nothing
      */
-    public BuildInstr executeAutoAction(Worker enemy) { return null; }
+    public BuildNotification executeAutoAction(Worker enemy, Position pos, Worker worker) { return null; }
 
     /**
      * not used here
