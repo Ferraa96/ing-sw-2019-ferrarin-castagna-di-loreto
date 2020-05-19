@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<Scene xmlns="http://javafx.com/javafx/10.0.2-internal"
+       xmlns:fx="http://javafx.com/fxml/1"
+       fx:controller="it.polimi.ingsw.view.GUI.LogController">
+
+<AnchorPane prefHeight="400.0" prefWidth="250.0">
+
+    <children>
+
+        <Button fx:id="button" layoutX="99.0" layoutY="200.0" mnemonicParsing="false" onAction="#logIn" text="LogIn" />
+        <Label layoutX="18.0" layoutY="83.0" text="Username:" />
+        <TextField fx:id="playerName" layoutX="87.0" layoutY="79.0" />
+         <TextField fx:id="IP" layoutX="87.0" layoutY="126.0" />
+         <Label layoutX="32.0" layoutY="130.0" text="IP:" />
+
+    </children>
+
+</AnchorPane>
+
+</Scene>

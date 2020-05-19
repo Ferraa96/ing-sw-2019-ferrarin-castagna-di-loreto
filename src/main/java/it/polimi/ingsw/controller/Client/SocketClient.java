@@ -3,7 +3,7 @@ package it.polimi.ingsw.controller.Client;
 import it.polimi.ingsw.controller.Instructions.MessageInterface;
 import it.polimi.ingsw.controller.Instructions.MessageVisitor;
 import it.polimi.ingsw.view.Cli.CLI;
-import it.polimi.ingsw.view.GUIController;
+import it.polimi.ingsw.view.GUI.GUIHandler;
 import it.polimi.ingsw.view.ViewInterface;
 
 import java.io.*;
@@ -23,7 +23,11 @@ public class SocketClient extends Thread {
      * creates a client and instantiate the view
      */
     public SocketClient() {
-        connect();
+            connect();
+    }
+
+    public SocketClient(int i) {
+
     }
 
     private void connect() {
@@ -36,17 +40,29 @@ public class SocketClient extends Thread {
             socket = new Socket(ip, port);
             outStream = new ObjectOutputStream(socket.getOutputStream());
             inStream = new ObjectInputStream(socket.getInputStream());
-            System.out.println("1: CLI\n2: GUI");
-            if(scanner.nextInt() == 1) {
-                view = new CLI(this);
-            } else {
-                view = new GUIController(this);
-            }
+            view = new CLI(this);
             clientUpdater = new ClientUpdater(view);
             start();
         } catch (IOException e) {
             System.out.println("Server non trovato");
             connect();
+        }
+    }
+
+    public boolean connectGUI(String ip, GUIHandler guiHandler) {
+        int port = 59898;
+        ViewInterface view;
+        try {
+            socket = new Socket(ip, port);
+            outStream = new ObjectOutputStream(socket.getOutputStream());
+            inStream = new ObjectInputStream(socket.getInputStream());
+            view = guiHandler;
+            clientUpdater = new ClientUpdater(view);
+            start();
+            return true;
+        } catch (IOException e) {
+            System.out.println("Server non trovato");
+            return false;
         }
     }
 

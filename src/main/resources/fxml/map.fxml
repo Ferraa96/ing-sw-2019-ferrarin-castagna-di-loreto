@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.Scene?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<Scene xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.view.GUI.MapController">
+
+<AnchorPane
+        fx:id="pane"
+        prefHeight="338.0"
+        prefWidth="600.0">
+
+   <children>
+
+      <ImageView
+              fx:id="map"
+              fitHeight="338.0"
+              fitWidth="600.0">
+
+         <image>
+            <Image url="@../images/SantoriniBoard.png" />
+         </image>
+
+      </ImageView>
+
+   </children>
+
+</AnchorPane>
+
+</Scene>

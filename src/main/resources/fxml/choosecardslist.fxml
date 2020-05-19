@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<Scene xmlns="http://javafx.com/javafx/10.0.2-internal"
+       xmlns:fx="http://javafx.com/fxml/1"
+       fx:controller="it.polimi.ingsw.view.GUI.CardsSelectionController">
+
+    <AnchorPane prefHeight="516.0"
+                prefWidth="674.0">
+
+       <children>
+
+         <ImageView fitHeight="598.0" fitWidth="676.0" layoutY="43.0" pickOnBounds="true" preserveRatio="true">
+            <image>
+               <Image url="@../images/title_water.png" />
+            </image>
+         </ImageView>
+         <ImageView fitHeight="150.0" fitWidth="200.0" layoutX="24.0" layoutY="97.0" pickOnBounds="true" preserveRatio="true">
+            <image>
+               <Image url="@../images/01.png" />
+            </image>
+         </ImageView>
+         <ImageView fitHeight="150.0" fitWidth="200.0" layoutX="152.0" layoutY="97.0" pickOnBounds="true" preserveRatio="true">
+            <image>
+               <Image url="@../images/02.png" />
+            </image>
+         </ImageView>
+         <ImageView fitHeight="150.0" fitWidth="200.0" layoutX="284.0" layoutY="97.0" pickOnBounds="true" preserveRatio="true">
+            <image>
+               <Image url="@../images/03.png" />
+            </image>
+         </ImageView>
+         <ImageView fitHeight="150.0" fitWidth="200.0" layoutX="423.0" layoutY="97.0" pickOnBounds="true" preserveRatio="true">
+            <image>
+               <Image url="@../images/04.png" />
+            </image>
+         </ImageView>
+         <ImageView fitHeight="150.0" fitWidth="200.0" layoutX="556.0" layoutY="97.0" pickOnBounds="true" preserveRatio="true">
+            <image>
+               <Image url="@../images/05.png" />
+            </image>
+         </ImageView>
+         <ImageView fitHeight="150.0" fitWidth="200.0" layoutX="24.0" layoutY="300.0" pickOnBounds="true" preserveRatio="true">
+            <image>
+               <Image url="@../images/06.png" />
+            </image>
+         </ImageView>
+         <ImageView fitHeight="150.0" fitWidth="200.0" layoutX="152.0" layoutY="300.0" pickOnBounds="true" preserveRatio="true">
+            <image>
+               <Image url="@../images/07.png" />
+            </image>
+         </ImageView>
+         <ImageView fitHeight="150.0" fitWidth="200.0" layoutX="285.0" layoutY="300.0" pickOnBounds="true" preserveRatio="true">
+            <image>
+               <Image url="@../images/08.png" />
+            </image>
+         </ImageView>
+         <ImageView fitHeight="150.0" fitWidth="200.0" layoutX="423.0" layoutY="300.0" pickOnBounds="true" preserveRatio="true">
+            <image>
+               <Image url="@../images/09.png" />
+            </image>
+         </ImageView>
+         <ImageView fitHeight="150.0" fitWidth="200.0" layoutX="556.0" layoutY="300.0" pickOnBounds="true" preserveRatio="true">
+            <image>
+               <Image url="@../images/10.png" />
+            </image>
+         </ImageView>
+
+         <Button fx:id="cardbutton" layoutX="263.0" layoutY="476.0" mnemonicParsing="false" text="CONFIRM SELECTION" onAction="#chooseCards" />
+
+         <Label layoutX="201.0" layoutY="26.0" prefHeight="34.0" prefWidth="254.0" text="CHOOSE CARDS LIST">
+            <font>
+               <Font name="Franklin Gothic Demi Cond" size="29.0" />
+            </font>
+         </Label>
+
+      </children>
+
+    </AnchorPane>
+
+</Scene>
