@@ -12,6 +12,11 @@ public class CardDeserializerTest {
     public void getCardList() {
         IOHandler cardDeserializer = new IOHandler();
         List<Card> cardList = cardDeserializer.getCardList();
+        SaveState save1 = new SaveState();
+        cardDeserializer.verifyFileExistance("prova");
+        cardDeserializer.save(save1);
+        cardDeserializer.getSaveState();
+        cardDeserializer.deleteFile();
         assertEquals(9, cardList.size());
         assertEquals("Apollo", cardList.get(0).getName());
     }

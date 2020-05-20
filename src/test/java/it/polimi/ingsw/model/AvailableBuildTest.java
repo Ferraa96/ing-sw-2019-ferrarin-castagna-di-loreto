@@ -53,7 +53,8 @@ public class AvailableBuildTest {
         assertEquals(3, availablePos3.get(3).getColumn());
         assertEquals(2, availablePos3.get(3).getRow());
         // diventa cupola
-        map[2][3].setHeight(4);
+        map[2][3].setHeight(3);
+        map[2][3].setDome(true);
         List<Position> availablePos4 = standardBuild.availableWithGod(target);
         assertEquals(6, availablePos4.size());
         assertEquals(1, availablePos4.get(3).getColumn());
@@ -75,9 +76,11 @@ public class AvailableBuildTest {
         map[2][1].setHeight(3);
         map[3][2].setWorkerID(22);
         map[3][2].setHeight(1);
-        map[1][1].setHeight(4);
+        map[1][1].setHeight(3);
+        map[1][1].setDome(true);
         map[1][2].setHeight(1);
-        map[2][3].setHeight(4);
+        map[2][3].setHeight(3);
+        map[2][3].setDome(true);
         map[3][3].setHeight(3);
         List<Position> availablePos = standardBuild.availableWithGod(target);
         assertEquals(2, availablePos.size());

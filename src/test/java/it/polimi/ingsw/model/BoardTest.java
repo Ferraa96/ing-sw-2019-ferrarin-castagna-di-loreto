@@ -15,5 +15,10 @@ public class BoardTest {
                 assertEquals(0, board.getMap()[row][column].getHeight());
             }
         }
+        board.toString();
+        Board board2 = new Board();
+        Cell[][] map;
+        map = board.getMap();
+        board2.setMap(map);
     }
 }

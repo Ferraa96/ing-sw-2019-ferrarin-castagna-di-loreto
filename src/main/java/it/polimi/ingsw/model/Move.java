@@ -58,7 +58,7 @@ public class Move implements Effect{
         }
         for(int i = up; i < down; i++) {
             for(int j = left; j < right; j++) {
-                if (map[i][j].getHeight() != 4 && map[i][j].getHeight()-map[row][column].getHeight()<=1) {
+                if (!map[i][j].isDome() && map[i][j].getHeight()-map[row][column].getHeight()<=1) {
                     if (!(i == row && j == column)) {
                         list.add(new Position(i, j));
                     }
@@ -204,6 +204,8 @@ public class Move implements Effect{
     /**
      * auto move for forced targets
      * @param enemy worker forced by mino/apollo
+     * @param pos chosenPosition
+     * @param worker worker
      * @return message you have to send to view
      */
     @Override

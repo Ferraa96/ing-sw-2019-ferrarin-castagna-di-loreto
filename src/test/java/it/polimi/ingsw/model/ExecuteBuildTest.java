@@ -11,6 +11,7 @@ public class ExecuteBuildTest {
     Cell[][] map;
     Build standardBuild = new Build(board.getMap(),true,false);
     Build hephaestusBuild = new Build(board.getMap(),false,true);
+    Build atlasBuild = new Build(board.getMap(),false,false);
     Build demeterBuild = new Build(board.getMap(),true,true);
     Position position = new Position(2,2);
     Worker target = new Worker(1,0);
@@ -52,5 +53,9 @@ public class ExecuteBuildTest {
         assertEquals(4,map[1][2].getHeight());
         assertEquals(2,target.getPosition().getRow());
         assertEquals(2,target.getPosition().getColumn());
+        atlasBuild.executeAction(new Position(0,0),target);
+        atlasBuild.executeAutoAction(target,mossa,target);
+        assertEquals(0,map[0][0].getHeight());
+        assertEquals(true, map[0][0].isDome());
     }
 }

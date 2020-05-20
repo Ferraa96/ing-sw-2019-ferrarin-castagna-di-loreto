@@ -43,7 +43,7 @@ public class Build implements Effect {
         else if(down > 5) { down = 5; }
         for(int i = up; i < down; i++) {
             for(int j = left; j < right; j++) {
-                if (map[i][j].getHeight()!=4 && map[i][j].getWorkerID() == -1) {
+                if (!map[i][j].isDome() && map[i][j].getWorkerID() == -1) {
                     if (!(i == row && j == column))
                         list.add(new Position(i, j));
                 }
@@ -108,7 +108,7 @@ public class Build implements Effect {
         int height = map[chosenCell.getRow()][chosenCell.getColumn()].getHeight();
         if (!nextBlock) {
             if (!specific) {
-                map[chosenCell.getRow()][chosenCell.getColumn()].setHeight(4);
+                map[chosenCell.getRow()][chosenCell.getColumn()].setDome(true);
                 return new BuildNotification(chosenCell, height, true);
             }
             else {
@@ -118,6 +118,10 @@ public class Build implements Effect {
         }
         else {
             height++;
+            if (height==4){
+                height=3;
+                map[chosenCell.getRow()][chosenCell.getColumn()].setDome(true);
+            }
             map[chosenCell.getRow()][chosenCell.getColumn()].setHeight(height);
         }
         return new BuildNotification(chosenCell, height, false);
@@ -128,7 +132,7 @@ public class Build implements Effect {
      * @param enemy not used
      * @return nothing
      */
-    public BuildNotification executeAutoAction(Worker enemy, Position pos, Worker worker) { return null; }
+    public BuildNotification executeAutoAction(Worker enemy, Position pos, Worker worker) { return null;}
 
     /**
      * not used here
