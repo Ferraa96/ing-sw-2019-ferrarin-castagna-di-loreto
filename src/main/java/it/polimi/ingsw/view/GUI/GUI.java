@@ -51,7 +51,7 @@ public class GUI extends Application implements UIRender{
                 this.stage.hide();
             } else {
                 this.stage = new Stage();
-                this.stage.setResizable(true);
+                this.stage.resizableProperty().setValue(fullScreen);
             }
 
             this.stage.setMaximized(fullScreen);
@@ -82,20 +82,34 @@ public class GUI extends Application implements UIRender{
 
     @Override
     public void showLogin(){
-            showScene("/fxml/login.fxml",false);
+        Platform.runLater( () -> {
+            showScene("/fxml/login.fxml", false);
             updateStageInfo("LOGIN");
+        });
     }
 
     @Override
     public void showSelectionCards(){
-        showScene("/fxml/choosecardslist.fxml",false);
-        updateStageInfo("SELECT CARDS");
+        Platform.runLater( () -> {
+          showScene("/fxml/choosecardslist.fxml",false);
+          updateStageInfo("SELECT CARDS");
+        });
+    }
+
+    @Override
+    public void showCardSelection(){
+        Platform.runLater( () -> {
+            showScene("/fxml/choosecard.fxml",false);
+            updateStageInfo("PICK A CARD");
+        });
     }
 
     @Override
     public void showMap(){
+        Platform.runLater( () -> {
             showScene("/fxml/map.fxml",true);
             updateStageInfo("SANTORINI");
+        });
     }
 
 }

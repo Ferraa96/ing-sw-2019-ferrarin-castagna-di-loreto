@@ -8,6 +8,8 @@ public interface UIRender {
 
     void showSelectionCards();
 
+    void showCardSelection();
+
     void showMap();
 
 }

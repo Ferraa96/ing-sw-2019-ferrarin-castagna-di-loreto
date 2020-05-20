@@ -1,22 +1,29 @@
 package it.polimi.ingsw.view.GUI;
 
 import it.polimi.ingsw.controller.Client.SocketClient;
+import it.polimi.ingsw.controller.Instructions.ChooseCardListNotification;
+import it.polimi.ingsw.controller.Instructions.ChooseCardNotification;
 import it.polimi.ingsw.controller.Instructions.SetNameNotification;
 import it.polimi.ingsw.model.Cell;
 import it.polimi.ingsw.model.Movement;
 import it.polimi.ingsw.model.Position;
 import it.polimi.ingsw.view.ViewInterface;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class GUIHandler implements ViewInterface {
 
     private SocketClient socketClient;
     private GUI gui;
+    private int playernumber;
     private String name = "";
     private String ip;
     private String currentScene = "welcome";
+    private String imagepath;
+    private int card;
     private int clientID;
+    private List<Integer> chosen = new ArrayList<>();
 
     public GUIHandler(GUI gui){
         this.gui = gui;
@@ -25,6 +32,7 @@ public class GUIHandler implements ViewInterface {
     public void getLoginInfo(String name,String ip){
         this.name = name;
         this.ip = ip;
+        socketClient = new SocketClient(1);
         if(socketClient.connectGUI(ip,this)){
             socketClient.send(new SetNameNotification(name, clientID));
         }else{
@@ -32,23 +40,8 @@ public class GUIHandler implements ViewInterface {
         }
     }
 
-    public void setScene(String scene){
-
-        switch(scene){
-            case "login":
-                socketClient = new SocketClient(1);
-                setName();
-                break;
-            case "cards":
-                currentScene="login";
-                gui.showSelectionCards();
-                break;
-            case "map":
-                currentScene="cards";
-                gui.showMap();
-                break;
-        }
-
+    public String setNameOnMap(){
+        return this.name;
     }
 
     @Override
@@ -56,17 +49,23 @@ public class GUIHandler implements ViewInterface {
         gui.showLogin();
     }
 
+    public void getSelectedCards(List<Integer> chosen){
+        this.chosen.addAll(chosen);
+        socketClient.send(new ChooseCardListNotification(chosen));
+    }
+
+    public int setPlayers(){
+        return this.playernumber;
+    }
 
     @Override
     public void chooseCardList(int num) {
-        setScene("cards");
-        boolean ok = true;
-        while(ok == true) {
-            if(currentScene.equals("map")){
-                ok = false;
-                break;
-            }
-        }
+        playernumber = num;
+        gui.showSelectionCards();
+    }
+
+    public List<Integer> setGodList(){
+        return this.chosen;
     }
 
     @Override
@@ -76,12 +75,26 @@ public class GUIHandler implements ViewInterface {
 
     @Override
     public void chooseCard(List<Integer> cardList) {
+        chosen.clear();
+        this.chosen.addAll(cardList);
+        gui.showCardSelection();
+    }
 
+    public void getCard(int card, String imagepath){
+        this.card = card;
+        this.imagepath = imagepath;
+        socketClient.send(new ChooseCardNotification(this.card));
     }
 
     @Override
     public void firstPositioning(List<Position> availablePos, String godName, boolean isMyTurn) {
+        if(isMyTurn) {
+            gui.showMap();
+        }
+    }
 
+    public String setGodOnMap(){
+        return this.imagepath;
     }
 
     @Override

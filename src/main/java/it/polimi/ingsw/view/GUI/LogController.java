@@ -3,6 +3,7 @@ package it.polimi.ingsw.view.GUI;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 
 public class LogController extends GUIController{
@@ -19,6 +20,7 @@ public class LogController extends GUIController{
     @FXML
     private void logIn() {
         this.guiHandler = super.getGuiHandler();
+
         if((playerName.getText().equals("")) || (IP.getText().equals(""))) {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("ERROR");
@@ -27,6 +29,7 @@ public class LogController extends GUIController{
             alert.showAndWait();
         }else{
             guiHandler.getLoginInfo(playerName.getText(), IP.getText());
+            button.disableProperty().setValue(true);
         }
     }
 

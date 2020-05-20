@@ -9,7 +9,7 @@ public class WelcomeController extends GUIController{
     @FXML
     public void startGame(){
         this.guiHandler = super.getGuiHandler();
-        guiHandler.setScene("login");
+        guiHandler.setName();
     }
 
 }
