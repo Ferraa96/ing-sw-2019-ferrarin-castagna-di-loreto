@@ -19,6 +19,8 @@ public class SaveState implements Serializable {
     private int actualEffect;
     @SerializedName("godPower")
     private boolean godPower;
+    @SerializedName("athenaPower")
+    private boolean athenaPower;
 
     public List<PlayerInfo> getPlayers() {
         return players;
@@ -81,5 +83,13 @@ public class SaveState implements Serializable {
 
     public boolean isGodPower() {
         return godPower;
+    }
+
+    public void setAthenaPower(boolean athenaPower) {
+        this.athenaPower = athenaPower;
+    }
+
+    public boolean isAthenaPower() {
+        return athenaPower;
     }
 }

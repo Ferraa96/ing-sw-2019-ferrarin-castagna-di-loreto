@@ -284,6 +284,12 @@ public class Turn implements ModelInterface {
                     break;
                 }
             }
+        } else {
+            nextTurn();
+            List<Position> availableWorkers = new ArrayList<>();
+            availableWorkers.add(cardList.get(actualPlayer).getWorker1().getPosition());
+            availableWorkers.add(cardList.get(actualPlayer).getWorker2().getPosition());
+            socket.broadcast(new ChooseWorkerNotification(availableWorkers, actualPlayer));
         }
     }
 

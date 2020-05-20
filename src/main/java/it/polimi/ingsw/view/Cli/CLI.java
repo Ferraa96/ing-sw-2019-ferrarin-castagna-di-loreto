@@ -13,9 +13,15 @@ import java.util.*;
 public class CLI implements ViewInterface {
     private final SocketClient socket;
     private final Tile[][] gameMap;
-    private final Scanner scanner = new Scanner(System.in);
     private final TileGetter tileGetter;
     private int clientID;
+    private List<Position> posList;
+    private List<Integer> intList = new ArrayList<>();
+    private List<Integer> chosenCards;
+    private final ScannerListener scannerListener;
+    private List<Position> chosenPos;
+    private int numPlayers;
+    private String godName;
 
     /**
      * creates the CLI
@@ -31,7 +37,32 @@ public class CLI implements ViewInterface {
             }
         }
         printLogo();
+        scannerListener = new ScannerListener(this);
+        scannerListener.start();
         setName();
+    }
+
+    /**
+     * lets the player set his name
+     */
+    @Override
+    public void setName() {
+        scannerListener.setRequest(Request.name);
+        System.out.print("Imposta il nome: ");
+    }
+
+    /**
+     * verify that the name is valid (non empty)
+     * @param name the input
+     */
+    public void verifyName(String name) {
+        if(name.length() > 0) {
+            socket.send(new SetNameNotification(name, clientID));
+            scannerListener.setRequest(Request.ignore);
+        } else {
+            System.out.print("Nome " + name + " non valido, scegline un altro: ");
+            scannerListener.setRequest(Request.name);
+        }
     }
 
     /**
@@ -57,6 +88,11 @@ public class CLI implements ViewInterface {
         }
     }
 
+    /**
+     * add the position of a worker in the map
+     * @param pos the position of the worker
+     * @param godName the name of the worker's god
+     */
     private void addPosition(Position pos, String godName) {
         int height;
         height = gameMap[pos.getRow()][pos.getColumn()].getHeight();
@@ -108,12 +144,35 @@ public class CLI implements ViewInterface {
         }
     }
 
+    /**
+     * ask the player if he wants to load a saved game
+     */
     @Override
     public void askForReloadState() {
+        scannerListener.setRequest(Request.askReload);
         System.out.print("E' presente un salvataggio, caricarlo? S/N ");
-        socket.send(new AskForReloadStateNotification(verifyBoolean()));
     }
 
+    /**
+     * controls the input of the player
+     * @param answer the input
+     */
+    public void reloadStateAnswer(String answer) {
+        if(answer.equals("s")) {
+            socket.send(new AskForReloadStateNotification(true));
+        } else if(answer.equals("n")) {
+            socket.send(new AskForReloadStateNotification(false));
+        } else {
+            System.out.print("S/N: ");
+            scannerListener.setRequest(Request.askReload);
+        }
+    }
+
+    /**
+     * load a saved game
+     * @param map contains all the workers and buildings positions and informations
+     * @param godNames the name of all the gods in game
+     */
     @Override
     public void reloadState(Cell[][] map, List<String> godNames) {
         HashMap<Integer, Position> workerPos = new HashMap<>();
@@ -147,136 +206,165 @@ public class CLI implements ViewInterface {
      */
     @Override
     public void choosePosition(List<Position> list) {
+        this.posList = list;
         for(Position pos: list) {
             gameMap[pos.getRow()][pos.getColumn()].setIdentifier('x');
         }
         updateScreen();
+        scannerListener.setRequest(Request.position);
         System.out.print("Scegli la posizione (riga, colonna): ");
-        for(Position pos: list) {
-            gameMap[pos.getRow()][pos.getColumn()].setIdentifier(' ');
-        }
-        socket.send(new ChoosePosNotification(verifyPosition(list)));
     }
 
+    /**
+     * verify and return the position entered by the player is available
+     * @param pos the position chosen by the player
+     */
+    public void verifyPosition(Position pos) {
+        for (Position curr : posList) {
+            if (pos.getRow() == curr.getRow() && pos.getColumn() == curr.getColumn()) {
+                for(Position currPos: posList) {
+                    gameMap[currPos.getRow()][currPos.getColumn()].setIdentifier(' ');
+                }
+                socket.send(new ChoosePosNotification(pos));
+                return;
+            }
+        }
+        System.out.print("Scelta non valida, inseriscine un'altra: ");
+        scannerListener.setRequest(Request.position);
+    }
+
+    /**
+     * lets the player choose the card to play with
+     * @param cardList the list of cards
+     */
     @Override
     public void chooseCard(List<Integer> cardList) {
-        List<Card> cards;
-        cards = new IOHandler().getCardList();
+        intList = cardList;
+        List<Card> cards = new IOHandler().getCardList();
         System.out.println("\nScegli una carta tra\n");
         for(Integer curr: cardList) {
             System.out.println(curr + ": " + cards.get(curr).getName());
             System.out.println(cards.get(curr).getDescription() + "\n");
         }
-        socket.send(new ChooseCardNotification(verifyCard(cardList)));
-    }
-
-    @Override
-    public void chooseCardList(int num) {
-        List<Card> cards = new IOHandler().getCardList();
-        List<Integer> chosen = new ArrayList<>();
-        System.out.println("\nSei il primo giocatore, scegli " + num + " carte tra\n");
-        for(int i = 0; i < cards.size(); i++) {
-            System.out.println(i + ": " + cards.get(i).getName() + "\n" + cards.get(i).getDescription() + "\n");
-        }
-        List<Integer> tempList = new ArrayList<>();
-        for(int i = 0; i < cards.size(); i++) {
-            tempList.add(i);
-        }
-        for(int i = 0; i < num; i++) {
-            System.out.print("Carta " + (i + 1) + ": ");
-            chosen.add(verifyCard(tempList));
-        }
-        socket.send(new ChooseCardListNotification(chosen));
+        scannerListener.setRequest(Request.card);
     }
 
     /**
      * verify and return the index of the card chosen by the player
-     * @param list the list of all the cards available
-     * @return the card index chosen and verified
+     * @param selected the selected card
      */
-    private int verifyCard(List<Integer> list) {
-        int card;
-        while(true) {
-            if(scanner.hasNextInt()) {
-                card = scanner.nextInt();
-                for (Integer i : list) {
-                    if (i == card) {
-                        return card;
-                    }
-                }
+    public void verifyCard(int selected) {
+        for (Integer i : intList) {
+            if (i == selected) {
+                socket.send(new ChooseCardNotification(selected));
+                intList.clear();
+                return;
             }
-            scanner.nextLine();
-            System.out.print("Carta non valida, selezionane un'altra: ");
         }
+        System.out.print("Carta non valida, selezionane un'altra: ");
+        scannerListener.setRequest(Request.card);
     }
 
+    /**
+     * lets the player choose all the cards that will be in the game
+     * @param num the number of cards that the player have to choose
+     */
+    @Override
+    public void chooseCardList(int num) {
+        numPlayers = num;
+        chosenCards = new ArrayList<>();
+        List<Card> cards = new IOHandler().getCardList();
+        System.out.println("\nSei il primo giocatore, scegli " + num + " carte tra\n");
+        for(int i = 0; i < cards.size(); i++) {
+            intList.add(i);
+            System.out.println(i + ": " + cards.get(i).getName() + "\n" + cards.get(i).getDescription() + "\n");
+        }
+        System.out.print("Carta " + 1 + ": ");
+        scannerListener.setRequest(Request.cardList);
+    }
+
+    /**
+     * verify that the selected card is allowed
+     * @param card the chosen card
+     */
+    public void verifyCardList(int card) {
+        if(card < new IOHandler().getCardList().size()) {
+            chosenCards.add(card);
+            if(chosenCards.size() == numPlayers) {
+                socket.send(new ChooseCardListNotification(chosenCards));
+                intList.clear();
+                return;
+            }
+            System.out.print("Carta " + (chosenCards.size() + 1) + ": ");
+        } else {
+            System.out.println("Selezione non valida");
+        }
+        scannerListener.setRequest(Request.cardList);
+    }
+
+    /**
+     * lets the player set the position of his workers
+     * @param availablePos the list of all the available positions
+     * @param godName the name of the chosen god
+     * @param isMyTurn indicates if is the turn of the player
+     */
     @Override
     public void firstPositioning(List<Position> availablePos, String godName, boolean isMyTurn) {
+        this.godName = godName;
+        posList = availablePos;
         if(isMyTurn) {
-            List<Position> list = new ArrayList<>();
-            Position pos;
+            chosenPos = new ArrayList<>();
             for (Position currPos : availablePos) {
                 gameMap[currPos.getRow()][currPos.getColumn()].setIdentifier('x');
             }
             updateScreen();
             System.out.print("Posizione iniziale lavoratore 1 (riga, colonna): ");
-            pos = verifyPosition(availablePos);
-            addPosition(pos, godName);
-            updateScreen();
-            list.add(pos);
-            System.out.print("Posizione iniziale lavoratore 2 (riga, colonna): ");
-            pos = verifyPosition(availablePos);
-            addPosition(pos, godName);
-            gameMap[pos.getRow()][pos.getColumn()].setPlayerInfo(godName);
-            list.add(pos);
-            socket.send(new FirstPositioningNotification(list));
-            for (Position currPos : availablePos) {
-                gameMap[currPos.getRow()][currPos.getColumn()].setIdentifier(' ');
-            }
+            scannerListener.setRequest(Request.firstPos);
         } else {
             for(Position currPos: availablePos) {
                 addPosition(currPos, godName);
             }
+            updateScreen();
         }
-        updateScreen();
     }
 
     /**
-     * verify and return the position entered by the player is available
-     * @param list the list of all the available positions
-     * @return the position chosen by the player and verified
+     * verify if the position chosen is valid
+     * @param pos the chosen position
      */
-    private Position verifyPosition(List<Position> list) {
-        boolean ok = false;
-        Position pos;
-        while(true) {
-            pos = controlTwoInt();
-            for (Position curr : list) {
-                if (pos.getRow() == curr.getRow() && pos.getColumn() == curr.getColumn()) {
-                    ok = true;
-                    break;
-                }
-            }
-            if(ok) {
-                return pos;
-            }
-            System.out.print("Scelta non valida, inseriscine un'altra: ");
+    public void verifyFirstPos(Position pos) {
+        System.out.println(pos);
+        if(notAvailablePos(pos)) {
+            System.out.println("Posizione non disponibile");
+            scannerListener.setRequest(Request.firstPos);
+            return;
         }
+        chosenPos.add(pos);
+        addPosition(pos, godName);
+        updateScreen();
+        if(chosenPos.size() == 2) {
+            for (Position currPos : posList) {
+                gameMap[currPos.getRow()][currPos.getColumn()].setIdentifier(' ');
+            }
+            socket.send(new FirstPositioningNotification(chosenPos));
+            return;
+        }
+        System.out.print("Posizione iniziale lavoratore 2 (riga, colonna): ");
+        scannerListener.setRequest(Request.firstPos);
     }
 
-    private Position controlTwoInt() {
-        int x, y;
-        while (true) {
-            if(scanner.hasNextInt()) {
-                x = scanner.nextInt();
-                if(scanner.hasNextInt()) {
-                    y = scanner.nextInt();
-                    return new Position(x - 1, y - 1);
-                }
+    /**
+     * verify if the chosen position is valid
+     * @param pos the position
+     * @return true if the position is NOT valid
+     */
+    private boolean notAvailablePos(Position pos) {
+        for (Position curr : posList) {
+            if (pos.getRow() == curr.getRow() && pos.getColumn() == curr.getColumn()) {
+                return false;
             }
-            scanner.nextLine();
-            System.out.print("Inserisci una posizione valida: ");
         }
+        return true;
     }
 
     @Override
@@ -284,63 +372,86 @@ public class CLI implements ViewInterface {
         this.clientID = clientID;
     }
 
-    @Override
-    public void setName() {
-        String name;
-        System.out.print("Imposta il nome: ");
-        if(scanner.hasNextLine()) {
-            name = scanner.nextLine();
-            if(name.length() > 0) {
-                socket.send(new SetNameNotification(name, clientID));
-            } else {
-                System.out.print("Nome " + name + " non valido, scegline un altro: ");
-            }
-        }
-    }
-
+    /**
+     * lets the player choose which worker play with
+     * @param availableWorkers the list of all his workers
+     */
     @Override
     public void chooseWorker(List<Position> availableWorkers) {
+        posList = availableWorkers;
         for(Position pos: availableWorkers) {
             gameMap[pos.getRow()][pos.getColumn()].setIdentifier('x');
         }
         updateScreen();
         System.out.print("Seleziona il worker: ");
-        Position chosen = verifyPosition(availableWorkers);
-        for(Position pos: availableWorkers) {
-            gameMap[pos.getRow()][pos.getColumn()].setIdentifier(' ');
-        }
-        socket.send(new ChooseWorkerNotification(chosen));
+        scannerListener.setRequest(Request.worker);
     }
 
+    /**
+     * verify that the chosen worker is valid
+     * @param pos the position of the chosen worker
+     */
+    public void verifyWorker(Position pos) {
+        if(notAvailablePos(pos)) {
+            System.out.println("Seleziona un worker valido");
+            scannerListener.setRequest(Request.worker);
+            return;
+        }
+        for(Position currPos: posList) {
+            gameMap[currPos.getRow()][currPos.getColumn()].setIdentifier(' ');
+        }
+        socket.send(new ChooseWorkerNotification(pos));
+    }
+
+    /**
+     * lets the player activate the power of his god
+     */
     @Override
     public void choosePower() {
         System.out.print("Attivare il potere della carta? S/N ");
-        socket.send(new SetPowerNotification(verifyBoolean()));
+        scannerListener.setRequest(Request.power);
     }
 
-    private boolean verifyBoolean() {
-        String answer;
-        while (true) {
-            answer = scanner.nextLine();
-            if(answer.equals("s")) {
-                return true;
-            } else if(answer.equals("n")) {
-                return false;
-            }
+    /**
+     * verify the answer of the player
+     * @param answer the answer
+     */
+    public void verifyPower(String answer) {
+        if(answer.equals("s")) {
+            socket.send(new SetPowerNotification(true));
+        } else if(answer.equals("n")) {
+            socket.send(new SetPowerNotification(false));
+        } else {
+            System.out.print("S/N: ");
+            scannerListener.setRequest(Request.power);
         }
     }
 
+    /**
+     * handle the disconnection
+     * @param playerDisconnected the player that has caused the disconnection
+     */
     @Override
     public void handleDisconnection(int playerDisconnected) {
         System.out.println("Il giocatore " + playerDisconnected + " si è disconnesso, la partita è annullata");
         socket.closeClient();
+        scannerListener.stopReading();
     }
 
+    /**
+     * handle a message for other clients
+     * @param message the message that the client has to show
+     */
     @Override
     public void notificationForOtherClient(String message) {
         System.out.println(message);
     }
 
+    /**
+     * handle the elimination of a player
+     * @param elim indicates if the client is the eliminated player
+     * @param eliminatedPlayer the name of the eliminated player
+     */
     @Override
     public void elimination(boolean elim, String eliminatedPlayer) {
         if(elim) {
@@ -350,6 +461,11 @@ public class CLI implements ViewInterface {
         }
     }
 
+    /**
+     * handle the win
+     * @param win indicates if the client is the winner
+     * @param winnerName the winner's name
+     */
     @Override
     public void win(boolean win, String winnerName) {
         if(win) {
@@ -358,8 +474,12 @@ public class CLI implements ViewInterface {
             System.out.println("Ha vinto " + winnerName);
         }
         socket.closeClient();
+        scannerListener.stopReading();
     }
 
+    /**
+     * prints the logo of "Santorini"
+     */
     private void printLogo() {
         String santoriniLogo = "   _____ ___    _   ____________  ____  _____   ______\n" +
                 "  / ___//   |  / | / /_  __/ __ \\/ __ \\/  _/ | / /  _/\n" +
