@@ -19,9 +19,17 @@ public class CardTest {
 
     @Test
     public void checkParameters() {
+        map = board.getMap();
         //set players
         for (int i = 0; i < 5; i++) {
             Card card = ioHandler.getCardList().get(i*2);
+            card.setCard(board.getMap(), i);
+            cardlist.add(card);
+        }
+        //extra
+        assertEquals(false, cardlist.get(0).getDescription().isEmpty());
+        for (int i = 0; i < 4; i++) {
+            Card card = ioHandler.getCardList().get(i*2+1);
             card.setCard(board.getMap(), i);
             cardlist.add(card);
         }
@@ -30,9 +38,6 @@ public class CardTest {
         for (Card curr: cardlist) {
             curr.setEnemies(cardlist);
         }
-
-        //board situation
-        map = board.getMap();
 
         //names
         assertEquals("Apollo", cardlist.get(0).getName());
@@ -62,6 +67,11 @@ public class CardTest {
         assertEquals(false, cardlist.get(1).checkCardActivation(cardlist.get(0).getWorker2()));
         assertEquals(true, cardlist.get(2).checkCardActivation(cardlist.get(0).getWorker2()));
 
+
+        assertEquals(7, cardlist.get(0).availablePositions(0,cardlist.get(0).getWorker2()).size());
+        cardlist.get(0).setActivePower(true);
+        assertEquals(0, cardlist.get(0).availablePositions(0,cardlist.get(0).getWorker2()).size());
+
         //real action simple
         cardlist.get(0).applyEffect(0,cardlist.get(0).getWorker1(),new Position(1,1));
         cardlist.get(0).applyEffect(1,cardlist.get(0).getWorker1(),new Position(2,2));
@@ -71,12 +81,12 @@ public class CardTest {
         assertEquals(1,map[2][2].getHeight());
 
         //double move
-        cardlist.get(1).firstPositioning(new Position(0,0), new Position(2, 1));
+        cardlist.get(1).firstPositioning(new Position(2,1), new Position(0, 0));
         cardlist.get(0).setActivePower(true);
         cardlist.get(0).applyEffect(0,cardlist.get(0).getWorker1(),new Position(0,0));
         assertEquals(0, cardlist.get(0).getWorker1().getPosition().getRow());
         assertEquals(0, cardlist.get(0).getWorker1().getPosition().getColumn());
-        assertEquals(1, cardlist.get(1).getWorker1().getPosition().getRow());
-        assertEquals(1, cardlist.get(1).getWorker1().getPosition().getColumn());
+        assertEquals(1, cardlist.get(1).getWorker2().getPosition().getRow());
+        assertEquals(1, cardlist.get(1).getWorker2().getPosition().getColumn());
     }
 }

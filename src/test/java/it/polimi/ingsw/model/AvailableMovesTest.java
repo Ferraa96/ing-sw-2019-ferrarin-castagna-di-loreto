@@ -72,7 +72,8 @@ public class AvailableMovesTest {
         assertEquals(1, availablePos6.get(0).getColumn());
         assertEquals(2, availablePos6.get(0).getRow());
         // diventa cupola
-        map[2][3].setHeight(4);
+        map[2][3].setHeight(3);
+        map[2][3].setDome(true);
         List<Position> availablePos4 = standardMove.availableWithGod(target);
         assertEquals(6, availablePos4.size());
         assertEquals(1, availablePos4.get(3).getColumn());
@@ -124,9 +125,11 @@ public class AvailableMovesTest {
         map[2][1].setHeight(3);
         map[3][2].setWorkerID(5);
         map[3][2].setHeight(1);
-        map[1][1].setHeight(4);
+        map[1][1].setHeight(3);
+        map[1][1].setDome(true);
         map[1][2].setHeight(1);
-        map[2][3].setHeight(4);
+        map[2][3].setHeight(3);
+        map[2][3].setDome(true);
         map[3][3].setHeight(3);
         List<Position> availablePos = standardMove.availableWithGod(target);
         assertEquals(1, availablePos.size());
@@ -147,6 +150,7 @@ public class AvailableMovesTest {
         assertEquals(1, availablePos3.get(0).getRow());
         assertEquals(2, availablePos3.get(0).getColumn());
         artemisMove.setLastMoveInitialPosition(new Position(1, 2));
+        artemisMove.setLastBuildPosition(new Position(1, 2));
         List<Position> availablePos4 = artemisMove.availableWithGod(target);
         assertEquals(0, availablePos4.size());
 

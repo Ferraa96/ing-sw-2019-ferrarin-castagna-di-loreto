@@ -103,10 +103,10 @@ public class GameTest {
         assertEquals(2, map[1][3].getHeight());
         assertEquals(0, map[1][4].getHeight());
         assertEquals(0, map[2][1].getHeight());
-        assertEquals(4, map[2][2].getHeight());
+        assertEquals(3, map[2][2].getHeight());
         assertEquals(3, map[2][3].getHeight());
         assertEquals(2, map[2][4].getHeight());
-        assertEquals(4, map[3][1].getHeight());
+        assertEquals(true, map[3][1].isDome());
         assertEquals(2, map[3][2].getHeight());
         assertEquals(0, map[3][3].getHeight());
         assertEquals(0, map[3][4].getHeight());
