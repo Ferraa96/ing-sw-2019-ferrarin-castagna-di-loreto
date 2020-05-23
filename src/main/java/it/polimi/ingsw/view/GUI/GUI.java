@@ -73,6 +73,36 @@ public class GUI extends Application implements UIRender{
         }
     }
 
+    private void showNewWindow(String resource, String title) {
+        if (resource == null) {
+            return;
+        }
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getClass().getResource(resource));
+            Scene scene2 = loader.load();
+            GUIController currentControl = loader.getController();
+
+            Stage stage2 = new Stage();
+            stage2.setTitle(title);
+
+            stage2.setOnCloseRequest((WindowEvent t) -> {
+                Platform.exit();
+                System.exit(0);
+            });
+
+            if (currentControl != null) {
+                currentControl.setGuiHandler(guiHandler);
+            }
+
+            stage2.setScene(scene2);
+            stage2.show();
+        } catch (IOException e) {
+            logger.log(Level.SEVERE, "Cannot load scene with resource {0}", resource);
+            logger.log(Level.SEVERE, "Exception when loading scene", e);
+        }
+    }
+
     private void updateStageInfo(String title) {
         if (this.stage != null) {
             this.stage.setTitle(title);
@@ -107,8 +137,27 @@ public class GUI extends Application implements UIRender{
     @Override
     public void showMap(){
         Platform.runLater( () -> {
-            showScene("/fxml/map.fxml",true);
+            showScene("/fxml/map.fxml",false);
             updateStageInfo("SANTORINI");
+        });
+    }
+
+    @Override
+    public void showMessage(){
+        Platform.runLater( () -> {
+            showScene("/fxml/message.fxml",false);
+            updateStageInfo("WAIT");
+        });
+    }
+
+    @Override
+    public void showRequestPower(){
+        Platform.runLater(() -> {
+            try {
+                showNewWindow("/fxml/powerrequest.fxml", "CARD POWER");
+            } catch (Exception e) {
+                logger.log(Level.WARNING, "Error during board request", e);
+            }
         });
     }
 

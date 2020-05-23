@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.Scene?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<Scene xmlns="http://javafx.com/javafx/11.0.1"
+       xmlns:fx="http://javafx.com/fxml/1"
+       fx:controller="it.polimi.ingsw.view.GUI.PowerController">
+
+    <AnchorPane>
+      <children>
+         <ImageView fitHeight="281.0" fitWidth="408.0" pickOnBounds="true" preserveRatio="true">
+            <image>
+               <Image url="@../images/title_water.png" />
+            </image>
+         </ImageView>
+         <Label layoutX="15.0" layoutY="50.0" text="DO YOU WANT TO ACTIVATE THE CARD POWER?">
+            <font>
+               <Font name="Franklin Gothic Medium" size="18.0" />
+            </font>
+         </Label>
+         <Button fx:id="YES" layoutX="94.0" layoutY="173.0" mnemonicParsing="false" onAction="#activatePower" text="YES" />
+         <Button fx:id="NO" layoutX="261.0" layoutY="173.0" mnemonicParsing="false" onAction="#dontactivatePower" text="NO" />
+      </children>
+    </AnchorPane>
+
+</Scene>

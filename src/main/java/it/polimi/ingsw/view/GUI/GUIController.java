@@ -1,5 +1,7 @@
 package it.polimi.ingsw.view.GUI;
 
+import javafx.stage.Stage;
+
 abstract class GUIController {
 
     private GUIHandler guiHandler;

@@ -12,4 +12,8 @@ public interface UIRender {
 
     void showMap();
 
+    void showMessage();
+
+    void showRequestPower();
+
 }
