@@ -173,6 +173,29 @@ public class CardsSelectionController extends GUIController{
             }
     }
 
+//    private void selectGods() {
+//        List<Button> godsButton = new ArrayList<>();
+//        godsButton.add(apollobutton);
+//        godsButton.add(artemisbutton);
+//        godsButton.add(athenabutton);
+//        godsButton.add(atlasbutton);
+//        godsButton.add(demeterbutton);
+//        godsButton.add(hephaestusbutton);
+//        godsButton.add(minotaurbutton);
+//        godsButton.add(pambutton);
+//        godsButton.add(prometeusbutton);
+//
+//        for (int i = 0; i < 9; i++) {
+//            if (!setted)
+//                getPlayers();
+//            chosen.add(i,i);
+//            Apollo.opacityProperty().setValue(5);
+//            godsButton.get(i).disableProperty().setValue(true);
+//            if (i == playerNumber)
+//                disableAll();
+//        }
+//    }
+
     private void disableAll() {
         apollobutton.disableProperty().setValue(true);
         artemisbutton.disableProperty().setValue(true);
@@ -192,7 +215,7 @@ public class CardsSelectionController extends GUIController{
 
     private void getPlayers(){
         this.guiHandler = super.getGuiHandler();
-        playerNumber = guiHandler.setPlayers();
+        playerNumber = guiHandler.getPlayers();
         setted = true;
     }
 

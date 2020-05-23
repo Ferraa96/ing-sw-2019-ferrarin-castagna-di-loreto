@@ -17,90 +17,60 @@ public class ChooseCardController extends GUIController{
     ImageView GOD2;
     @FXML
     ImageView GOD3;
+    private List<ImageView> godsImages = new ArrayList<>();
 
     @FXML
     AnchorPane pane;
 
     @FXML
-    Button god1;
+    Button god1 = new Button("CHOOSE");
     @FXML
-    Button god2;
+    Button god2 = new Button("CHOOSE");
     @FXML
-    Button god3;
+    Button god3 = new Button("CHOOSE");
+    private final List<Button> godsButtons = new ArrayList<>();
+
     @FXML
     Button show;
 
     private GUIHandler guiHandler;
-
     private List<Integer> chosen = new ArrayList<>();
 
     @FXML
-    public void showCards(){ //non funziona per test singleplayer
+    public void showCards(){
+        godsImages.add(GOD1);
+        godsImages.add(GOD2);
+        godsImages.add(GOD3);
+        godsButtons.add(god1);
+        godsButtons.add(god2);
+        godsButtons.add(god3);
         setChosen();
-        if(chosen.size() == 3) {
-            GOD2.setImage(new Image(convertGod(chosen.get(2)), 300, 450, true, true));
-            GOD1.setImage(new Image(convertGod(chosen.get(0)), 300, 450, true, true));
-            GOD3.setImage(new Image(convertGod(chosen.get(1)), 300, 450, true, true));
-            god1 = new Button("CHOOSE");
-            god1.setLayoutY(300);
-            god1.setLayoutX(50);
-            god3 = new Button("CHOOSE");
-            god3.setLayoutY(300);
-            god3.setLayoutX(400);
-            god2 = new Button("CHOOSE");
-            god2.setLayoutY(300);
-            god2.setLayoutX(220);
-            pane.getChildren().addAll(god1,god2,god3);
-            god2.setOnAction( e -> {
-                setCard0();
-                disableAll();
-            });
-            god3.setOnAction( e -> {
-                setCard1();
-                disableAll();
-            });
-            god1.setOnAction( e -> {
-                setCard2();
+
+        for (int i = 0; i < chosen.size(); i++) {
+            final int finalI = i;
+            godsImages.get(offsetX(chosen.size(),finalI)).setImage(new Image(convertGod(chosen.get(finalI)), 300, 450, true, true));
+            godsButtons.get(finalI).setLayoutY(300);
+            godsButtons.get(finalI).setLayoutX(offsetX(chosen.size(),finalI)*175+50);
+            pane.getChildren().addAll(godsButtons.get(finalI));
+            godsButtons.get(finalI).setOnAction( e -> {
+                setCard(finalI);
                 disableAll();
             });
         }
-        if(chosen.size() == 2){
-            GOD1.setImage(new Image(convertGod(chosen.get(0)), 300, 450, true, true));
-            GOD3.setImage(new Image(convertGod(chosen.get(1)), 300, 450, true, true));
-            god1 = new Button("CHOOSE");
-            god1.setLayoutY(300);
-            god1.setLayoutX(50);
-            god3 = new Button("CHOOSE");
-            god3.setLayoutY(300);
-            god3.setLayoutX(400);
-            pane.getChildren().addAll(god1, god3);
-            god1.setOnAction( e -> {
-                setCard0();
-                disableAll();
-            });
-            god3.setOnAction( e -> {
-                setCard1();
-                disableAll();
-            });
-            show.setVisible(false);
-        }
-        if(chosen.size() == 1){
-            GOD3.setImage(new Image(convertGod(chosen.get(0)), 300, 450, true, true));
-            god3 = new Button("CHOOSE");
-            god3.setLayoutY(300);
-            god3.setLayoutX(400);
-            pane.getChildren().addAll(god3);
-            god3.setOnAction( e -> {
-                setCard0();
-                disableAll();
-            });
-            show.setVisible(false);
-        }
+        show.setVisible(false);
+    }
+
+    private int offsetX( int num, int actual) {
+        if (num == 3)
+            return actual;
+        if (num == 2)
+            return actual*2;
+        return 1;
     }
 
     private void setChosen(){
         this.guiHandler = super.getGuiHandler();
-        chosen.addAll(guiHandler.setGodList());
+        chosen.addAll(guiHandler.getGodList());
     }
 
     private String convertGod(int godName){
@@ -138,16 +108,8 @@ public class ChooseCardController extends GUIController{
         }
     }
 
-    private void setCard0(){
-       guiHandler.getCard(chosen.get(0),convertGod(chosen.get(0)));
-    }
-
-    private void setCard1(){
-        guiHandler.getCard(chosen.get(1),convertGod(chosen.get(1)));
-    }
-
-    private void setCard2(){
-        guiHandler.getCard(chosen.get(2),convertGod(chosen.get(2)));
+    private void setCard(int index){
+       guiHandler.getCard(chosen.get(index),convertGod(chosen.get(index)));
     }
 
     private void disableAll(){

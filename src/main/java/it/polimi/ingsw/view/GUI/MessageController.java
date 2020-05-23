@@ -17,7 +17,7 @@ public class MessageController extends GUIController {
     @FXML
     public void showMessage(){
         this.guiHandler = super.getGuiHandler();
-        message.setText(guiHandler.setMessage());
+        message.setText(guiHandler.getMessage());
         message.setLayoutY(300);
         message.setLayoutX(150);
         pane.getChildren().add(message);

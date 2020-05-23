@@ -3,12 +3,12 @@ package it.polimi.ingsw.view.GUI;
 public class Square {
 
     private int height;
-    private boolean worker;
+    private int worker;
     private String godname;
 
     public Square(){
         this.height = 0;
-        this.worker = false;
+        this.worker = -1;
     }
 
     public void setHeight(int height) {
@@ -27,11 +27,9 @@ public class Square {
         return godname;
     }
 
-    public void setWorker(boolean worker) {
+    public void setWorker(int worker) {
         this.worker = worker;
     }
 
-    public boolean isWorker() {
-        return worker;
-    }
+    public int getWorker() { return worker; }
 }

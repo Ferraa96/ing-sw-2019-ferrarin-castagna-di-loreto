@@ -6,7 +6,6 @@ import it.polimi.ingsw.model.Cell;
 import it.polimi.ingsw.model.Movement;
 import it.polimi.ingsw.model.Position;
 import it.polimi.ingsw.view.ViewInterface;
-import javafx.application.Platform;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,9 +22,11 @@ public class GUIHandler implements ViewInterface {
     private String godname;
     private String state;
     private Square[][] map;
+    private int playerId;
+    private int currentPlayer = 0;
     private final List<Integer> chosen = new ArrayList<>();
     private final List<Position> availablePos = new ArrayList<>();
-    private final List<Position> currentChoise = new ArrayList<>();
+    private final List<Position> currentChoice = new ArrayList<>();
 
     public GUIHandler(GUI gui){
         this.gui = gui;
@@ -34,21 +35,12 @@ public class GUIHandler implements ViewInterface {
     public void getLoginInfo(String name,String ip){
         this.name = name;
         socketClient = new SocketClient(1);
-        map = new Square[5][5];
-        for(int i = 0; i < 5; i++) {
-            for(int j = 0; j < 5; j++) {
-                map[i][j] = new Square();
-            }
-        }
+
         if(socketClient.connectGUI(ip,this)){
             socketClient.send(new SetNameNotification(name, clientID));
         }else{
             setName();
         }
-    }
-
-    public String setNameOnMap(){
-        return this.name;
     }
 
     @Override
@@ -61,27 +53,10 @@ public class GUIHandler implements ViewInterface {
         socketClient.send(new ChooseCardListNotification(chosen));
     }
 
-    public int setPlayers(){
-        return this.playernumber;
-    }
-
     @Override
     public void chooseCardList(int num) {
         playernumber = num;
         gui.showSelectionCards();
-    }
-
-    public String getState(){
-        return this.state;
-    }
-
-    public List<Integer> setGodList(){
-        return this.chosen;
-    }
-
-    @Override
-    public void setID(int clientID) {
-        this.clientID = clientID;
     }
 
     @Override
@@ -98,39 +73,35 @@ public class GUIHandler implements ViewInterface {
 
     @Override
     public void firstPositioning(List<Position> availablePos, String godName, boolean isMyTurn) {
+        map = new Square[5][5];
+        for(int i = 0; i < 5; i++) {
+            for(int j = 0; j < 5; j++) {
+                map[i][j] = new Square();
+            }
+        }
         if(isMyTurn) {
             this.availablePos.addAll(availablePos);
             this.godname = godName;
+            this.playerId = currentPlayer;
             this.state = "FIRSTPOS";
         }else {
             for(Position currPos: availablePos) {
                 map[currPos.getRow()][currPos.getColumn()].setGodname(godName);
-                map[currPos.getRow()][currPos.getColumn()].setWorker(true);
+                map[currPos.getRow()][currPos.getColumn()].setWorker(currentPlayer);
             }
         }
+        currentPlayer++;
         updateScreen();
     }
 
-    public String setGodOnMap(){
-        return this.imagepath;
-    }
-
-    public List<Position> setAvailablePos(){
-        return this.availablePos;
-    }
-
-    public void getSelectedPos(Position pos){
-        currentChoise.add(pos);
+    public void setSelectedPos(Position pos){
+        currentChoice.add(pos);
         map[pos.getRow()][pos.getColumn()].setGodname(godname);
-        map[pos.getRow()][pos.getColumn()].setWorker(true);
-    }
-
-    public Square[][] getMap() {
-        return map;
+        map[pos.getRow()][pos.getColumn()].setWorker(playerId);
     }
 
     public void definePositions(){
-        socketClient.send(new FirstPositioningNotification(currentChoise));
+        socketClient.send(new FirstPositioningNotification(currentChoice));
     }
 
     @Override
@@ -140,10 +111,6 @@ public class GUIHandler implements ViewInterface {
         this.godname = map[availableWorkers.get(0).getRow()][availableWorkers.get(0).getColumn()].getGodname();
         state = "SELECTWORKER";
         updateScreen();
-    }
-
-    public String getGodName(){
-        return this.godname;
     }
 
     public void defineWorker(Position pos){
@@ -167,16 +134,16 @@ public class GUIHandler implements ViewInterface {
         updateScreen();
     }
 
+    public void defineMovement(Position pos){
+        socketClient.send(new ChoosePosNotification(pos));
+    }
+
     @Override
     public void move(List<Movement> movements) {
         for(Movement move : movements){
-            map[move.getOldPos().getRow()][move.getOldPos().getColumn()].setWorker(false);
-            map[move.getNewPos().getRow()][move.getNewPos().getColumn()].setWorker(true);
+            map[move.getNewPos().getRow()][move.getNewPos().getColumn()].setWorker(map[move.getOldPos().getRow()][move.getOldPos().getColumn()].getWorker());
+            map[move.getOldPos().getRow()][move.getOldPos().getColumn()].setWorker(-1);
         }
-    }
-
-    public void defineMovement(Position pos){
-        socketClient.send(new ChoosePosNotification(pos));
     }
 
     @Override
@@ -209,10 +176,6 @@ public class GUIHandler implements ViewInterface {
 
     }
 
-    public String setMessage(){
-        return this.message;
-    }
-
     @Override
     public void notificationForOtherClient(String message) {
         this.message = message;
@@ -227,6 +190,47 @@ public class GUIHandler implements ViewInterface {
     @Override
     public void win(boolean win, String winnerName) {
 
+    }
+
+    @Override
+    public void setID(int clientID) {
+        this.clientID = clientID;
+    }
+
+    public String getName(){
+        return this.name;
+    }
+
+    public String getMessage(){
+        return this.message;
+    }
+
+    public String getGodName(){
+        return this.godname;
+    }
+
+    public int getPlayers(){
+        return this.playernumber;
+    }
+
+    public String getState(){
+        return this.state;
+    }
+
+    public List<Integer> getGodList(){
+        return this.chosen;
+    }
+
+    public String getGodOnMap(){
+        return this.imagepath;
+    }
+
+    public List<Position> getAvailablePos(){
+        return this.availablePos;
+    }
+
+    public Square[][] getMap() {
+        return map;
     }
 
 }
