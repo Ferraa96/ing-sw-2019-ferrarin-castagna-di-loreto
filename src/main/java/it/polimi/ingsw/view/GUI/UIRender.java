@@ -14,6 +14,6 @@ public interface UIRender {
 
     void showMessage();
 
-    void showRequestPower();
+    void showRequest();
 
 }

@@ -22,8 +22,7 @@ public class GUIHandler implements ViewInterface {
     private String godname;
     private String state;
     private Square[][] map;
-    private int playerId;
-    private int currentPlayer = 0;
+    private int playerId = 0;
     private final List<Integer> chosen = new ArrayList<>();
     private final List<Position> availablePos = new ArrayList<>();
     private final List<Position> currentChoice = new ArrayList<>();
@@ -35,7 +34,12 @@ public class GUIHandler implements ViewInterface {
     public void getLoginInfo(String name,String ip){
         this.name = name;
         socketClient = new SocketClient(1);
-
+        map = new Square[5][5];
+        for(int i = 0; i < 5; i++) {
+            for(int j = 0; j < 5; j++) {
+                map[i][j] = new Square();
+            }
+        }
         if(socketClient.connectGUI(ip,this)){
             socketClient.send(new SetNameNotification(name, clientID));
         }else{
@@ -73,24 +77,24 @@ public class GUIHandler implements ViewInterface {
 
     @Override
     public void firstPositioning(List<Position> availablePos, String godName, boolean isMyTurn) {
-        map = new Square[5][5];
-        for(int i = 0; i < 5; i++) {
-            for(int j = 0; j < 5; j++) {
-                map[i][j] = new Square();
-            }
-        }
         if(isMyTurn) {
             this.availablePos.addAll(availablePos);
             this.godname = godName;
-            this.playerId = currentPlayer;
+            if(availablePos.size() == 23)
+                this.playerId = 1;
+            if(availablePos.size() == 21)
+                this.playerId = 2;
             this.state = "FIRSTPOS";
         }else {
+            if(availablePos.size() == 23)
+                this.playerId = 1;
+            if(availablePos.size() == 21)
+                this.playerId = 2;
             for(Position currPos: availablePos) {
                 map[currPos.getRow()][currPos.getColumn()].setGodname(godName);
-                map[currPos.getRow()][currPos.getColumn()].setWorker(currentPlayer);
+                map[currPos.getRow()][currPos.getColumn()].setWorker(playerId);
             }
         }
-        currentPlayer++;
         updateScreen();
     }
 
@@ -108,7 +112,6 @@ public class GUIHandler implements ViewInterface {
     public void chooseWorker(List<Position> availableWorkers) {
         availablePos.clear();
         availablePos.addAll(availableWorkers);
-        this.godname = map[availableWorkers.get(0).getRow()][availableWorkers.get(0).getColumn()].getGodname();
         state = "SELECTWORKER";
         updateScreen();
     }
@@ -119,7 +122,9 @@ public class GUIHandler implements ViewInterface {
 
     @Override
     public void choosePower() {
-        gui.showRequestPower();
+        this.message = "Do you want to activate the card power?";
+        state = "POWER";
+        gui.showRequest();
     }
 
     public void getPowerSelection(boolean power){
@@ -163,7 +168,13 @@ public class GUIHandler implements ViewInterface {
 
     @Override
     public void askForReloadState() {
+        this.message = "Do you want to use an existent save?";
+        state = "RELOAD";
+        gui.showRequest();
+    }
 
+    public void getReloadSelection(boolean reload){
+        socketClient.send(new AskForReloadStateNotification(reload));
     }
 
     @Override
@@ -173,7 +184,9 @@ public class GUIHandler implements ViewInterface {
 
     @Override
     public void handleDisconnection(int playerDisconnected) {
-
+        this.message = "Player " + playerDisconnected + " disconnected, leaving the game.";
+        gui.showMessage();
+        socketClient.closeClient();
     }
 
     @Override
@@ -184,12 +197,23 @@ public class GUIHandler implements ViewInterface {
 
     @Override
     public void elimination(boolean elim, String eliminatedPlayer) {
-
+        if(elim) {
+            this.message = "You lost";
+        } else {
+            this.message = eliminatedPlayer + " lost.";
+        }
+        gui.showMessage();
     }
 
     @Override
     public void win(boolean win, String winnerName) {
-
+        if(win) {
+            this.message = "You won";
+        } else {
+            this.message = winnerName + " won";
+        }
+        gui.showMessage();
+        socketClient.closeClient();
     }
 
     @Override

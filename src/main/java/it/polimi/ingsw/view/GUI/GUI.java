@@ -151,10 +151,11 @@ public class GUI extends Application implements UIRender{
     }
 
     @Override
-    public void showRequestPower(){
+    public void showRequest(){
         Platform.runLater(() -> {
             try {
-                showNewWindow("/fxml/powerrequest.fxml", "CARD POWER");
+                //showNewWindow buggato
+                showScene("/fxml/request.fxml", false);
             } catch (Exception e) {
                 logger.log(Level.WARNING, "Error during board request", e);
             }
