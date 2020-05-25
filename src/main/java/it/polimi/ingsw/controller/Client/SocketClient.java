@@ -18,6 +18,7 @@ public class SocketClient extends Thread {
     private ObjectInputStream inStream;
     private MessageVisitor clientUpdater;
     private Socket socket;
+    private boolean running = true;
 
     /**
      * creates a client and instantiate the view
@@ -72,7 +73,7 @@ public class SocketClient extends Thread {
     @Override
     public void run() {
         try {
-            while(true){
+            while(running){
                 MessageInterface msg = (MessageInterface) inStream.readObject();
                 msg.accept(clientUpdater);
             }
@@ -87,10 +88,9 @@ public class SocketClient extends Thread {
      */
     public void closeClient() {
         try {
-            socket.close();
-            System.out.println("Closed: " + socket);
+            running = false;
             interrupt();
-            System.exit(0);
+            socket.close();
         } catch(IOException e) {
             e.printStackTrace();
         }

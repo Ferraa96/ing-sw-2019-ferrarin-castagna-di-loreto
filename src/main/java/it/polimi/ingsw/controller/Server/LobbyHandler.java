@@ -6,19 +6,20 @@ import it.polimi.ingsw.model.ModelInterface;
 import it.polimi.ingsw.model.Turn;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class LobbyHandler {
-    private List<ServerThread> observer;
+    private Map<Integer, ServerThread> observer;
 
-    public LobbyHandler(List<ServerThread> observer) {
+    public LobbyHandler(Map<Integer, ServerThread> observer) {
         this.observer = observer;
         ModelInterface turn = new Turn(this, observer.size());
         MessageVisitor modelUpdater = new ModelUpdater(turn);
-        for(ServerThread currThread: observer) {
-            currThread.setModelUpdater(modelUpdater);
-            currThread.start();
+        for(Map.Entry<Integer, ServerThread> currThread : observer.entrySet()) {
+            currThread.getValue().setModelUpdater(modelUpdater);
+            currThread.getValue().start();
         }
     }
 
@@ -26,8 +27,8 @@ public class LobbyHandler {
      * closes the server
      */
     public void closeServer() {
-        for(ServerThread curr: observer) {
-            curr.closeConnection();
+        for(Map.Entry<Integer, ServerThread> currThread : observer.entrySet()) {
+            currThread.getValue().closeConnection();
         }
     }
 
@@ -45,22 +46,22 @@ public class LobbyHandler {
      * @param command the command to be sent to all the clients
      */
     public void broadcast(MessageInterface command) {
-        for(ServerThread currClient: observer) {
-            currClient.send(command);
+        for(Map.Entry<Integer, ServerThread> currThread : observer.entrySet()) {
+            currThread.getValue().send(command);
         }
     }
 
     /**
      * sort all the players in the same order of the game loaded
-     * @param playerMap maps the actual order to the game loaded order
+     * @param playerMap maps the actual order to the loaded game order
      */
     public void sortPlayers(Map<Integer, Integer> playerMap) {
-        List<ServerThread> temp = new ArrayList<>();
-        for(int i = 0; i < observer.size(); i++) {
-            temp.add(observer.get(playerMap.get(i)));
-            temp.get(i).setClientID(i);
+        Map<Integer, ServerThread> newOrder = new HashMap<>();
+        for(int i = 0; i < playerMap.size(); i++) {
+            newOrder.put(i, observer.get(playerMap.get(i)));
+            newOrder.get(i).setClientID(i);
         }
-        observer = temp;
+        observer = newOrder;
     }
 
     /**

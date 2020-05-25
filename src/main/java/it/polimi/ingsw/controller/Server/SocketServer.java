@@ -27,7 +27,7 @@ public class SocketServer {
     private void addClients() {
         int maxLobbies = 100;
         int timer = 1000;
-        List<ServerThread> observer;
+        Map<Integer, ServerThread> obs;
         ServerSocket serverSocket;
         int actualNum = 0;
         int serverNum = 1;
@@ -40,14 +40,14 @@ public class SocketServer {
             return;
         }
         while (serverNum < maxLobbies) {
-            observer = new ArrayList<>();
+            obs = new HashMap<>();
             System.out.println("Server " + serverNum + " online");
             while (actualNum != max) {
                 try {
                     Socket socketClient = serverSocket.accept();
                     ServerThread serverThread = new ServerThread(socketClient);
                     serverThread.setClientID(actualNum);
-                    observer.add(serverThread);
+                    obs.put(actualNum, serverThread);
                     actualNum++;
                     System.out.println("Connected: " + socketClient);
                     if (actualNum == min) {
@@ -66,7 +66,7 @@ public class SocketServer {
             } catch (SocketException e) {
                 e.printStackTrace();
             }
-            new LobbyHandler(observer);
+            new LobbyHandler(obs);
             actualNum = 0;
             serverNum++;
         }

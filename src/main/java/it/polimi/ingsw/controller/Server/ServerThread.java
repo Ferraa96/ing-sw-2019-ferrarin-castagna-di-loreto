@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.net.SocketException;
 
 /**
  * the thread that handle the client
@@ -62,7 +61,6 @@ public class ServerThread extends Thread {
         try {
             outStream.writeObject(commands);
             outStream.reset();
-//        } catch (SocketException ignored) {
         } catch(IOException e) {
             e.printStackTrace();
         }

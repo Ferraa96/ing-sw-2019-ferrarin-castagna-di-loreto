@@ -5,7 +5,9 @@ import it.polimi.ingsw.controller.Server.ServerThread;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.IntStream;
 
 import static org.junit.Assert.*;
@@ -15,8 +17,8 @@ public class TurnTest {
 
     @Test
     public void tryTurn(){
-        List<ServerThread> list = new ArrayList<>();
-        Turn turn = new Turn(new LobbyHandler(list),1);
+        Map<Integer, ServerThread> players = new HashMap<>();
+        Turn turn = new Turn(new LobbyHandler(players),1);
         //turn.setPlayerName("anna",0);
         turn.loadState(false);
         List<Integer> gods = new ArrayList<>();

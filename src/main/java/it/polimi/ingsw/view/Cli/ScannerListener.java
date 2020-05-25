@@ -110,5 +110,6 @@ public class ScannerListener extends Thread {
     public void stopReading() {
         running = false;
         interrupt();
+        scanner.close();
     }
 }
