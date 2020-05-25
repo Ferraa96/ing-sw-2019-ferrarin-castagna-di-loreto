@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.Scene?>
-<?import javafx.scene.control.Button?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -12,7 +11,7 @@
 
    <children>
 
-      <ImageView fx:id="map" fitHeight="515.0" fitWidth="960.0">
+      <ImageView fx:id="map" fitHeight="515.0" fitWidth="960.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 
          <image>
             <Image url="@../images/SantoriniBoard.png" />
@@ -25,32 +24,6 @@
             </image>
          </ImageView>
          <ImageView fx:id="godcard" fitHeight="148.0" fitWidth="87.0" layoutX="58.0" layoutY="313.0" pickOnBounds="true" preserveRatio="true" />
-         <ImageView fx:id="zz" fitHeight="68.0" fitWidth="71.0" layoutX="286.0" layoutY="77.0" pickOnBounds="true" preserveRatio="true" />
-         <ImageView fx:id="zu" fitHeight="68.0" fitWidth="71.0" layoutX="366.0" layoutY="77.0" pickOnBounds="true" preserveRatio="true" />
-         <ImageView fx:id="zd" fitHeight="68.0" fitWidth="71.0" layoutX="445.0" layoutY="77.0" pickOnBounds="true" preserveRatio="true" />
-         <ImageView fx:id="zt" fitHeight="68.0" fitWidth="71.0" layoutX="525.0" layoutY="77.0" pickOnBounds="true" preserveRatio="true" />
-         <ImageView fx:id="zq" fitHeight="68.0" fitWidth="71.0" layoutX="602.0" layoutY="77.0" pickOnBounds="true" preserveRatio="true" />
-         <ImageView fx:id="uz" fitHeight="68.0" fitWidth="71.0" layoutX="286.0" layoutY="154.0" pickOnBounds="true" preserveRatio="true" />
-         <ImageView fx:id="uu" fitHeight="68.0" fitWidth="71.0" layoutX="366.0" layoutY="154.0" pickOnBounds="true" preserveRatio="true" />
-         <ImageView fx:id="ud" fitHeight="68.0" fitWidth="71.0" layoutX="445.0" layoutY="154.0" pickOnBounds="true" preserveRatio="true" />
-         <ImageView fx:id="ut" fitHeight="68.0" fitWidth="71.0" layoutX="525.0" layoutY="154.0" pickOnBounds="true" preserveRatio="true" />
-         <ImageView fx:id="uq" fitHeight="68.0" fitWidth="71.0" layoutX="602.0" layoutY="154.0" pickOnBounds="true" preserveRatio="true" />
-         <ImageView fx:id="dz" fitHeight="68.0" fitWidth="71.0" layoutX="286.0" layoutY="224.0" pickOnBounds="true" preserveRatio="true" />
-         <ImageView fx:id="du" fitHeight="68.0" fitWidth="71.0" layoutX="366.0" layoutY="224.0" pickOnBounds="true" preserveRatio="true" />
-         <ImageView fx:id="dd" fitHeight="68.0" fitWidth="71.0" layoutX="445.0" layoutY="224.0" pickOnBounds="true" preserveRatio="true" />
-         <ImageView fx:id="dt" fitHeight="68.0" fitWidth="71.0" layoutX="525.0" layoutY="224.0" pickOnBounds="true" preserveRatio="true" />
-         <ImageView fx:id="dq" fitHeight="68.0" fitWidth="71.0" layoutX="602.0" layoutY="224.0" pickOnBounds="true" preserveRatio="true" />
-         <ImageView fx:id="tz" fitHeight="68.0" fitWidth="71.0" layoutX="286.0" layoutY="303.0" pickOnBounds="true" preserveRatio="true" />
-         <ImageView fx:id="tu" fitHeight="68.0" fitWidth="71.0" layoutX="366.0" layoutY="303.0" pickOnBounds="true" preserveRatio="true" />
-         <ImageView fx:id="td" fitHeight="68.0" fitWidth="71.0" layoutX="445.0" layoutY="303.0" pickOnBounds="true" preserveRatio="true" />
-         <ImageView fx:id="tt" fitHeight="68.0" fitWidth="71.0" layoutX="525.0" layoutY="303.0" pickOnBounds="true" preserveRatio="true" />
-         <ImageView fx:id="tq" fitHeight="68.0" fitWidth="71.0" layoutX="602.0" layoutY="303.0" pickOnBounds="true" preserveRatio="true" />
-         <ImageView fx:id="qz" fitHeight="68.0" fitWidth="71.0" layoutX="286.0" layoutY="378.0" pickOnBounds="true" preserveRatio="true" />
-         <ImageView fx:id="qu" fitHeight="68.0" fitWidth="71.0" layoutX="366.0" layoutY="378.0" pickOnBounds="true" preserveRatio="true" />
-         <ImageView fx:id="qd" fitHeight="68.0" fitWidth="71.0" layoutX="445.0" layoutY="378.0" pickOnBounds="true" preserveRatio="true" />
-         <ImageView fx:id="qt" fitHeight="68.0" fitWidth="71.0" layoutX="525.0" layoutY="378.0" pickOnBounds="true" preserveRatio="true" />
-         <ImageView fx:id="qq" fitHeight="68.0" fitWidth="71.0" layoutX="602.0" layoutY="378.0" pickOnBounds="true" preserveRatio="true" />
-         <Button fx:id="setbutton" layoutX="31.0" layoutY="197.0" mnemonicParsing="false" prefHeight="58.0" prefWidth="126.0" onAction="#setWorker" text="PLAY" />
 
    </children>
 

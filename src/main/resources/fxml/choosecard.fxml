@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.Scene?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.text.Font?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<Scene xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.view.GUI.ChooseCardController">
+<Scene xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.view.GUI.ChooseCardController">
 
     <AnchorPane fx:id="pane" prefHeight="400.0" prefWidth="520.0">
       <children>
@@ -25,7 +23,6 @@
          <ImageView fx:id="GOD2" fitHeight="176.0" fitWidth="116.0" layoutX="202.0" layoutY="112.0" pickOnBounds="true" preserveRatio="true" />
          <ImageView fx:id="GOD3" fitHeight="176.0" fitWidth="116.0" layoutX="378.0" layoutY="112.0" pickOnBounds="true" preserveRatio="true" />
          <ImageView fx:id="GOD1" fitHeight="176.0" fitWidth="116.0" layoutX="32.0" layoutY="112.0" pickOnBounds="true" preserveRatio="true" />
-         <Button fx:id="show" layoutX="204.0" layoutY="67.0" mnemonicParsing="false" onAction="#showCards" text="SHOW AVAILABLE" />
       </children></AnchorPane>
 
 </Scene>

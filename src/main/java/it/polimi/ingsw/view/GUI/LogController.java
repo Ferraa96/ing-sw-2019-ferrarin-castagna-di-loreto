@@ -15,11 +15,9 @@ public class LogController extends GUIController{
     @FXML
     Button button;
 
-    private GUIHandler guiHandler;
-
     @FXML
     private void logIn() {
-        this.guiHandler = super.getGuiHandler();
+        GUIHandler guiHandler = super.getGuiHandler();
 
         if((playerName.getText().equals("")) || (IP.getText().equals(""))) {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);

@@ -121,6 +121,7 @@ public class Build implements Effect {
             if (height==4){
                 height=3;
                 map[chosenCell.getRow()][chosenCell.getColumn()].setDome(true);
+                return new BuildNotification(chosenCell, height, true);
             }
             map[chosenCell.getRow()][chosenCell.getColumn()].setHeight(height);
         }

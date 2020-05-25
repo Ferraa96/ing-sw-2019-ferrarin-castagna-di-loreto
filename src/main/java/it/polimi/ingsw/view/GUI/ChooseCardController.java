@@ -9,7 +9,7 @@ import javafx.scene.layout.AnchorPane;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ChooseCardController extends GUIController{
+public class ChooseCardController extends GUIController {
 
     @FXML
     ImageView GOD1;
@@ -17,7 +17,8 @@ public class ChooseCardController extends GUIController{
     ImageView GOD2;
     @FXML
     ImageView GOD3;
-    private List<ImageView> godsImages = new ArrayList<>();
+
+    private final List<ImageView> godsImages = new ArrayList<>();
 
     @FXML
     AnchorPane pane;
@@ -28,16 +29,20 @@ public class ChooseCardController extends GUIController{
     Button god2 = new Button("CHOOSE");
     @FXML
     Button god3 = new Button("CHOOSE");
+
     private final List<Button> godsButtons = new ArrayList<>();
 
-    @FXML
-    Button show;
-
     private GUIHandler guiHandler;
-    private List<Integer> chosen = new ArrayList<>();
+
+    private final List<Integer> chosen = new ArrayList<>();
+
+    @Override
+    public void start(){
+        show();
+    }
 
     @FXML
-    public void showCards(){
+    public void show(){
         godsImages.add(GOD1);
         godsImages.add(GOD2);
         godsImages.add(GOD3);
@@ -57,7 +62,6 @@ public class ChooseCardController extends GUIController{
                 disableAll();
             });
         }
-        show.setVisible(false);
     }
 
     private int offsetX( int num, int actual) {

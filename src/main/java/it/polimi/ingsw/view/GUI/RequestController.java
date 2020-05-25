@@ -8,8 +8,6 @@ import javafx.scene.layout.AnchorPane;
 
 public class RequestController extends GUIController{
 
-    @FXML
-    Button request;
 
     @FXML
     Button YES,NO;
@@ -24,13 +22,10 @@ public class RequestController extends GUIController{
 
     private String state;
 
-    @FXML
-    public void showRequest(){
+    @Override
+    public void start(){
         this.guiHandler = super.getGuiHandler();
         state = guiHandler.getState();
-
-        request.setVisible(false);
-
         YES = new Button("YES");
         NO = new Button("NO");
         YES.setLayoutX(95);

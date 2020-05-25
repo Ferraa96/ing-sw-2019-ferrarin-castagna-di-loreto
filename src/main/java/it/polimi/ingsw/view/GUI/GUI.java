@@ -63,6 +63,7 @@ public class GUI extends Application implements UIRender{
 
             if (currentController != null) {
                 currentController.setGuiHandler(guiHandler);
+                currentController.start();
             }
 
             this.stage.setScene(scene);
@@ -93,6 +94,7 @@ public class GUI extends Application implements UIRender{
 
             if (currentControl != null) {
                 currentControl.setGuiHandler(guiHandler);
+                currentControl.start();
             }
 
             stage2.setScene(scene2);

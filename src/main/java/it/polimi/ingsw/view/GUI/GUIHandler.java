@@ -6,6 +6,7 @@ import it.polimi.ingsw.model.Cell;
 import it.polimi.ingsw.model.Movement;
 import it.polimi.ingsw.model.Position;
 import it.polimi.ingsw.view.ViewInterface;
+import javafx.application.Platform;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +23,7 @@ public class GUIHandler implements ViewInterface {
     private String godname;
     private String state;
     private Square[][] map;
-    private int playerId = 0;
+    private int scanId = -1;
     private final List<Integer> chosen = new ArrayList<>();
     private final List<Position> availablePos = new ArrayList<>();
     private final List<Position> currentChoice = new ArrayList<>();
@@ -49,6 +50,7 @@ public class GUIHandler implements ViewInterface {
 
     @Override
     public void setName(){
+        state = "SET NAME";
         gui.showLogin();
     }
 
@@ -60,6 +62,7 @@ public class GUIHandler implements ViewInterface {
     @Override
     public void chooseCardList(int num) {
         playernumber = num;
+        state = "CARD LIST";
         gui.showSelectionCards();
     }
 
@@ -67,6 +70,7 @@ public class GUIHandler implements ViewInterface {
     public void chooseCard(List<Integer> cardList) {
         chosen.clear();
         this.chosen.addAll(cardList);
+        state = "SET CARD";
         gui.showCardSelection();
     }
 
@@ -77,22 +81,15 @@ public class GUIHandler implements ViewInterface {
 
     @Override
     public void firstPositioning(List<Position> availablePos, String godName, boolean isMyTurn) {
+        scanId++;
         if(isMyTurn) {
             this.availablePos.addAll(availablePos);
             this.godname = godName;
-            if(availablePos.size() == 23)
-                this.playerId = 1;
-            if(availablePos.size() == 21)
-                this.playerId = 2;
             this.state = "FIRSTPOS";
         }else {
-            if(availablePos.size() == 23)
-                this.playerId = 1;
-            if(availablePos.size() == 21)
-                this.playerId = 2;
             for(Position currPos: availablePos) {
                 map[currPos.getRow()][currPos.getColumn()].setGodname(godName);
-                map[currPos.getRow()][currPos.getColumn()].setWorker(playerId);
+                map[currPos.getRow()][currPos.getColumn()].setWorker(scanId);
             }
         }
         updateScreen();
@@ -101,7 +98,7 @@ public class GUIHandler implements ViewInterface {
     public void setSelectedPos(Position pos){
         currentChoice.add(pos);
         map[pos.getRow()][pos.getColumn()].setGodname(godname);
-        map[pos.getRow()][pos.getColumn()].setWorker(playerId);
+        map[pos.getRow()][pos.getColumn()].setWorker(scanId);
     }
 
     public void definePositions(){
@@ -145,9 +142,13 @@ public class GUIHandler implements ViewInterface {
 
     @Override
     public void move(List<Movement> movements) {
-        for(Movement move : movements){
-            map[move.getNewPos().getRow()][move.getNewPos().getColumn()].setWorker(map[move.getOldPos().getRow()][move.getOldPos().getColumn()].getWorker());
-            map[move.getOldPos().getRow()][move.getOldPos().getColumn()].setWorker(-1);
+        List<Integer> id = new ArrayList<>();
+        for(Movement currMove: movements) {
+            id.add(map[currMove.getOldPos().getRow()][currMove.getOldPos().getColumn()].getWorker());
+            map[currMove.getOldPos().getRow()][currMove.getOldPos().getColumn()].setWorker(-1);
+        }
+        for(int i = 0; i < movements.size(); i++ ){
+            map[movements.get(i).getNewPos().getRow()][movements.get(i).getNewPos().getColumn()].setWorker(id.get(i));
         }
     }
 
@@ -159,6 +160,7 @@ public class GUIHandler implements ViewInterface {
     @Override
     public void buildDome(Position position, int height) {
         map[position.getRow()][position.getColumn()].setHeight(height);
+        map[position.getRow()][position.getColumn()].setDome(true);
     }
 
     @Override
@@ -184,9 +186,9 @@ public class GUIHandler implements ViewInterface {
 
     @Override
     public void handleDisconnection(int playerDisconnected) {
+        state = "END";
         this.message = "Player " + playerDisconnected + " disconnected, leaving the game.";
         gui.showMessage();
-        socketClient.closeClient();
     }
 
     @Override
@@ -207,18 +209,22 @@ public class GUIHandler implements ViewInterface {
 
     @Override
     public void win(boolean win, String winnerName) {
+        state = "END";
         if(win) {
             this.message = "You won";
         } else {
             this.message = winnerName + " won";
         }
         gui.showMessage();
-        socketClient.closeClient();
     }
 
     @Override
     public void setID(int clientID) {
         this.clientID = clientID;
+    }
+
+    public void closeClient(){
+        socketClient.closeClient();
     }
 
     public String getName(){

@@ -2,7 +2,6 @@ package it.polimi.ingsw.view.GUI;
 
 import it.polimi.ingsw.model.Position;
 import javafx.fxml.FXML;
-import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -19,21 +18,10 @@ public class MapController extends GUIController {
     @FXML
     ImageView godcard;
     @FXML
-    ImageView zz,zu,zd,zt,zq;
-    @FXML
-    ImageView uz,uu,ud,ut,uq;
-    @FXML
-    ImageView dz,du,dd,dt,dq;
-    @FXML
-    ImageView tz,tu,td,tt,tq;
-    @FXML
-    ImageView qz,qu,qd,qt,qq;
+    ImageView worker,building;
 
     @FXML
     Label playername = new Label("");
-
-    @FXML
-    Button setbutton;
 
     @FXML
     AnchorPane pane;
@@ -50,10 +38,8 @@ public class MapController extends GUIController {
 
     private final Button[][] position = new Button[5][5];
 
-    private final ImageView [][] boardImages = new ImageView[5][5];
-
-    @FXML
-    public void setWorker(){
+    @Override
+    public void start(){
         this.guiHandler = super.getGuiHandler();
         godcard.setImage(new Image(guiHandler.getGodOnMap(), 300, 450, true, true));
 
@@ -61,7 +47,17 @@ public class MapController extends GUIController {
         mappa = guiHandler.getMap();
         currentstate = guiHandler.getState();
 
-        setbutton.setVisible(false);
+        //get the already chosen workers/buildings
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 5; j++) {
+                if(mappa[i][j].getHeight()!=-1){
+                    drawBuilding(i,j);
+                }
+                if (mappa[i][j].getWorker()!=(-1)) {
+                    drawWorker(i,j);
+                }
+            }
+        }
 
         //creates the buttons for the available positions
         for(Position curr : listavailable) {
@@ -71,18 +67,6 @@ public class MapController extends GUIController {
             position[i][j].setLayoutX(310 + (80 * j));
             position[i][j].setLayoutY(100 + (75 * i));
             pane.getChildren().add(position[i][j]);
-        }
-
-        //get the already chosen workers/buildings
-        for (int i = 0; i < 5; i++) {
-            for (int j = 0; j < 5; j++) {
-                if (mappa[i][j].getWorker()!=(-1)) {
-                    drawWorker(i,j);
-                }
-                if(mappa[i][j].getHeight()==1){
-                    drawBuilding(i,j);
-                }
-            }
         }
 
         //set the playername
@@ -123,60 +107,48 @@ public class MapController extends GUIController {
     }
 
     private void drawWorker(int row, int column){
-        setImages();
-        boardImages[row][column].setImage(new Image(findColor(mappa[row][column].getWorker()), 300, 450, true, true));
+        worker = new ImageView(new Image(findColor(mappa[row][column].getWorker())));
+        worker.setLayoutX(288 + (80 * column));
+        worker.setLayoutY(75 + (75 * row));
+        pane.getChildren().add(worker);
     }
 
     private String findColor(int playerId) {
         switch (playerId) {
-            case 0: return "/images/workerGreen.png";
-            case 1: return "/images/workerBrown.png";
-            //manca un colore
+            case 0: return "/images/WorkerYellow.png";
+            case 1: return "/images/WorkerBlue.png";
+            case 2: return "/images/WorkerRed.png";
             default: return "Error loading images!";
         }
     }
 
     private void drawBuilding(int row,int column){
-        setImages();
-        boardImages[row][column].setImage(new Image(findHeight(mappa[row][column].getHeight()), 300, 450, true, true));
+        building = new ImageView(findHeight(mappa[row][column].getHeight(),mappa[row][column].isDome()));
+        building.setLayoutX(288 + (80 * column));
+        building.setLayoutY(75 + (75 * row));
+        pane.getChildren().add(building);
     }
 
-    private String findHeight(int height){
+    private String findHeight(int height,boolean dome){
         switch (height) {
-            case 0: return "/images/building1.png";
-            case 1: return "/images/building1.png";
-            case 2: return "/images/building1.png";
-            //mancano livello due, tre e cupola
-            default: return "Error loading images!";
+            case 0:
+                if(dome)
+                    return  "/images/dome.png";
+                break;
+            case 1:
+                if(dome)
+                    return  "/images/Build1dome.png";
+                return "/images/Build1.png";
+            case 2:
+                if(dome)
+                    return  "/images/Build2dome.png";
+                return "/images/Build2.png";
+            case 3:
+                if(dome)
+                    return  "/images/Build3dome.png";
+                return "/images/Build3.png";
         }
-    }
-
-    private void setImages() {
-        boardImages[0][0] = zz;
-        boardImages[0][1] = zu;
-        boardImages[0][2] = zd;
-        boardImages[0][3] = zt;
-        boardImages[0][4] = zq;
-        boardImages[1][0] = uz;
-        boardImages[1][1] = uu;
-        boardImages[1][2] = ud;
-        boardImages[1][3] = ut;
-        boardImages[1][4] = uq;
-        boardImages[2][0] = dz;
-        boardImages[2][1] = du;
-        boardImages[2][2] = dd;
-        boardImages[2][3] = dt;
-        boardImages[2][4] = dq;
-        boardImages[3][0] = tz;
-        boardImages[3][1] = tu;
-        boardImages[3][2] = td;
-        boardImages[3][3] = tt;
-        boardImages[3][4] = tq;
-        boardImages[4][0] = qz;
-        boardImages[4][1] = qu;
-        boardImages[4][2] = qd;
-        boardImages[4][3] = qt;
-        boardImages[4][4] = qq;
+        return "Error loading images!";
     }
 
     private void disableAll(){

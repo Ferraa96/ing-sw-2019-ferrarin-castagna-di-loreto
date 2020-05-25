@@ -5,10 +5,12 @@ public class Square {
     private int height;
     private int worker;
     private String godname;
+    private boolean isDome;
 
     public Square(){
-        this.height = 0;
+        this.height = -1;
         this.worker = -1;
+        this.isDome = false;
     }
 
     public void setHeight(int height) {
@@ -32,4 +34,12 @@ public class Square {
     }
 
     public int getWorker() { return worker; }
+
+    public boolean isDome() {
+        return isDome;
+    }
+
+    public void setDome(boolean dome) {
+        isDome = dome;
+    }
 }
