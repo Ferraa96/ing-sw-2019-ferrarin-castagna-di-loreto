@@ -6,7 +6,6 @@ import it.polimi.ingsw.model.Cell;
 import it.polimi.ingsw.model.Movement;
 import it.polimi.ingsw.model.Position;
 import it.polimi.ingsw.view.ViewInterface;
-import javafx.application.Platform;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,9 +31,14 @@ public class GUIHandler implements ViewInterface {
         this.gui = gui;
     }
 
+    /**
+     * let the player set his name
+     * @param name the input
+     *
+     */
     public void getLoginInfo(String name,String ip){
         this.name = name;
-        socketClient = new SocketClient(1);
+        socketClient = new SocketClient();
         map = new Square[5][5];
         for(int i = 0; i < 5; i++) {
             for(int j = 0; j < 5; j++) {
@@ -53,12 +57,15 @@ public class GUIHandler implements ViewInterface {
         state = "SET NAME";
         gui.showLogin();
     }
-
     public void getSelectedCards(List<Integer> chosen){
         this.chosen.addAll(chosen);
         socketClient.send(new ChooseCardListNotification(chosen));
     }
 
+    /**
+     * @param num the amount of players playing
+     * Call to choose 'num' cards between all
+     */
     @Override
     public void chooseCardList(int num) {
         playernumber = num;
@@ -66,6 +73,9 @@ public class GUIHandler implements ViewInterface {
         gui.showSelectionCards();
     }
 
+    /**
+     *Choose the card you want to play with between the ones chosen before
+     */
     @Override
     public void chooseCard(List<Integer> cardList) {
         chosen.clear();
@@ -74,17 +84,30 @@ public class GUIHandler implements ViewInterface {
         gui.showCardSelection();
     }
 
+    /**
+     * Used to get the card selected
+     * @param imagepath the path to correct god image
+     *
+     */
     public void getCard(int card, String imagepath){
         this.imagepath = imagepath;
         socketClient.send(new ChooseCardNotification(card));
     }
 
+    /**
+     * Method called for every player to set the initial positions
+     * @param availablePos list of the available postions
+     * @param godName the god card of the player who is playing in this turn
+     * scanId is used to identify the player and connect it to the worker
+     *
+     */
     @Override
     public void firstPositioning(List<Position> availablePos, String godName, boolean isMyTurn) {
         scanId++;
         if(isMyTurn) {
             this.availablePos.addAll(availablePos);
             this.godname = godName;
+            this.message = "Select Workers position";
             this.state = "FIRSTPOS";
         }else {
             for(Position currPos: availablePos) {
@@ -109,6 +132,7 @@ public class GUIHandler implements ViewInterface {
     public void chooseWorker(List<Position> availableWorkers) {
         availablePos.clear();
         availablePos.addAll(availableWorkers);
+        this.message = "Select the worker you want to use";
         state = "SELECTWORKER";
         updateScreen();
     }
@@ -132,6 +156,7 @@ public class GUIHandler implements ViewInterface {
     public void choosePosition(List<Position> list) {
         availablePos.clear();
         availablePos.addAll(list);
+        this.message = "Move and then build";
         state = "SELECTPOSITION";
         updateScreen();
     }

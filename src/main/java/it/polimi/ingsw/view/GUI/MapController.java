@@ -7,6 +7,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.control.Label;
+import javafx.scene.text.Font;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +23,9 @@ public class MapController extends GUIController {
 
     @FXML
     Label playername = new Label("");
+
+    @FXML
+    Label action = new Label("");
 
     @FXML
     AnchorPane pane;
@@ -64,16 +68,24 @@ public class MapController extends GUIController {
             int i = curr.getRow();
             int j = curr.getColumn();
             position[i][j] = new Button();
-            position[i][j].setLayoutX(310 + (80 * j));
-            position[i][j].setLayoutY(100 + (75 * i));
+            position[i][j].setStyle("-fx-background-color: rgba(255,213,0,0.18); -fx-border-color: #fff000; -fx-border-width: 5px;");
+            position[i][j].setLayoutX(288 + (80 * j));
+            position[i][j].setLayoutY(75 + (75 * i));
+            position[i][j].setPrefWidth(71);
+            position[i][j].setPrefHeight(69);
             pane.getChildren().add(position[i][j]);
         }
 
-        //set the playername
+        //set the playername and the action
         playername.setText(guiHandler.getName());
         playername.setLayoutX(87);
         playername.setLayoutY(471);
-        pane.getChildren().add(playername);
+        playername.setFont(Font.font ("Franklin Gothic Medium", 12));
+        action.setText(guiHandler.getMessage());
+        action.setLayoutX(20);
+        action.setLayoutY(20);
+        action.setFont(Font.font ("Franklin Gothic Medium", 20));
+        pane.getChildren().addAll(playername,action);
 
         for (int i = 0; i < 5; i++) {
             for (int j = 0; j < 5; j++) {

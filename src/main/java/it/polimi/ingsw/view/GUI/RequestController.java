@@ -4,6 +4,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.text.Font;
 
 
 public class RequestController extends GUIController{
@@ -34,8 +35,9 @@ public class RequestController extends GUIController{
         NO.setLayoutY(170);
         message = new Label();
         message.setText(guiHandler.getMessage());
-        message.setLayoutX(90);
+        message.setLayoutX(70);
         message.setLayoutY(50);
+        message.setFont(Font.font ("Franklin Gothic Medium", 18));
 
         pane.getChildren().addAll(YES,NO,message);
 

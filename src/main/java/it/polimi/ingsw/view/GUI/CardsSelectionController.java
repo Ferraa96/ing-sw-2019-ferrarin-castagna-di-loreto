@@ -2,6 +2,7 @@ package it.polimi.ingsw.view.GUI;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.ImageView;
 
 import java.util.ArrayList;
@@ -11,30 +12,9 @@ public class CardsSelectionController extends GUIController{
 
     @FXML
     Button cardbutton;
-    @FXML
-    Button apollobutton;
-    @FXML
-    Button artemisbutton;
-    @FXML
-    Button athenabutton;
-    @FXML
-    Button atlasbutton;
-    @FXML
-    Button demeterbutton;
-    @FXML
-    Button hephaestusbutton;
-    @FXML
-    Button minotaurbutton;
-    @FXML
-    Button pambutton;
-    @FXML
-    Button prometeusbutton;
 
     @FXML
-    ImageView Apollo;
-
-    @FXML
-    ImageView Artemis;
+    ImageView Apollo,Artemis,Athena,Atlas,Demeter,Hephaestus,Minotaur,Pam,Prometheus;
 
     private GUIHandler guiHandler;
 
@@ -54,22 +34,20 @@ public class CardsSelectionController extends GUIController{
         }
         chosen.add(counter,0);
         counter ++;
-        Apollo.opacityProperty().setValue(5);
-        apollobutton.disableProperty().setValue(true);
+        Apollo.setVisible(false);
         if(counter==playerNumber){
                disableAll();
         }
     }
 
     @FXML
-    private void selectArthemis(){
+    private void selectArtemis(){
         if(!setted){
             getPlayers();
         }
         chosen.add(counter,1);
         counter ++;
-        Artemis.opacityProperty().setValue(70);
-        artemisbutton.disableProperty().setValue(true);
+        Artemis.setVisible(false);
         if(counter==playerNumber){
                 disableAll();
         }
@@ -82,8 +60,7 @@ public class CardsSelectionController extends GUIController{
         }
             chosen.add(counter,2);
             counter ++;
-            Apollo.setOpacity(5); //non funge
-            athenabutton.disableProperty().setValue(true);
+            Athena.setVisible(false);
         if(counter==playerNumber){
             disableAll();
         }
@@ -96,8 +73,7 @@ public class CardsSelectionController extends GUIController{
         }
             chosen.add(counter,3);
             counter ++;
-            Apollo.setOpacity(5); //non funge
-            atlasbutton.disableProperty().setValue(true);
+            Atlas.setVisible(false);
         if(counter==playerNumber){
             disableAll();
         }
@@ -110,8 +86,7 @@ public class CardsSelectionController extends GUIController{
         }
             chosen.add(counter,4);
             counter ++;
-            Apollo.setOpacity(5); //non funge
-            demeterbutton.disableProperty().setValue(true);
+            Demeter.setVisible(false);
             if(counter==playerNumber){
                 disableAll();
             }
@@ -124,8 +99,7 @@ public class CardsSelectionController extends GUIController{
         }
             chosen.add(counter,5);
             counter ++;
-            Apollo.setOpacity(5); //non funge
-            hephaestusbutton.disableProperty().setValue(true);
+            Hephaestus.setVisible(false);
             if(counter==playerNumber){
                 disableAll();
             }
@@ -138,8 +112,7 @@ public class CardsSelectionController extends GUIController{
         }
             chosen.add(counter,6);
             counter ++;
-            Apollo.setOpacity(5); //non funge
-            minotaurbutton.disableProperty().setValue(true);
+            Minotaur.setVisible(false);
             if(counter==playerNumber){
                 disableAll();
             }
@@ -152,37 +125,35 @@ public class CardsSelectionController extends GUIController{
         }
             chosen.add(counter,7);
             counter ++;
-            Apollo.setOpacity(5); //non funge
-            pambutton.disableProperty().setValue(true);
+            Pam.setVisible(false);
             if(counter==playerNumber){
                 disableAll();
             }
     }
 
     @FXML
-    private void selectPrometeus(){
+    private void selectPrometheus(){
         if(!setted){
             getPlayers();
         }
             chosen.add(counter,8);
             counter ++;
-            Apollo.opacityProperty().setValue(5);
-            prometeusbutton.disableProperty().setValue(true);
+            Prometheus.setVisible(false);
             if(counter==playerNumber){
                 disableAll();
             }
     }
 
     private void disableAll() {
-        apollobutton.disableProperty().setValue(true);
-        artemisbutton.disableProperty().setValue(true);
-        athenabutton.disableProperty().setValue(true);
-        atlasbutton.disableProperty().setValue(true);
-        demeterbutton.disableProperty().setValue(true);
-        hephaestusbutton.disableProperty().setValue(true);
-        minotaurbutton.disableProperty().setValue(true);
-        pambutton.disableProperty().setValue(true);
-        prometeusbutton.disableProperty().setValue(true);
+        Apollo.setVisible(false);
+        Artemis.setVisible(false);
+        Athena.setVisible(false);
+        Atlas.setVisible(false);
+        Demeter.setVisible(false);
+        Hephaestus.setVisible(false);
+        Minotaur.setVisible(false);
+        Pam.setVisible(false);
+        Prometheus.setVisible(false);
     }
 
     @FXML

@@ -23,15 +23,10 @@ public class SocketClient extends Thread {
     /**
      * creates a client and instantiate the view
      */
-    public SocketClient() {
-            connect();
-    }
 
-    public SocketClient(int i) {
+    public SocketClient() { }
 
-    }
-
-    private void connect() {
+    public void connectCLI() {
         int port = 59898;
         ViewInterface view;
         Scanner scanner = new Scanner(System.in);
@@ -46,7 +41,7 @@ public class SocketClient extends Thread {
             start();
         } catch (IOException e) {
             System.out.println("Server non trovato");
-            connect();
+            connectCLI();
         }
     }
 

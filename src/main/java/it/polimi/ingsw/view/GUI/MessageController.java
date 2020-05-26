@@ -5,6 +5,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.text.Font;
 
 public class MessageController extends GUIController {
 
@@ -25,11 +26,12 @@ public class MessageController extends GUIController {
         message.setText(guiHandler.getMessage());
         String state = guiHandler.getState();
         message.setLayoutY(300);
-        message.setLayoutX(150);
+        message.setLayoutX(90);
+        message.setFont(Font.font ("Franklin Gothic Medium", 18));
         if(state.equals("END")){
             close = new Button("END");
-            close.setLayoutX(150);
-            close.setLayoutY(150);
+            close.setLayoutX(230);
+            close.setLayoutY(240);
             close.setOnAction(e->{
                 guiHandler.closeClient();
                 Platform.exit();
