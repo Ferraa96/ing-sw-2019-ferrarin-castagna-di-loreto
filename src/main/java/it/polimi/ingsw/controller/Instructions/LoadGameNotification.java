@@ -12,6 +12,7 @@ public class LoadGameNotification implements Serializable, MessageInterface {
     private int clientID;
     private final Cell[][] map;
     private List<String> godNames;
+    private List<String> userNames;
 
     public LoadGameNotification(Cell[][] map) {
         this.map = map;
@@ -27,6 +28,14 @@ public class LoadGameNotification implements Serializable, MessageInterface {
 
     public List<String> getGodNames() {
         return godNames;
+    }
+
+    public void setUserNames(List<String> userNames) {
+        this.userNames = userNames;
+    }
+
+    public List<String> getUserNames() {
+        return userNames;
     }
 
     @Override

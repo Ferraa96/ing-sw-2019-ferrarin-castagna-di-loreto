@@ -11,8 +11,6 @@ import java.util.List;
  */
 public interface ViewInterface {
 
-    void setID(int clientID);
-
     /**
      * ask for name
      */
@@ -34,7 +32,7 @@ public interface ViewInterface {
      * lets the player choose the initial position of his workers
      * @param availablePos the list of all the available positions
      */
-    void firstPositioning(List<Position> availablePos, String godName, boolean isMyTurn);
+    void firstPositioning(List<Position> availablePos, String godName, String userName, boolean isMyTurn);
 
     /**
      * allows player to select the worker to use in current turn
@@ -86,7 +84,7 @@ public interface ViewInterface {
      * loads the saved game
      * @param map contains all the workers and buildings positions and informations
      */
-    void reloadState(Cell[][] map, List<String> godNames);
+    void reloadState(Cell[][] map, List<String> godNames, List<String> userNames);
 
     void handleDisconnection(String message);
 

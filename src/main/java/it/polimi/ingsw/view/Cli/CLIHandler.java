@@ -174,7 +174,7 @@ public class CLIHandler implements ViewInterface {
      * @param godNames the name of all the gods in game
      */
     @Override
-    public void reloadState(Cell[][] map, List<String> godNames) {
+    public void reloadState(Cell[][] map, List<String> godNames, List<String> userNames) {
         HashMap<Integer, Position> workerPos = new HashMap<>();
         System.out.println("Loading game...");
         for(int row = 0; row < 5; row++) {
@@ -196,7 +196,7 @@ public class CLIHandler implements ViewInterface {
             List<Position> myWorker = new ArrayList<>();
             myWorker.add(workerPos.get(i * 2));
             myWorker.add(workerPos.get(i * 2 + 1));
-            firstPositioning(myWorker, godNames.get(i), false);
+            firstPositioning(myWorker, godNames.get(i), userNames.get(i), false);
         }
     }
 
@@ -309,7 +309,7 @@ public class CLIHandler implements ViewInterface {
      * @param isMyTurn indicates if is the turn of the player
      */
     @Override
-    public void firstPositioning(List<Position> availablePos, String godName, boolean isMyTurn) {
+    public void firstPositioning(List<Position> availablePos, String godName, String userName, boolean isMyTurn) {
         this.godName = godName;
         posList = availablePos;
         if(isMyTurn) {
@@ -365,11 +365,6 @@ public class CLIHandler implements ViewInterface {
             }
         }
         return true;
-    }
-
-    @Override
-    public void setID(int clientID) {
-        this.clientID = clientID;
     }
 
     /**

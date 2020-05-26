@@ -16,6 +16,7 @@ public class Board {
                 map[i][j] = new Cell();
             }
         }
+        System.out.println(this);
     }
 
     public Cell[][] getMap() {
@@ -29,14 +30,21 @@ public class Board {
     @Override
     public String toString() {
         StringBuilder string = new StringBuilder();
-        string.append("  -----------------------------------------\n");
+        System.out.println("\t0\t\t1\t\t2\t\t3\t\t4");
+        string.append("  -------------------------------------\n");
         for(int raw = 0; raw < 5; raw++) {
             string.append(raw).append(" ");
             for(int column = 0; column < 5; column++) {
-                string.append("|").append(map[raw][column].getWorkerID()).append(" \t").append(map[raw][column].getHeight());
+                string.append("|").append(map[raw][column].getWorkerID());
+                if(map[raw][column].isDome()) {
+                    string.append("/-\\");
+                } else {
+                    string.append("   ");
+                }
+                string.append(map[raw][column].getHeight());
             }
             string.append(" |\n");
-            string.append("  -----------------------------------------\n");
+            string.append("  ------------------------------------\n");
         }
         return string.toString();
     }

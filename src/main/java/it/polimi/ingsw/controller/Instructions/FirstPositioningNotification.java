@@ -12,15 +12,17 @@ public class FirstPositioningNotification implements Serializable, MessageInterf
     private int clientID;
     private final List<Position> positions;
     private String godName;
+    private String userName;
     private boolean loadPos = false;
 
     public FirstPositioningNotification(List<Position> positions) {
         this.positions = positions;
     }
 
-    public FirstPositioningNotification(List<Position> positions, String godName, int clientID) {
+    public FirstPositioningNotification(List<Position> positions, String godName, String userName, int clientID) {
         this.positions = positions;
         this.godName = godName;
+        this.userName = userName;
         this.clientID = clientID;
     }
 
@@ -30,6 +32,10 @@ public class FirstPositioningNotification implements Serializable, MessageInterf
 
     public String getGodName() {
         return godName;
+    }
+
+    public String getUserName() {
+        return userName;
     }
 
     public void setLoadPos(boolean loadPos) {

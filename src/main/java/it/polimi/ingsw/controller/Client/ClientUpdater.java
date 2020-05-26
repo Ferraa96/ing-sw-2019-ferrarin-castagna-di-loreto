@@ -23,7 +23,7 @@ public class ClientUpdater implements MessageVisitor {
         if(msg.getClientID() == playerID) {
             view.askForReloadState();
         } else {
-            view.notificationForOtherClient("Il giocatore " + msg.getClientID() + " sta scegliendo se caricare la partita");
+            view.notificationForOtherClient("Player " + msg.getClientID() + " is choosing if he wants to reload the game");
         }
     }
 
@@ -77,11 +77,11 @@ public class ClientUpdater implements MessageVisitor {
     public void visit(FirstPositioningNotification msg) {
         if(msg.getClientID() == playerID) {
             if(!msg.isLoadPos()) {
-                view.firstPositioning(msg.getPositions(), msg.getGodName(), true);
+                view.firstPositioning(msg.getPositions(), msg.getGodName(), msg.getUserName(), true);
             }
         } else {
             if(msg.isLoadPos()) {
-                view.firstPositioning(msg.getPositions(), msg.getGodName(), false);
+                view.firstPositioning(msg.getPositions(), msg.getGodName(), msg.getUserName(), false);
             } else {
                 view.notificationForOtherClient("Il giocatore " + msg.getClientID() + " sta posizionando i lavoratori");
             }
@@ -118,7 +118,7 @@ public class ClientUpdater implements MessageVisitor {
 
     @Override
     public void visit(LoadGameNotification msg) {
-        view.reloadState(msg.getMap(), msg.getGodNames());
+        view.reloadState(msg.getMap(), msg.getGodNames(), msg.getUserNames());
         view.updateScreen();
     }
 

@@ -96,6 +96,7 @@ public class Turn implements ModelInterface {
             setEnemiesLists();
             LoadGameNotification oldState = new LoadGameNotification(board.getMap());
             oldState.setGodNames(godNames);
+            oldState.setUserNames(nameList);
             socket.broadcast(oldState);
             socket.sortPlayers(mapPlayers(saveState));
             actualPlayer = saveState.getActualPlayer();
@@ -178,7 +179,7 @@ public class Turn implements ModelInterface {
             //first positioning
             saveState.setPlayers(players);
             String godName = cardList.get(actualPlayer).getName();
-            socket.broadcast(new FirstPositioningNotification(cardList.get(actualPlayer).availableFirstPositioning(), godName, actualPlayer));
+            socket.broadcast(new FirstPositioningNotification(cardList.get(actualPlayer).availableFirstPositioning(), godName, nameList.get(actualPlayer), actualPlayer));
         }
     }
 
@@ -200,10 +201,12 @@ public class Turn implements ModelInterface {
     @Override
     public void setWorkersPosition(List<Position> positions) {
         String godName = cardList.get(actualPlayer).getName();
+        String userName;
         Position w1 = positions.get(0);
         Position w2 = positions.get(1);
         cardList.get(actualPlayer).firstPositioning(w1, w2);
-        FirstPositioningNotification fpn = new FirstPositioningNotification(positions, godName, actualPlayer);
+        userName = nameList.get(actualPlayer);
+        FirstPositioningNotification fpn = new FirstPositioningNotification(positions, godName, userName, actualPlayer);
         fpn.setLoadPos(true);
         socket.broadcast(fpn);
         nextTurn();
@@ -218,7 +221,8 @@ public class Turn implements ModelInterface {
             //first positioning
             saveState.setPlayers(players);
             godName = cardList.get(actualPlayer).getName();
-            socket.broadcast(new FirstPositioningNotification(cardList.get(actualPlayer).availableFirstPositioning(), godName, actualPlayer));
+            userName = nameList.get(actualPlayer);
+            socket.broadcast(new FirstPositioningNotification(cardList.get(actualPlayer).availableFirstPositioning(), userName, godName, actualPlayer));
         }
     }
 
@@ -319,6 +323,7 @@ public class Turn implements ModelInterface {
                 nextTurn();
                 askWhichWorker();
             }
+            System.out.println(this);
             saveGame();
         }
     }

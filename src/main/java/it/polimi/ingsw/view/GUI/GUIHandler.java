@@ -105,7 +105,7 @@ public class GUIHandler implements ViewInterface {
      * scanId is used to identify the player and connect it to the worker
      */
     @Override
-    public void firstPositioning(List<Position> availablePos, String godName, boolean isMyTurn) {
+    public void firstPositioning(List<Position> availablePos, String godName, String userName, boolean isMyTurn) {
         scanId++;
         if(isMyTurn) {
             this.isMyTurn = true;
@@ -244,7 +244,7 @@ public class GUIHandler implements ViewInterface {
     }
 
     @Override
-    public void reloadState(Cell[][] map, List<String> godNames) {
+    public void reloadState(Cell[][] map, List<String> godNames, List<String> userNames) {
 
     }
 
@@ -290,11 +290,6 @@ public class GUIHandler implements ViewInterface {
             this.message = winnerName + " won";
         }
         gui.showMessage();
-    }
-
-    @Override
-    public void setID(int clientID) {
-        this.clientID = clientID;
     }
 
     public void closeClient(){
