@@ -103,12 +103,19 @@ public class Turn implements ModelInterface {
                 System.out.println("Start turn player" + " " + actualPlayer);
                 askWhichWorker();
             } else {
-                if(saveState.getChosenWorker() % 2 == 0) {
+                if(saveState.getChosenWorker() == 0) {
                     currWorker = cardList.get(actualPlayer).getWorker1();
                 } else {
                     currWorker = cardList.get(actualPlayer).getWorker2();
                 }
                 currEffect = saveState.getActualEffect();
+                if(saveState.isGodPower()) {
+                    if(currEffect == 1) {
+                        cardList.get(actualPlayer).getCardRoutine().get(currEffect).setLastMoveInitialPosition(saveState.getPreviousPos());
+                    } else if(currEffect == 2) {
+                        cardList.get(actualPlayer).getCardRoutine().get(currEffect).setLastBuildPosition(saveState.getPreviousPos());
+                    }
+                }
                 providePosition(saveState.isGodPower());
             }
         } else {
@@ -344,6 +351,7 @@ public class Turn implements ModelInterface {
      * save the game to a file
      */
     private void saveGame() {
+        Position pos;
         List<Position> positions;
         for(int i = 0; i < players.size(); i++) {
             positions = new ArrayList<>();
@@ -356,6 +364,8 @@ public class Turn implements ModelInterface {
         saveState.setActualEffect(currEffect);
         saveState.setChosenWorker(currWorker.getWorkerID());
         saveState.setGodPower(powerUsed);
+        pos = cardList.get(actualPlayer).getCardRoutine().get(currEffect).getLastPosition();
+        saveState.setPreviousPos(pos);
         ioHandler.save(saveState);
     }
 
@@ -368,7 +378,8 @@ public class Turn implements ModelInterface {
         System.out.println("Client " + deadClient + " disconnected");
         socket.removeObserver(deadClient);
         if(!eliminatedPlayers.contains(deadClient)) {
-            DisconnectionNotification gameEnd = new DisconnectionNotification();
+            String message = "Player " + deadClient + " disconnected, the game is cancelled";
+            DisconnectionNotification gameEnd = new DisconnectionNotification(message);
             gameEnd.setClientID(deadClient);
             socket.broadcast(gameEnd);
             socket.closeServer();

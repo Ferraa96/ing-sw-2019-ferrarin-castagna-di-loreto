@@ -263,4 +263,9 @@ public class Move implements Effect{
      */
     public void setLastBuildPosition(Position lastBuildPosition) {  }
 
+    @Override
+    public Position getLastPosition() {
+        return lastMoveInitialPosition;
+    }
+
 }

@@ -7,6 +7,15 @@ import java.io.Serializable;
  */
 public class DisconnectionNotification implements Serializable, MessageInterface {
     private int clientID;
+    private final String message;
+
+    public DisconnectionNotification(String message) {
+        this.message = message;
+    }
+
+    public String getMessage() {
+        return message;
+    }
 
     @Override
     public void setClientID(int clientID) {

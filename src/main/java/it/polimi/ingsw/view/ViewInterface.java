@@ -88,7 +88,7 @@ public interface ViewInterface {
      */
     void reloadState(Cell[][] map, List<String> godNames);
 
-    void handleDisconnection(int playerDisconnected);
+    void handleDisconnection(String message);
 
     void notificationForOtherClient(String message);
 

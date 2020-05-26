@@ -210,9 +210,9 @@ public class GUIHandler implements ViewInterface {
     }
 
     @Override
-    public void handleDisconnection(int playerDisconnected) {
+    public void handleDisconnection(String message) {
         state = "END";
-        this.message = "Player " + playerDisconnected + " disconnected, leaving the game.";
+        this.message = message;
         gui.showMessage();
     }
 

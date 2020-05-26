@@ -50,6 +50,11 @@ public interface Effect {
     void setLastBuildPosition(Position lastBuildPosition);
 
     /**
+     * @return the last position chosen
+     */
+    Position getLastPosition();
+
+    /**
      * getter
      * @return height difference of the move
      */

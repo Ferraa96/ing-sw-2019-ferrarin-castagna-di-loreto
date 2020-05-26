@@ -46,7 +46,7 @@ public class ServerThread extends Thread {
                 msg.accept(modelUpdater);
             }
         } catch(IOException | ClassNotFoundException e) {
-            DisconnectionNotification disconnection = new DisconnectionNotification();
+            DisconnectionNotification disconnection = new DisconnectionNotification("");
             disconnection.setClientID(clientID);
             disconnection.accept(modelUpdater);
             Thread.currentThread().interrupt();

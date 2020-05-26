@@ -1,8 +1,9 @@
 package it.polimi.ingsw.controller.Client;
 
+import it.polimi.ingsw.controller.Instructions.DisconnectionNotification;
 import it.polimi.ingsw.controller.Instructions.MessageInterface;
 import it.polimi.ingsw.controller.Instructions.MessageVisitor;
-import it.polimi.ingsw.view.Cli.CLI;
+import it.polimi.ingsw.view.Cli.CLIHandler;
 import it.polimi.ingsw.view.GUI.GUIHandler;
 import it.polimi.ingsw.view.ViewInterface;
 
@@ -36,7 +37,7 @@ public class SocketClient extends Thread {
             socket = new Socket(ip, port);
             outStream = new ObjectOutputStream(socket.getOutputStream());
             inStream = new ObjectInputStream(socket.getInputStream());
-            view = new CLI(this);
+            view = new CLIHandler(this);
             clientUpdater = new ClientUpdater(view);
             start();
         } catch (IOException e) {
@@ -73,6 +74,8 @@ public class SocketClient extends Thread {
                 msg.accept(clientUpdater);
             }
         } catch(IOException | ClassNotFoundException e) {
+            MessageInterface msg = new DisconnectionNotification("Server offline");
+            msg.accept(clientUpdater);
             System.out.println("Server offline");
             closeClient();
         }

@@ -10,8 +10,8 @@ import java.util.*;
 /**
  * the CLI
  */
-public class CLI implements ViewInterface {
-    private final SocketClient socket;
+public class CLIHandler implements ViewInterface {
+    private final SocketClient socketClient;
     private final Tile[][] gameMap;
     private final TileGetter tileGetter;
     private int clientID;
@@ -25,10 +25,10 @@ public class CLI implements ViewInterface {
 
     /**
      * creates the CLI
-     * @param socket the server socket
+     * @param socketClient the server socket
      */
-    public CLI(SocketClient socket) {
-        this.socket = socket;
+    public CLIHandler(SocketClient socketClient) {
+        this.socketClient = socketClient;
         gameMap = new Tile[5][5];
         tileGetter = new TileGetter();
         for(int i = 0; i < 5; i++) {
@@ -48,7 +48,7 @@ public class CLI implements ViewInterface {
     @Override
     public void setName() {
         scannerListener.setRequest(Request.name);
-        System.out.print("Imposta il nome: ");
+        System.out.print("Set the name: ");
     }
 
     /**
@@ -57,10 +57,10 @@ public class CLI implements ViewInterface {
      */
     public void verifyName(String name) {
         if(name.length() > 0) {
-            socket.send(new SetNameNotification(name, clientID));
+            socketClient.send(new SetNameNotification(name, clientID));
             scannerListener.setRequest(Request.ignore);
         } else {
-            System.out.print("Nome " + name + " non valido, scegline un altro: ");
+            System.out.print("Name " + name + " not valid, choose another one: ");
             scannerListener.setRequest(Request.name);
         }
     }
@@ -150,7 +150,7 @@ public class CLI implements ViewInterface {
     @Override
     public void askForReloadState() {
         scannerListener.setRequest(Request.askReload);
-        System.out.print("E' presente un salvataggio, caricarlo? S/N ");
+        System.out.print("Do you want to use an existent state? Y/N ");
     }
 
     /**
@@ -158,12 +158,12 @@ public class CLI implements ViewInterface {
      * @param answer the input
      */
     public void reloadStateAnswer(String answer) {
-        if(answer.equals("s")) {
-            socket.send(new AskForReloadStateNotification(true));
+        if(answer.equals("y")) {
+            socketClient.send(new AskForReloadStateNotification(true));
         } else if(answer.equals("n")) {
-            socket.send(new AskForReloadStateNotification(false));
+            socketClient.send(new AskForReloadStateNotification(false));
         } else {
-            System.out.print("S/N: ");
+            System.out.print("Y/N: ");
             scannerListener.setRequest(Request.askReload);
         }
     }
@@ -176,7 +176,7 @@ public class CLI implements ViewInterface {
     @Override
     public void reloadState(Cell[][] map, List<String> godNames) {
         HashMap<Integer, Position> workerPos = new HashMap<>();
-        System.out.println("Caricamento partita in corso...");
+        System.out.println("Loading game...");
         for(int row = 0; row < 5; row++) {
             for(int column = 0; column < 5; column++) {
                 int height = map[row][column].getHeight();
@@ -212,7 +212,7 @@ public class CLI implements ViewInterface {
         }
         updateScreen();
         scannerListener.setRequest(Request.position);
-        System.out.print("Scegli la posizione (riga, colonna): ");
+        System.out.print("Choose the position (row, column): ");
     }
 
     /**
@@ -225,11 +225,11 @@ public class CLI implements ViewInterface {
                 for(Position currPos: posList) {
                     gameMap[currPos.getRow()][currPos.getColumn()].setIdentifier(' ');
                 }
-                socket.send(new ChoosePosNotification(pos));
+                socketClient.send(new ChoosePosNotification(pos));
                 return;
             }
         }
-        System.out.print("Scelta non valida, inseriscine un'altra: ");
+        System.out.print("Not valid choice, choose another position: ");
         scannerListener.setRequest(Request.position);
     }
 
@@ -241,7 +241,7 @@ public class CLI implements ViewInterface {
     public void chooseCard(List<Integer> cardList) {
         intList = cardList;
         List<Card> cards = new IOHandler().getCardList();
-        System.out.println("\nScegli una carta tra\n");
+        System.out.println("\nChoose a card\n");
         for(Integer curr: cardList) {
             System.out.println(curr + ": " + cards.get(curr).getName());
             System.out.println(cards.get(curr).getDescription() + "\n");
@@ -256,12 +256,12 @@ public class CLI implements ViewInterface {
     public void verifyCard(int selected) {
         for (Integer i : intList) {
             if (i == selected) {
-                socket.send(new ChooseCardNotification(selected));
+                socketClient.send(new ChooseCardNotification(selected));
                 intList.clear();
                 return;
             }
         }
-        System.out.print("Carta non valida, selezionane un'altra: ");
+        System.out.print("Not valid card, choose another one: ");
         scannerListener.setRequest(Request.card);
     }
 
@@ -274,12 +274,12 @@ public class CLI implements ViewInterface {
         numPlayers = num;
         chosenCards = new ArrayList<>();
         List<Card> cards = new IOHandler().getCardList();
-        System.out.println("\nSei il primo giocatore, scegli " + num + " carte tra\n");
+        System.out.println("\nYou are the first player, choose " + num + " cards\n");
         for(int i = 0; i < cards.size(); i++) {
             intList.add(i);
             System.out.println(i + ": " + cards.get(i).getName() + "\n" + cards.get(i).getDescription() + "\n");
         }
-        System.out.print("Carta " + 1 + ": ");
+        System.out.print("Card " + 1 + ": ");
         scannerListener.setRequest(Request.cardList);
     }
 
@@ -291,13 +291,13 @@ public class CLI implements ViewInterface {
         if(card < new IOHandler().getCardList().size()) {
             chosenCards.add(card);
             if(chosenCards.size() == numPlayers) {
-                socket.send(new ChooseCardListNotification(chosenCards));
+                socketClient.send(new ChooseCardListNotification(chosenCards));
                 intList.clear();
                 return;
             }
-            System.out.print("Carta " + (chosenCards.size() + 1) + ": ");
+            System.out.print("Card " + (chosenCards.size() + 1) + ": ");
         } else {
-            System.out.println("Selezione non valida");
+            System.out.println("Not valid choice");
         }
         scannerListener.setRequest(Request.cardList);
     }
@@ -318,7 +318,7 @@ public class CLI implements ViewInterface {
                 gameMap[currPos.getRow()][currPos.getColumn()].setIdentifier('x');
             }
             updateScreen();
-            System.out.print("Posizione iniziale lavoratore 1 (riga, colonna): ");
+            System.out.print("Initial position player 1 (row, column): ");
             scannerListener.setRequest(Request.firstPos);
         } else {
             for(Position currPos: availablePos) {
@@ -335,7 +335,7 @@ public class CLI implements ViewInterface {
     public void verifyFirstPos(Position pos) {
         System.out.println(pos);
         if(notAvailablePos(pos)) {
-            System.out.println("Posizione non disponibile");
+            System.out.println("Position not available");
             scannerListener.setRequest(Request.firstPos);
             return;
         }
@@ -346,10 +346,10 @@ public class CLI implements ViewInterface {
             for (Position currPos : posList) {
                 gameMap[currPos.getRow()][currPos.getColumn()].setIdentifier(' ');
             }
-            socket.send(new FirstPositioningNotification(chosenPos));
+            socketClient.send(new FirstPositioningNotification(chosenPos));
             return;
         }
-        System.out.print("Posizione iniziale lavoratore 2 (riga, colonna): ");
+        System.out.print("Initial positionplayer 2 (row, column): ");
         scannerListener.setRequest(Request.firstPos);
     }
 
@@ -383,7 +383,7 @@ public class CLI implements ViewInterface {
             gameMap[pos.getRow()][pos.getColumn()].setIdentifier('x');
         }
         updateScreen();
-        System.out.print("Seleziona il worker: ");
+        System.out.print("Choose the worker: ");
         scannerListener.setRequest(Request.worker);
     }
 
@@ -393,14 +393,14 @@ public class CLI implements ViewInterface {
      */
     public void verifyWorker(Position pos) {
         if(notAvailablePos(pos)) {
-            System.out.println("Seleziona un worker valido");
+            System.out.println("Choose a valid worker");
             scannerListener.setRequest(Request.worker);
             return;
         }
         for(Position currPos: posList) {
             gameMap[currPos.getRow()][currPos.getColumn()].setIdentifier(' ');
         }
-        socket.send(new ChooseWorkerNotification(pos));
+        socketClient.send(new ChooseWorkerNotification(pos));
     }
 
     /**
@@ -408,7 +408,7 @@ public class CLI implements ViewInterface {
      */
     @Override
     public void choosePower() {
-        System.out.print("Attivare il potere della carta? S/N ");
+        System.out.print("Do you want to activate the god's power? Y/N ");
         scannerListener.setRequest(Request.power);
     }
 
@@ -417,24 +417,24 @@ public class CLI implements ViewInterface {
      * @param answer the answer
      */
     public void verifyPower(String answer) {
-        if(answer.equals("s")) {
-            socket.send(new SetPowerNotification(true));
+        if(answer.equals("y")) {
+            socketClient.send(new SetPowerNotification(true));
         } else if(answer.equals("n")) {
-            socket.send(new SetPowerNotification(false));
+            socketClient.send(new SetPowerNotification(false));
         } else {
-            System.out.print("S/N: ");
+            System.out.print("Y/N: ");
             scannerListener.setRequest(Request.power);
         }
     }
 
     /**
      * handle the disconnection
-     * @param playerDisconnected the player that has caused the disconnection
+     * @param message the log of the disconnection
      */
     @Override
-    public void handleDisconnection(int playerDisconnected) {
-        System.out.println("Il giocatore " + playerDisconnected + " si è disconnesso, la partita è annullata");
-        socket.closeClient();
+    public void handleDisconnection(String message) {
+        System.out.println(message);
+        socketClient.closeClient();
         scannerListener.stopReading();
     }
 
@@ -455,9 +455,9 @@ public class CLI implements ViewInterface {
     @Override
     public void elimination(boolean elim, String eliminatedPlayer) {
         if(elim) {
-            System.out.println("Hai perso");
+            System.out.println("You lose");
         } else {
-            System.out.println(eliminatedPlayer + " ha perso");
+            System.out.println(eliminatedPlayer + " has lost");
         }
     }
 
@@ -469,11 +469,11 @@ public class CLI implements ViewInterface {
     @Override
     public void win(boolean win, String winnerName) {
         if(win) {
-            System.out.println("Hai vinto");
+            System.out.println("You won");
         } else {
-            System.out.println("Ha vinto " + winnerName);
+            System.out.println(winnerName + " won");
         }
-        socket.closeClient();
+        socketClient.closeClient();
         scannerListener.stopReading();
     }
 

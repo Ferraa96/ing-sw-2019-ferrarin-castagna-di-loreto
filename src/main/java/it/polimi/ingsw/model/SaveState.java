@@ -19,8 +19,10 @@ public class SaveState implements Serializable {
     private int actualEffect;
     @SerializedName("godPower")
     private boolean godPower;
-    @SerializedName("athenaPower")
-    private boolean athenaPower;
+    @SerializedName("noClimb")
+    private boolean noClimb;        //true if Athena's power is active
+
+    private Position previousPos;   //used by Artemis, Demeter
 
     public List<PlayerInfo> getPlayers() {
         return players;
@@ -85,11 +87,19 @@ public class SaveState implements Serializable {
         return godPower;
     }
 
-    public void setAthenaPower(boolean athenaPower) {
-        this.athenaPower = athenaPower;
+    public void setNoClimb(boolean noClimb) {
+        this.noClimb = noClimb;
     }
 
-    public boolean isAthenaPower() {
-        return athenaPower;
+    public boolean isNoClimb() {
+        return noClimb;
+    }
+
+    public Position getPreviousPos() {
+        return previousPos;
+    }
+
+    public void setPreviousPos(Position previousPos) {
+        this.previousPos = previousPos;
     }
 }

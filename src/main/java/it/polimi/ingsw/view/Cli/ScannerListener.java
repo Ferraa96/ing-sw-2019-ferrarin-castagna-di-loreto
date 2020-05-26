@@ -7,11 +7,11 @@ import java.util.Scanner;
 public class ScannerListener extends Thread {
     private Request request = Request.ignore;
     private boolean running = true;
-    private final CLI cli;
+    private final CLIHandler cliHandler;
     private Scanner scanner;
 
-    public ScannerListener(CLI cli) {
-        this.cli = cli;
+    public ScannerListener(CLIHandler cliHandler) {
+        this.cliHandler = cliHandler;
     }
 
     /**
@@ -25,30 +25,30 @@ public class ScannerListener extends Thread {
                 switch (request) {
                     case name:
                         request = Request.ignore;
-                        cli.verifyName(scanner.nextLine());
+                        cliHandler.verifyName(scanner.nextLine());
                         break;
                     case askReload:
                         request = Request.ignore;
-                        cli.reloadStateAnswer(scanner.nextLine());
+                        cliHandler.reloadStateAnswer(scanner.nextLine());
                         break;
                     case cardList:
-                        cli.verifyCardList(waitForInt());
+                        cliHandler.verifyCardList(waitForInt());
                         break;
                     case card:
-                        cli.verifyCard(waitForInt());
+                        cliHandler.verifyCard(waitForInt());
                         break;
                     case firstPos:
-                        cli.verifyFirstPos(controlTwoInt());
+                        cliHandler.verifyFirstPos(controlTwoInt());
                         break;
                     case worker:
-                        cli.verifyWorker(controlTwoInt());
+                        cliHandler.verifyWorker(controlTwoInt());
                         break;
                     case power:
                         request = Request.ignore;
-                        cli.verifyPower(scanner.nextLine());
+                        cliHandler.verifyPower(scanner.nextLine());
                         break;
                     case position:
-                        cli.verifyPosition(controlTwoInt());
+                        cliHandler.verifyPosition(controlTwoInt());
                         break;
                     default:
                         scanner.nextLine();

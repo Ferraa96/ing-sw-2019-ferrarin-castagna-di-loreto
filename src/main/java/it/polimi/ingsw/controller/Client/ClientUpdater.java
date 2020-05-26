@@ -113,7 +113,7 @@ public class ClientUpdater implements MessageVisitor {
 
     @Override
     public void visit(DisconnectionNotification msg) {
-        view.handleDisconnection(msg.getClientID());
+        view.handleDisconnection(msg.getMessage());
     }
 
     @Override

@@ -150,6 +150,10 @@ public class Build implements Effect {
         this.lastBuildPosition = lastBuildPosition;
     }
 
+    public Position getLastPosition() {
+        return lastBuildPosition;
+    }
+
     /**
      * not used here
      * @param noUp true if athena triggers her power
