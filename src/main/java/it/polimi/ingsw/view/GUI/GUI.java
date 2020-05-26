@@ -12,11 +12,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Class that take care of everything that must be displayed
+ * Class that has a reference to every scene and run on the JavaFX Application Thread to display them
  */
 public class GUI extends Application implements UIRender{
-
-    private GUIController currentController;
 
     private GUIHandler guiHandler;
 
@@ -45,7 +43,7 @@ public class GUI extends Application implements UIRender{
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(getClass().getResource(fxmlResource));
             Scene scene = loader.load();
-            currentController = loader.getController();
+            GUIController currentController = loader.getController();
 
             if (this.stage != null) {
                 this.stage.hide();
@@ -70,37 +68,6 @@ public class GUI extends Application implements UIRender{
             this.stage.show();
         } catch (IOException e) {
             logger.log(Level.SEVERE, "Cannot load scene with resource {0}", fxmlResource);
-            logger.log(Level.SEVERE, "Exception when loading scene", e);
-        }
-    }
-
-    private void showNewWindow(String resource, String title) {
-        if (resource == null) {
-            return;
-        }
-        try {
-            FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(getClass().getResource(resource));
-            Scene scene2 = loader.load();
-            GUIController currentControl = loader.getController();
-
-            Stage stage2 = new Stage();
-            stage2.setTitle(title);
-
-            stage2.setOnCloseRequest((WindowEvent t) -> {
-                Platform.exit();
-                System.exit(0);
-            });
-
-            if (currentControl != null) {
-                currentControl.setGuiHandler(guiHandler);
-                currentControl.start();
-            }
-
-            stage2.setScene(scene2);
-            stage2.show();
-        } catch (IOException e) {
-            logger.log(Level.SEVERE, "Cannot load scene with resource {0}", resource);
             logger.log(Level.SEVERE, "Exception when loading scene", e);
         }
     }
@@ -155,12 +122,8 @@ public class GUI extends Application implements UIRender{
     @Override
     public void showRequest(){
         Platform.runLater(() -> {
-            try {
-                //showNewWindow buggato
-                showScene("/fxml/request.fxml", false);
-            } catch (Exception e) {
-                logger.log(Level.WARNING, "Error during board request", e);
-            }
+            showScene("/fxml/request.fxml", false);
+            updateStageInfo("ACTION NEEDED");
         });
     }
 

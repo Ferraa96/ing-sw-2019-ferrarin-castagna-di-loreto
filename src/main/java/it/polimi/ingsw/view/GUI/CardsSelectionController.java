@@ -2,7 +2,6 @@ package it.polimi.ingsw.view.GUI;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.control.Tooltip;
 import javafx.scene.image.ImageView;
 
 import java.util.ArrayList;
@@ -18,7 +17,7 @@ public class CardsSelectionController extends GUIController{
 
     private GUIHandler guiHandler;
 
-    private int playerNumber;
+    private int NumofPlayers;
 
     private int counter = 0;
 
@@ -29,13 +28,12 @@ public class CardsSelectionController extends GUIController{
     @FXML
     private void selectApollo(){
         if(!setted){
-        getPlayers();
-        setted = true;
+            getPlayers();
         }
         chosen.add(counter,0);
         counter ++;
         Apollo.setVisible(false);
-        if(counter==playerNumber){
+        if(counter==NumofPlayers){
                disableAll();
         }
     }
@@ -48,7 +46,7 @@ public class CardsSelectionController extends GUIController{
         chosen.add(counter,1);
         counter ++;
         Artemis.setVisible(false);
-        if(counter==playerNumber){
+        if(counter==NumofPlayers){
                 disableAll();
         }
     }
@@ -61,7 +59,7 @@ public class CardsSelectionController extends GUIController{
             chosen.add(counter,2);
             counter ++;
             Athena.setVisible(false);
-        if(counter==playerNumber){
+        if(counter==NumofPlayers){
             disableAll();
         }
     }
@@ -74,7 +72,7 @@ public class CardsSelectionController extends GUIController{
             chosen.add(counter,3);
             counter ++;
             Atlas.setVisible(false);
-        if(counter==playerNumber){
+        if(counter==NumofPlayers){
             disableAll();
         }
     }
@@ -87,7 +85,7 @@ public class CardsSelectionController extends GUIController{
             chosen.add(counter,4);
             counter ++;
             Demeter.setVisible(false);
-            if(counter==playerNumber){
+            if(counter==NumofPlayers){
                 disableAll();
             }
     }
@@ -100,7 +98,7 @@ public class CardsSelectionController extends GUIController{
             chosen.add(counter,5);
             counter ++;
             Hephaestus.setVisible(false);
-            if(counter==playerNumber){
+            if(counter==NumofPlayers){
                 disableAll();
             }
     }
@@ -113,7 +111,7 @@ public class CardsSelectionController extends GUIController{
             chosen.add(counter,6);
             counter ++;
             Minotaur.setVisible(false);
-            if(counter==playerNumber){
+            if(counter==NumofPlayers){
                 disableAll();
             }
     }
@@ -126,7 +124,7 @@ public class CardsSelectionController extends GUIController{
             chosen.add(counter,7);
             counter ++;
             Pam.setVisible(false);
-            if(counter==playerNumber){
+            if(counter==NumofPlayers){
                 disableAll();
             }
     }
@@ -139,7 +137,7 @@ public class CardsSelectionController extends GUIController{
             chosen.add(counter,8);
             counter ++;
             Prometheus.setVisible(false);
-            if(counter==playerNumber){
+            if(counter==NumofPlayers){
                 disableAll();
             }
     }
@@ -163,7 +161,7 @@ public class CardsSelectionController extends GUIController{
 
     private void getPlayers(){
         this.guiHandler = super.getGuiHandler();
-        playerNumber = guiHandler.getPlayers();
+        NumofPlayers = guiHandler.getPlayers();
         setted = true;
     }
 

@@ -18,8 +18,6 @@ public class ChooseCardController extends GUIController {
     @FXML
     ImageView GOD3;
 
-    private final List<ImageView> godsImages = new ArrayList<>();
-
     @FXML
     AnchorPane pane;
 
@@ -29,6 +27,8 @@ public class ChooseCardController extends GUIController {
     Button god2 = new Button("CHOOSE");
     @FXML
     Button god3 = new Button("CHOOSE");
+
+    private final List<ImageView> godsImages = new ArrayList<>();
 
     private final List<Button> godsButtons = new ArrayList<>();
 

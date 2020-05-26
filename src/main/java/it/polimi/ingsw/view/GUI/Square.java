@@ -4,7 +4,6 @@ public class Square {
 
     private int height;
     private int worker;
-    private String godname;
     private boolean isDome;
 
     public Square(){
@@ -17,16 +16,8 @@ public class Square {
         this.height = height;
     }
 
-    public void setGodname(String godname) {
-        this.godname = godname;
-    }
-
     public int getHeight() {
         return height;
-    }
-
-    public String getGodname() {
-        return godname;
     }
 
     public void setWorker(int worker) {

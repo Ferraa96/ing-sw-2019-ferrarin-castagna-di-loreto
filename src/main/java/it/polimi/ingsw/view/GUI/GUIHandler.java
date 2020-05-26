@@ -10,6 +10,11 @@ import it.polimi.ingsw.view.ViewInterface;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Class that recives informations from the controllers and takes care to call the correct display method
+ * and communicate those information to the server
+ *
+ */
 public class GUIHandler implements ViewInterface {
 
     private SocketClient socketClient;
@@ -19,8 +24,8 @@ public class GUIHandler implements ViewInterface {
     private String imagepath;
     private int clientID;
     private String message;
-    private String godname;
     private String state;
+    private boolean isMyTurn;
     private Square[][] map;
     private int scanId = -1;
     private final List<Integer> chosen = new ArrayList<>();
@@ -63,8 +68,8 @@ public class GUIHandler implements ViewInterface {
     }
 
     /**
-     * @param num the amount of players playing
      * Call to choose 'num' cards between all
+     * @param num the amount of players playing
      */
     @Override
     public void chooseCardList(int num) {
@@ -87,7 +92,6 @@ public class GUIHandler implements ViewInterface {
     /**
      * Used to get the card selected
      * @param imagepath the path to correct god image
-     *
      */
     public void getCard(int card, String imagepath){
         this.imagepath = imagepath;
@@ -99,75 +103,100 @@ public class GUIHandler implements ViewInterface {
      * @param availablePos list of the available postions
      * @param godName the god card of the player who is playing in this turn
      * scanId is used to identify the player and connect it to the worker
-     *
      */
     @Override
     public void firstPositioning(List<Position> availablePos, String godName, boolean isMyTurn) {
         scanId++;
         if(isMyTurn) {
+            this.isMyTurn = true;
             this.availablePos.addAll(availablePos);
-            this.godname = godName;
             this.message = "Select Workers position";
             this.state = "FIRSTPOS";
         }else {
+            this.isMyTurn = false;
             for(Position currPos: availablePos) {
-                map[currPos.getRow()][currPos.getColumn()].setGodname(godName);
                 map[currPos.getRow()][currPos.getColumn()].setWorker(scanId);
             }
         }
         updateScreen();
     }
 
+    /**
+     * Used to get the position of the worker and bind it to the player
+     * @param pos contains the position of the worker placed
+     */
     public void setSelectedPos(Position pos){
         currentChoice.add(pos);
-        map[pos.getRow()][pos.getColumn()].setGodname(godname);
+        this.state = "POS";
         map[pos.getRow()][pos.getColumn()].setWorker(scanId);
     }
 
     public void definePositions(){
+        this.state = "WAIT";
         socketClient.send(new FirstPositioningNotification(currentChoice));
     }
 
+    /**
+     * Choose which of the two workers you want to move
+     */
     @Override
     public void chooseWorker(List<Position> availableWorkers) {
         availablePos.clear();
         availablePos.addAll(availableWorkers);
-        this.message = "Select the worker you want to use";
+        isMyTurn = true;
+        message = "Select the worker you want to use";
         state = "SELECTWORKER";
         updateScreen();
     }
 
     public void defineWorker(Position pos){
+        this.state = "WAIT";
         socketClient.send(new ChooseWorkerNotification(pos));
     }
 
+    /**
+     * Choose whether you want to activate the power or not
+     */
     @Override
     public void choosePower() {
         this.message = "Do you want to activate the card power?";
+        isMyTurn = true;
         state = "POWER";
         gui.showRequest();
     }
 
     public void getPowerSelection(boolean power){
+        this.state = "WAIT";
         socketClient.send(new SetPowerNotification(power));
     }
 
+    /**
+     * After the worker selection choose where to move it
+     * @param list contains the positions where the worker can go
+     */
     @Override
     public void choosePosition(List<Position> list) {
         availablePos.clear();
         availablePos.addAll(list);
+        isMyTurn = true;
         this.message = "Move and then build";
         state = "SELECTPOSITION";
         updateScreen();
     }
 
     public void defineMovement(Position pos){
+        this.state = "WAIT";
         socketClient.send(new ChoosePosNotification(pos));
     }
 
+    /**
+     * Used to refresh the map deleting the elements from the old pos and adding them to the new one
+     * @param movements Contains the old position and the new position after the movement is done
+     */
     @Override
     public void move(List<Movement> movements) {
         List<Integer> id = new ArrayList<>();
+        isMyTurn = true;
         for(Movement currMove: movements) {
             id.add(map[currMove.getOldPos().getRow()][currMove.getOldPos().getColumn()].getWorker());
             map[currMove.getOldPos().getRow()][currMove.getOldPos().getColumn()].setWorker(-1);
@@ -177,13 +206,23 @@ public class GUIHandler implements ViewInterface {
         }
     }
 
+    /**
+     * Set the new height after a build has been places
+     */
     @Override
     public void buildBlock(Position position, int height) {
+        state = "BLOCK";
+        isMyTurn = true;
         map[position.getRow()][position.getColumn()].setHeight(height);
     }
 
+    /**
+     * Set the dome flag true when a dome has been built
+     */
     @Override
     public void buildDome(Position position, int height) {
+        state = "DOME";
+        isMyTurn = true;
         map[position.getRow()][position.getColumn()].setHeight(height);
         map[position.getRow()][position.getColumn()].setDome(true);
     }
@@ -219,7 +258,17 @@ public class GUIHandler implements ViewInterface {
     @Override
     public void notificationForOtherClient(String message) {
         this.message = message;
-        gui.showMessage();
+        isMyTurn = false;
+        switch (state){
+            case "SET NAME":
+            case "CARD LIST":
+            case "SET CARD":
+                gui.showMessage();
+                break;
+            default:
+                gui.showMap();
+                break;
+        }
     }
 
     @Override
@@ -256,12 +305,12 @@ public class GUIHandler implements ViewInterface {
         return this.name;
     }
 
-    public String getMessage(){
-        return this.message;
+    public boolean isMyTurn() {
+        return isMyTurn;
     }
 
-    public String getGodName(){
-        return this.godname;
+    public String getMessage(){
+        return this.message;
     }
 
     public int getPlayers(){

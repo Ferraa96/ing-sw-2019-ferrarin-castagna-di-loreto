@@ -23,7 +23,6 @@ public class MapController extends GUIController {
 
     @FXML
     Label playername = new Label("");
-
     @FXML
     Label action = new Label("");
 
@@ -40,6 +39,8 @@ public class MapController extends GUIController {
 
     private String currentstate;
 
+    private boolean isMyturn;
+
     private final Button[][] position = new Button[5][5];
 
     @Override
@@ -50,6 +51,7 @@ public class MapController extends GUIController {
         listavailable.addAll(guiHandler.getAvailablePos());
         mappa = guiHandler.getMap();
         currentstate = guiHandler.getState();
+        isMyturn = guiHandler.isMyTurn();
 
         //get the already chosen workers/buildings
         for (int i = 0; i < 5; i++) {
@@ -63,7 +65,30 @@ public class MapController extends GUIController {
             }
         }
 
-        //creates the buttons for the available positions
+        //set the playername and the action
+        playername.setText(guiHandler.getName());
+        playername.setLayoutX(87);
+        playername.setLayoutY(471);
+        playername.setFont(Font.font ("Franklin Gothic Medium", 12));
+        if(isMyturn) {
+            action.setText(guiHandler.getMessage());
+            action.setLayoutX(20);
+            action.setLayoutY(20);
+            action.setFont(Font.font("Franklin Gothic Medium", 20));
+            pane.getChildren().addAll(playername,action);
+            doAction();
+        }else {
+            action.setText(guiHandler.getMessage());
+            action.setLayoutX(20);
+            action.setLayoutY(20);
+            action.setFont(Font.font("Franklin Gothic Medium", 20));
+            pane.getChildren().addAll(playername,action);
+        }
+
+    }
+
+    private void doAction(){
+        //creates the buttons for the available position
         for(Position curr : listavailable) {
             int i = curr.getRow();
             int j = curr.getColumn();
@@ -76,22 +101,12 @@ public class MapController extends GUIController {
             pane.getChildren().add(position[i][j]);
         }
 
-        //set the playername and the action
-        playername.setText(guiHandler.getName());
-        playername.setLayoutX(87);
-        playername.setLayoutY(471);
-        playername.setFont(Font.font ("Franklin Gothic Medium", 12));
-        action.setText(guiHandler.getMessage());
-        action.setLayoutX(20);
-        action.setLayoutY(20);
-        action.setFont(Font.font ("Franklin Gothic Medium", 20));
-        pane.getChildren().addAll(playername,action);
 
         for (int i = 0; i < 5; i++) {
             for (int j = 0; j < 5; j++) {
                 int finalI = i;
                 int finalJ = j;
-                    if(position[i][j]!=null){
+                if(position[i][j]!=null){
                     position[i][j].setOnAction(e -> {
                         Position pos = new Position(finalI, finalJ);
                         position[finalI][finalJ].setVisible(false);
@@ -101,8 +116,8 @@ public class MapController extends GUIController {
                                 guiHandler.setSelectedPos(pos);
                                 drawWorker(finalI,finalJ);
                                 if(counter==2) {
-                                disableAll();
-                                guiHandler.definePositions();
+                                    disableAll();
+                                    guiHandler.definePositions();
                                 }
                                 break;
                             case "SELECTWORKER":
@@ -112,8 +127,8 @@ public class MapController extends GUIController {
                                 guiHandler.defineMovement(pos);
                                 break;
                         }
-                      });
-                    }
+                    });
+                }
             }
         }
     }

@@ -4,11 +4,9 @@ import javafx.fxml.FXML;
 
 public class WelcomeController extends GUIController{
 
-    private GUIHandler guiHandler;
-
     @FXML
     public void startGame(){
-        this.guiHandler = super.getGuiHandler();
+        GUIHandler guiHandler = super.getGuiHandler();
         guiHandler.setName();
     }
 

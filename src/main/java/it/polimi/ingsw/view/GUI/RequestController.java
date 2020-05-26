@@ -9,7 +9,6 @@ import javafx.scene.text.Font;
 
 public class RequestController extends GUIController{
 
-
     @FXML
     Button YES,NO;
 
@@ -42,8 +41,7 @@ public class RequestController extends GUIController{
         pane.getChildren().addAll(YES,NO,message);
 
         YES.setOnAction(e-> confirmRequest());
-        NO.setOnAction(e->denyRequest());
-
+        NO.setOnAction(e-> denyRequest());
     }
 
     @FXML
