@@ -15,9 +15,8 @@ public class SetNameNotification implements Serializable, MessageInterface {
         this.ok = ok;
     }
 
-    public SetNameNotification(String name, int clientID) {
+    public SetNameNotification(String name) {
         this.name = name;
-        this.clientID = clientID;
     }
 
     public boolean isOk() {

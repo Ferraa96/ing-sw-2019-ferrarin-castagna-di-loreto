@@ -14,14 +14,14 @@ public class CLIHandler implements ViewInterface {
     private final SocketClient socketClient;
     private final Tile[][] gameMap;
     private final TileGetter tileGetter;
-    private int clientID;
     private List<Position> posList;
     private List<Integer> intList = new ArrayList<>();
     private List<Integer> chosenCards;
     private final ScannerListener scannerListener;
     private List<Position> chosenPos;
     private int numPlayers;
-    private String godName;
+    private List<String> godNames;
+    private int currPlayer;
 
     /**
      * creates the CLI
@@ -57,7 +57,7 @@ public class CLIHandler implements ViewInterface {
      */
     public void verifyName(String name) {
         if(name.length() > 0) {
-            socketClient.send(new SetNameNotification(name, clientID));
+            socketClient.send(new SetNameNotification(name));
             scannerListener.setRequest(Request.ignore);
         } else {
             System.out.print("Name " + name + " not valid, choose another one: ");
@@ -196,7 +196,8 @@ public class CLIHandler implements ViewInterface {
             List<Position> myWorker = new ArrayList<>();
             myWorker.add(workerPos.get(i * 2));
             myWorker.add(workerPos.get(i * 2 + 1));
-            firstPositioning(myWorker, godNames.get(i), userNames.get(i), false);
+            currPlayer = i;
+            firstPositioning(myWorker, godNames, userNames, currPlayer, false);
         }
     }
 
@@ -305,12 +306,12 @@ public class CLIHandler implements ViewInterface {
     /**
      * lets the player set the position of his workers
      * @param availablePos the list of all the available positions
-     * @param godName the name of the chosen god
+     * @param godNames the name of the chosen god
      * @param isMyTurn indicates if is the turn of the player
      */
     @Override
-    public void firstPositioning(List<Position> availablePos, String godName, String userName, boolean isMyTurn) {
-        this.godName = godName;
+    public void firstPositioning(List<Position> availablePos, List<String> godNames, List<String> userName, int client, boolean isMyTurn) {
+        this.godNames = godNames;
         posList = availablePos;
         if(isMyTurn) {
             chosenPos = new ArrayList<>();
@@ -318,11 +319,11 @@ public class CLIHandler implements ViewInterface {
                 gameMap[currPos.getRow()][currPos.getColumn()].setIdentifier('x');
             }
             updateScreen();
-            System.out.print("Initial position player 1 (row, column): ");
+            System.out.print("Initial position worker 1 (row, column): ");
             scannerListener.setRequest(Request.firstPos);
         } else {
             for(Position currPos: availablePos) {
-                addPosition(currPos, godName);
+                addPosition(currPos, godNames.get(client));
             }
             updateScreen();
         }
@@ -340,7 +341,7 @@ public class CLIHandler implements ViewInterface {
             return;
         }
         chosenPos.add(pos);
-        addPosition(pos, godName);
+        addPosition(pos, godNames.get(currPlayer));
         updateScreen();
         if(chosenPos.size() == 2) {
             for (Position currPos : posList) {
@@ -349,7 +350,7 @@ public class CLIHandler implements ViewInterface {
             socketClient.send(new FirstPositioningNotification(chosenPos));
             return;
         }
-        System.out.print("Initial positionplayer 2 (row, column): ");
+        System.out.print("Initial position worker 2 (row, column): ");
         scannerListener.setRequest(Request.firstPos);
     }
 

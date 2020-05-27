@@ -32,7 +32,7 @@ public interface ViewInterface {
      * lets the player choose the initial position of his workers
      * @param availablePos the list of all the available positions
      */
-    void firstPositioning(List<Position> availablePos, String godName, String userName, boolean isMyTurn);
+    void firstPositioning(List<Position> availablePos, List<String> godName, List<String> userName, int client, boolean isMyTurn);
 
     /**
      * allows player to select the worker to use in current turn

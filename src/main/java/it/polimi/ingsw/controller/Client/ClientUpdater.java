@@ -3,12 +3,16 @@ package it.polimi.ingsw.controller.Client;
 import it.polimi.ingsw.controller.Instructions.*;
 import it.polimi.ingsw.view.ViewInterface;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * handle the messages from the server
  */
 public class ClientUpdater implements MessageVisitor {
     private final ViewInterface view;
     private int playerID;
+    private List<String> allNames;
 
     /**
      * adapter server-client
@@ -16,6 +20,7 @@ public class ClientUpdater implements MessageVisitor {
      */
     public ClientUpdater(ViewInterface view) {
         this.view = view;
+        allNames = new ArrayList<>();
     }
 
     @Override
@@ -23,7 +28,7 @@ public class ClientUpdater implements MessageVisitor {
         if(msg.getClientID() == playerID) {
             view.askForReloadState();
         } else {
-            view.notificationForOtherClient("Player " + msg.getClientID() + " is choosing if he wants to reload the game");
+            view.notificationForOtherClient(allNames.get(msg.getClientID()) + " is choosing if he wants to reload the game");
         }
     }
 
@@ -42,16 +47,17 @@ public class ClientUpdater implements MessageVisitor {
         if(msg.getClientID() == playerID) {
             view.chooseCard(msg.getAvailableCards());
         } else {
-            view.notificationForOtherClient("Il giocatore " + msg.getClientID() + " sta scegliendo la carta");
+            view.notificationForOtherClient(allNames.get(msg.getClientID()) + " is choosing the card");
         }
     }
 
     @Override
     public void visit(ChooseCardListNotification msg) {
+        allNames = msg.getUserNames();
         if(msg.getClientID() == playerID) {
             view.chooseCardList(msg.getNumPlayers());
         } else {
-            view.notificationForOtherClient("Scelta delle carte di gioco...");
+            view.notificationForOtherClient(allNames.get(msg.getClientID()) + " is choosing all the cards");
         }
     }
 
@@ -60,7 +66,7 @@ public class ClientUpdater implements MessageVisitor {
         if(msg.getClientID() == playerID) {
             view.choosePosition(msg.getAvailablePositions());
         } else {
-            view.notificationForOtherClient("Il giocatore " + msg.getClientID() + " sta scegliendo la posizione");
+            view.notificationForOtherClient(allNames.get(msg.getClientID()) + " is choosing the position");
         }
     }
 
@@ -69,7 +75,7 @@ public class ClientUpdater implements MessageVisitor {
         if(msg.getClientID() == playerID) {
             view.chooseWorker(msg.getAvailableWorkers());
         } else {
-            view.notificationForOtherClient("Il giocatore " + msg.getClientID() + " sta scegliendo il lavoratore");
+            view.notificationForOtherClient(allNames.get(msg.getClientID()) + " is choosing the worker");
         }
     }
 
@@ -77,13 +83,13 @@ public class ClientUpdater implements MessageVisitor {
     public void visit(FirstPositioningNotification msg) {
         if(msg.getClientID() == playerID) {
             if(!msg.isLoadPos()) {
-                view.firstPositioning(msg.getPositions(), msg.getGodName(), msg.getUserName(), true);
+                view.firstPositioning(msg.getPositions(), msg.getGodName(), allNames, msg.getClientID(), true);
             }
         } else {
             if(msg.isLoadPos()) {
-                view.firstPositioning(msg.getPositions(), msg.getGodName(), msg.getUserName(), false);
+                view.firstPositioning(msg.getPositions(), msg.getGodName(), allNames, msg.getClientID(), false);
             } else {
-                view.notificationForOtherClient("Il giocatore " + msg.getClientID() + " sta posizionando i lavoratori");
+                view.notificationForOtherClient(allNames.get(msg.getClientID()) + " is choosing where to position his workers");
             }
         }
     }
@@ -107,7 +113,7 @@ public class ClientUpdater implements MessageVisitor {
         if(msg.getClientID() == playerID) {
             view.choosePower();
         } else {
-            view.notificationForOtherClient("Il giocatore " + msg.getClientID() + " sta scegliendo il potere");
+            view.notificationForOtherClient(allNames.get(msg.getClientID()) + " is choosing the power");
         }
     }
 
@@ -118,6 +124,7 @@ public class ClientUpdater implements MessageVisitor {
 
     @Override
     public void visit(LoadGameNotification msg) {
+        allNames = msg.getUserNames();
         view.reloadState(msg.getMap(), msg.getGodNames(), msg.getUserNames());
         view.updateScreen();
     }

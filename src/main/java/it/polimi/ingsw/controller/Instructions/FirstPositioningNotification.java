@@ -11,18 +11,16 @@ import java.util.List;
 public class FirstPositioningNotification implements Serializable, MessageInterface {
     private int clientID;
     private final List<Position> positions;
-    private String godName;
-    private String userName;
+    private List<String> godName;
     private boolean loadPos = false;
 
     public FirstPositioningNotification(List<Position> positions) {
         this.positions = positions;
     }
 
-    public FirstPositioningNotification(List<Position> positions, String godName, String userName, int clientID) {
+    public FirstPositioningNotification(List<Position> positions, List<String> godName, int clientID) {
         this.positions = positions;
         this.godName = godName;
-        this.userName = userName;
         this.clientID = clientID;
     }
 
@@ -30,12 +28,8 @@ public class FirstPositioningNotification implements Serializable, MessageInterf
         return positions;
     }
 
-    public String getGodName() {
+    public List<String> getGodName() {
         return godName;
-    }
-
-    public String getUserName() {
-        return userName;
     }
 
     public void setLoadPos(boolean loadPos) {

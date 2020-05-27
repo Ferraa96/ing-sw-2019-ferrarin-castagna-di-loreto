@@ -31,7 +31,7 @@ public class SocketServer {
         ServerSocket serverSocket;
         int actualNum = 0;
         int serverNum = 1;
-        int min = 3;
+        int min = 2;
         int max = 3;
         try {
             serverSocket = new ServerSocket(port);

@@ -10,10 +10,12 @@ public class ChooseCardListNotification implements Serializable, MessageInterfac
     private int clientID;
     private int numPlayers;
     private List<Integer> chosenCards;
+    private List<String> userNames;
 
-    public ChooseCardListNotification(int numPlayers, int clientID) {
+    public ChooseCardListNotification(int numPlayers, int clientID, List<String> userNames) {
         this.numPlayers = numPlayers;
         this.clientID = clientID;
+        this.userNames = userNames;
     }
 
     public ChooseCardListNotification(List<Integer> chosenCards) {
@@ -26,6 +28,10 @@ public class ChooseCardListNotification implements Serializable, MessageInterfac
 
     public List<Integer> getChosenCards() {
         return chosenCards;
+    }
+
+    public List<String> getUserNames() {
+        return userNames;
     }
 
     @Override
