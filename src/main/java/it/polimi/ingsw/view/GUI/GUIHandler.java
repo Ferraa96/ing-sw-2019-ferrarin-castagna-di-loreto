@@ -109,11 +109,11 @@ public class GUIHandler implements ViewInterface {
     @Override
     public void firstPositioning(List<Position> availablePos, List<String> godName, List<String> userName, int client, boolean isMyTurn) {
         scanId++;
-        this.userName.clear();
-        this.userName.addAll(userName);
+        if (client == 0) {
+            this.userName.addAll(userName);
+            this.godName.addAll(godName);
+        }
         this.playernumber = userName.size();
-        this.godName.clear();
-        this.godName.addAll(godName);
         if(isMyTurn) {
             this.isMyTurn = true;
             this.availablePos.addAll(availablePos);
@@ -187,7 +187,7 @@ public class GUIHandler implements ViewInterface {
         availablePos.clear();
         availablePos.addAll(list);
         isMyTurn = true;
-        this.message = "Move and then build";
+        this.message = "Do your moves & buildings";
         state = "SELECTPOSITION";
         updateScreen();
     }

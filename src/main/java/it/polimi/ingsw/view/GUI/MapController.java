@@ -78,8 +78,8 @@ public class MapController extends GUIController {
 
         //set the playername and the action
         playername1.setText(guiHandler.getName());
-        playername1.setLayoutX(87);
-        playername1.setLayoutY(471);
+        playername1.setLayoutX(77);
+        playername1.setLayoutY(470);
         playername1.setFont(Font.font ("Franklin Gothic Medium", 12));
         pane1.setVisible(false);
         pane2.setVisible(false);
@@ -100,8 +100,8 @@ public class MapController extends GUIController {
             pane1.setVisible(true);
             godcard1.setImage(new Image(convertGod(godname.get(0)), 300, 450, true, true));
             playername2.setText(players.get(0));
-            playername2.setLayoutX(835);
-            playername2.setLayoutY(473);
+            playername2.setLayoutX(824);
+            playername2.setLayoutY(470);
             playername2.setFont(Font.font("Franklin Gothic Medium", 12));
         }
 
@@ -109,8 +109,8 @@ public class MapController extends GUIController {
             pane2.setVisible(true);
             godcard2.setImage(new Image(convertGod(godname.get(1)), 300, 450, true, true));
             playername3.setText(players.get(1));
-            playername3.setLayoutX(835);
-            playername3.setLayoutY(125);
+            playername3.setLayoutX(824);
+            playername3.setLayoutY(173);
             playername3.setFont(Font.font ("Franklin Gothic Medium", 12));
         }
 
