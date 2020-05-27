@@ -33,7 +33,6 @@ public class MessageController extends GUIController {
             close.setLayoutX(230);
             close.setLayoutY(240);
             close.setOnAction(e->{
-                guiHandler.closeClient();
                 Platform.exit();
             });
             pane.getChildren().add(close);

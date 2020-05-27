@@ -17,12 +17,18 @@ public class MapController extends GUIController {
     @FXML
     ImageView map;
     @FXML
-    ImageView godcard;
+    ImageView pane1,pane2;
+    @FXML
+    ImageView godcard,godcard1,godcard2;
     @FXML
     ImageView worker,building;
 
     @FXML
-    Label playername = new Label("");
+    Label playername1 = new Label("");
+    @FXML
+    Label playername2 = new Label("");
+    @FXML
+    Label playername3 = new Label("");
     @FXML
     Label action = new Label("");
 
@@ -37,11 +43,15 @@ public class MapController extends GUIController {
 
     private int counter = 0;
 
+    private int NumofPlayers;
+
     private String currentstate;
 
-    private boolean isMyturn;
+    private final List<String> players = new ArrayList<>();
 
     private final Button[][] position = new Button[5][5];
+
+    private final List<String> godname = new ArrayList<>();
 
     @Override
     public void start(){
@@ -51,7 +61,8 @@ public class MapController extends GUIController {
         listavailable.addAll(guiHandler.getAvailablePos());
         mappa = guiHandler.getMap();
         currentstate = guiHandler.getState();
-        isMyturn = guiHandler.isMyTurn();
+        boolean isMyturn = guiHandler.isMyTurn();
+        NumofPlayers = guiHandler.getPlayers();
 
         //get the already chosen workers/buildings
         for (int i = 0; i < 5; i++) {
@@ -66,25 +77,58 @@ public class MapController extends GUIController {
         }
 
         //set the playername and the action
-        playername.setText(guiHandler.getName());
-        playername.setLayoutX(87);
-        playername.setLayoutY(471);
-        playername.setFont(Font.font ("Franklin Gothic Medium", 12));
-        if(isMyturn) {
-            action.setText(guiHandler.getMessage());
-            action.setLayoutX(20);
-            action.setLayoutY(20);
-            action.setFont(Font.font("Franklin Gothic Medium", 20));
-            pane.getChildren().addAll(playername,action);
-            doAction();
-        }else {
-            action.setText(guiHandler.getMessage());
-            action.setLayoutX(20);
-            action.setLayoutY(20);
-            action.setFont(Font.font("Franklin Gothic Medium", 20));
-            pane.getChildren().addAll(playername,action);
+        playername1.setText(guiHandler.getName());
+        playername1.setLayoutX(87);
+        playername1.setLayoutY(471);
+        playername1.setFont(Font.font ("Franklin Gothic Medium", 12));
+        pane1.setVisible(false);
+        pane2.setVisible(false);
+
+        players.clear();
+        for(String curr : guiHandler.getUsername()){
+            if(!curr.equals(guiHandler.getName()))
+            players.add(curr);
         }
 
+        godname.clear();
+        for(String curr : guiHandler.getGodName()){
+            if(!convertGod(curr).equals(guiHandler.getGodOnMap()))
+                godname.add(curr);
+        }
+
+        if(godname.size()>=1) {
+            pane1.setVisible(true);
+            godcard1.setImage(new Image(convertGod(godname.get(0)), 300, 450, true, true));
+            playername2.setText(players.get(0));
+            playername2.setLayoutX(835);
+            playername2.setLayoutY(473);
+            playername2.setFont(Font.font("Franklin Gothic Medium", 12));
+        }
+
+        if(godname.size()>=2){
+            pane2.setVisible(true);
+            godcard2.setImage(new Image(convertGod(godname.get(1)), 300, 450, true, true));
+            playername3.setText(players.get(1));
+            playername3.setLayoutX(835);
+            playername3.setLayoutY(125);
+            playername3.setFont(Font.font ("Franklin Gothic Medium", 12));
+        }
+
+        setMessage();
+        if(isMyturn) {
+            doAction();
+        }
+
+    }
+
+    private void setMessage() {
+        action.setText(guiHandler.getMessage());
+        action.setLayoutX(20);
+        action.setLayoutY(20);
+        action.setFont(Font.font("Franklin Gothic Medium", 20));
+        pane.getChildren().addAll(playername1,playername2,action);
+        if(NumofPlayers == 3)
+            pane.getChildren().add(playername3);
     }
 
     private void doAction(){
@@ -183,6 +227,41 @@ public class MapController extends GUIController {
             for (int j = 0; j < 5; j++) {
                 if (position[i][j] != null)
                     position[i][j].setVisible(false);
+            }
+        }
+    }
+
+    private String convertGod(String godName){
+        switch(godName){
+            case "Apollo":{
+                return "/images/01.png";
+            }
+            case "Artemis":{
+                return "/images/02.png";
+            }
+            case "Athena":{
+                return "/images/03.png";
+            }
+            case "Atlas":{
+                return "/images/04.png";
+            }
+            case "Demeter":{
+                return "/images/05.png";
+            }
+            case "Hephaestus":{
+                return "/images/06.png";
+            }
+            case "Minotaur":{
+                return "/images/08.png";
+            }
+            case "Pan":{
+                return "/images/09.png";
+            }
+            case "Prometheus":{
+                return "/images/10.png";
+            }
+            default:{
+                return "Invalid Choicqe";
             }
         }
     }

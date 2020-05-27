@@ -22,8 +22,9 @@ public class GUIHandler implements ViewInterface {
     private int playernumber;
     private String name = "";
     private String imagepath;
-    private int clientID;
+    private List<String> godName = new ArrayList<>();
     private String message;
+    private final List<String> userName = new ArrayList<>();
     private String state;
     private boolean isMyTurn;
     private Square[][] map;
@@ -51,7 +52,7 @@ public class GUIHandler implements ViewInterface {
             }
         }
         if(socketClient.connectGUI(ip,this)){
-            socketClient.send(new SetNameNotification(name, clientID));
+            socketClient.send(new SetNameNotification(name));
         }else{
             setName();
         }
@@ -62,6 +63,7 @@ public class GUIHandler implements ViewInterface {
         state = "SET NAME";
         gui.showLogin();
     }
+
     public void getSelectedCards(List<Integer> chosen){
         this.chosen.addAll(chosen);
         socketClient.send(new ChooseCardListNotification(chosen));
@@ -105,8 +107,13 @@ public class GUIHandler implements ViewInterface {
      * scanId is used to identify the player and connect it to the worker
      */
     @Override
-    public void firstPositioning(List<Position> availablePos, String godName, String userName, boolean isMyTurn) {
+    public void firstPositioning(List<Position> availablePos, List<String> godName, List<String> userName, int client, boolean isMyTurn) {
         scanId++;
+        this.userName.clear();
+        this.userName.addAll(userName);
+        this.playernumber = userName.size();
+        this.godName.clear();
+        this.godName.addAll(godName);
         if(isMyTurn) {
             this.isMyTurn = true;
             this.availablePos.addAll(availablePos);
@@ -114,6 +121,7 @@ public class GUIHandler implements ViewInterface {
             this.state = "FIRSTPOS";
         }else {
             this.isMyTurn = false;
+            state = "WAIT";
             for(Position currPos: availablePos) {
                 map[currPos.getRow()][currPos.getColumn()].setWorker(scanId);
             }
@@ -252,6 +260,7 @@ public class GUIHandler implements ViewInterface {
     public void handleDisconnection(String message) {
         state = "END";
         this.message = message;
+        socketClient.closeClient();
         gui.showMessage();
     }
 
@@ -289,11 +298,16 @@ public class GUIHandler implements ViewInterface {
         } else {
             this.message = winnerName + " won";
         }
+        socketClient.closeClient();
         gui.showMessage();
     }
 
-    public void closeClient(){
-        socketClient.closeClient();
+    public List<String> getGodName() {
+        return this.godName;
+    }
+
+    public List<String> getUsername(){
+        return this.userName;
     }
 
     public String getName(){

@@ -124,7 +124,7 @@ public class Move implements Effect{
                 possibleCells.remove(possibleCells.get(curr));
                 curr--;
             }
-            else if (map[r][c].getWorkerID() != -1) {
+            else if (map[r][c].getWorkerID() != -1 || map[r][c].isDome()) {
                 possibleCells.remove(possibleCells.get(curr));
                 curr--;
             }
