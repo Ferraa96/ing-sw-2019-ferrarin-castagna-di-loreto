@@ -3,10 +3,12 @@ package it.polimi.ingsw.view.GUI;
 import it.polimi.ingsw.model.Position;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.control.Label;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
 import java.util.ArrayList;
@@ -49,12 +51,19 @@ public class MapController extends GUIController {
 
     private final List<String> players = new ArrayList<>();
 
+    private final List<String> allPlayers = new ArrayList<>();
+
     private final Button[][] position = new Button[5][5];
 
     private final List<String> godname = new ArrayList<>();
 
     @Override
     public void start(){
+
+        DropShadow ds = new DropShadow();
+        ds.setOffsetY(3.0f);
+        ds.setColor(Color.color(0.4f, 0.4f, 0.4f));
+
         this.guiHandler = super.getGuiHandler();
         godcard.setImage(new Image(guiHandler.getGodOnMap(), 300, 450, true, true));
 
@@ -76,19 +85,24 @@ public class MapController extends GUIController {
             }
         }
 
+
+        players.clear();
+        for(String curr : guiHandler.getUsername()){
+            allPlayers.add(curr);
+            if(!curr.equals(guiHandler.getName()))
+            players.add(curr);
+        }
+
         //set the playername and the action
         playername1.setText(guiHandler.getName());
         playername1.setLayoutX(77);
         playername1.setLayoutY(470);
         playername1.setFont(Font.font ("Franklin Gothic Medium", 12));
+        playername1.setTextFill(Color.web(getPlayerColor(guiHandler.getName())));
+        playername1.setEffect(ds);
+        playername1.setCache(true);
         pane1.setVisible(false);
         pane2.setVisible(false);
-
-        players.clear();
-        for(String curr : guiHandler.getUsername()){
-            if(!curr.equals(guiHandler.getName()))
-            players.add(curr);
-        }
 
         godname.clear();
         for(String curr : guiHandler.getGodName()){
@@ -103,6 +117,9 @@ public class MapController extends GUIController {
             playername2.setLayoutX(824);
             playername2.setLayoutY(470);
             playername2.setFont(Font.font("Franklin Gothic Medium", 12));
+            playername2.setTextFill(Color.web(getPlayerColor(players.get(0))));
+            playername2.setEffect(ds);
+            playername2.setCache(true);
         }
 
         if(godname.size()>=2){
@@ -112,6 +129,9 @@ public class MapController extends GUIController {
             playername3.setLayoutX(824);
             playername3.setLayoutY(173);
             playername3.setFont(Font.font ("Franklin Gothic Medium", 12));
+            playername3.setTextFill(Color.web(getPlayerColor(players.get(1))));
+            playername3.setEffect(ds);
+            playername3.setCache(true);
         }
 
         setMessage();
@@ -263,6 +283,29 @@ public class MapController extends GUIController {
             default:{
                 return "Invalid Choicqe";
             }
+        }
+    }
+
+    private String getPlayerColor(String name){
+
+        int count = 0;
+
+        for (String allPlayer : allPlayers) {
+            if (allPlayer.equals(name)) {
+                break;
+            }
+            count++;
+        }
+
+        switch(count){
+            case 0:
+                return "#fffb00";
+            case 1:
+                return "#0300ff";
+            case 2:
+                return "#ff1800";
+            default:
+                return "#ffffff";
         }
     }
 
