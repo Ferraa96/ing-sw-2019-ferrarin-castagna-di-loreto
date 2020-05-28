@@ -47,15 +47,13 @@ public class Turn implements ModelInterface {
         if(controlName(name)) {
             socket.sendTo(playerID, new SetNameNotification(playerID, true));
             nameMap.put(playerID, name);
-            nextTurn();
             if (nameMap.size() == numPlayer) {
                 for(int i = 0; i < numPlayer; i++) {
                     players.add(new PlayerInfo(nameMap.get(i)));
+                    nameList.add(nameMap.get(i));
                 }
-                for (PlayerInfo curr : players) {
-                    nameList.add(curr.getPlayerName());
-                }
-                if (ioHandler.verifyFileExistance(saveState.generateName(nameList))) {
+                System.out.println(this);
+                if (ioHandler.verifyFileExistance(saveState.generateName(new ArrayList<>(nameList)))) {
                     socket.broadcast(new AskForReloadStateNotification(actualPlayer));
                     return;
                 }
@@ -125,13 +123,6 @@ public class Turn implements ModelInterface {
         }
     }
 
-    private void askWhichWorker() {
-        List<Position> availableWorkers = new ArrayList<>();
-        availableWorkers.add(cardList.get(actualPlayer).getWorker1().getPosition());
-        availableWorkers.add(cardList.get(actualPlayer).getWorker2().getPosition());
-        socket.broadcast(new ChooseWorkerNotification(availableWorkers, actualPlayer));
-    }
-
     /**
      * puts all the players in the same order of the game loaded
      * @param state the file with all the configurations saved
@@ -148,6 +139,13 @@ public class Turn implements ModelInterface {
             }
         }
         return playerMap;
+    }
+
+    private void askWhichWorker() {
+        List<Position> availableWorkers = new ArrayList<>();
+        availableWorkers.add(cardList.get(actualPlayer).getWorker1().getPosition());
+        availableWorkers.add(cardList.get(actualPlayer).getWorker2().getPosition());
+        socket.broadcast(new ChooseWorkerNotification(availableWorkers, actualPlayer));
     }
 
     /**
@@ -174,12 +172,12 @@ public class Turn implements ModelInterface {
             socket.broadcast(new ChooseCardNotification(chosenCards, actualPlayer));
         } else {
             List<String> godNames = new ArrayList<>();
-            for(Card curr: cardList) {
-                godNames.add(curr.getName());
-            }
             Card temp = cardList.get(numPlayer - 1);
             cardList.remove(temp);
             cardList.add(0, temp);
+            for(Card curr: cardList) {
+                godNames.add(curr.getName());
+            }
             //first positioning
             saveState.setPlayers(players);
             socket.broadcast(new FirstPositioningNotification(cardList.get(actualPlayer).availableFirstPositioning(), godNames, actualPlayer));
@@ -325,7 +323,7 @@ public class Turn implements ModelInterface {
                 nextTurn();
                 askWhichWorker();
             }
-            System.out.println(this);
+            //System.out.println(this);
             saveGame();
         }
     }

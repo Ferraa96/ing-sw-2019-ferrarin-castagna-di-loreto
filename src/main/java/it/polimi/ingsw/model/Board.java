@@ -16,7 +16,6 @@ public class Board {
                 map[i][j] = new Cell();
             }
         }
-        System.out.println(this);
     }
 
     public Cell[][] getMap() {

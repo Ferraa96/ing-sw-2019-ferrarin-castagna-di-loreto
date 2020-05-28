@@ -8,10 +8,11 @@ public class ScannerListener extends Thread {
     private Request request = Request.ignore;
     private boolean running = true;
     private final CLIHandler cliHandler;
-    private Scanner scanner;
+    private final Scanner scanner;
 
     public ScannerListener(CLIHandler cliHandler) {
         this.cliHandler = cliHandler;
+        scanner = new Scanner(System.in);
     }
 
     /**
@@ -19,9 +20,8 @@ public class ScannerListener extends Thread {
      */
     @Override
     public void run() {
-        scanner = new Scanner(System.in);
         while (running) {
-            if(scanner.hasNextLine()) {
+            if (scanner.hasNextLine()) {
                 switch (request) {
                     case name:
                         request = Request.ignore;
@@ -63,7 +63,7 @@ public class ScannerListener extends Thread {
      */
     private Position controlTwoInt() {
         int x, y;
-        while (true) {
+        while (running) {
             if(scanner.hasNextInt()) {
                 x = scanner.nextInt();
                 if(scanner.hasNextInt()) {
@@ -75,6 +75,7 @@ public class ScannerListener extends Thread {
             scanner.nextLine();
             System.out.print("Inserisci una posizione valida: ");
         }
+        return null;
     }
 
     /**
@@ -83,7 +84,7 @@ public class ScannerListener extends Thread {
      */
     private int waitForInt() {
         int num;
-        while(true) {
+        while(running) {
             if(scanner.hasNextInt()) {
                 num = scanner.nextInt();
                 if(num >= 0) {
@@ -94,6 +95,7 @@ public class ScannerListener extends Thread {
             System.out.print("Inserisci l'indice della carta: ");
             scanner.nextLine();
         }
+        return 0;
     }
 
     /**

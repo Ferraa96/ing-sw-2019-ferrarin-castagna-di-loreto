@@ -66,85 +66,6 @@ public class CLIHandler implements ViewInterface {
     }
 
     /**
-     * change the position of all players in movement
-     * @param movements the old and new position of the worker
-     */
-    @Override
-    public void move(List<Movement> movements) {
-        int height;
-        List<String> godNames;
-        //remove old positions
-        godNames = new ArrayList<>();
-        for(Movement currMove: movements) {
-            Position oldPos = currMove.getOldPos();
-            godNames.add(gameMap[oldPos.getRow()][oldPos.getColumn()].getGodName());
-            height = gameMap[oldPos.getRow()][oldPos.getColumn()].getHeight();
-            gameMap[oldPos.getRow()][oldPos.getColumn()] = tileGetter.getTile(0, height, false);
-        }
-        //add the new positions
-        for(int i = 0; i < movements.size(); i++) {
-            Position newPos = movements.get(i).getNewPos();
-            addPosition(newPos, godNames.get(i));
-        }
-    }
-
-    /**
-     * add the position of a worker in the map
-     * @param pos the position of the worker
-     * @param godName the name of the worker's god
-     */
-    private void addPosition(Position pos, String godName) {
-        int height;
-        height = gameMap[pos.getRow()][pos.getColumn()].getHeight();
-        gameMap[pos.getRow()][pos.getColumn()] = tileGetter.getTile(1, height, false);
-        gameMap[pos.getRow()][pos.getColumn()].setPlayerInfo(godName);
-    }
-
-    /**
-     * add a block in position
-     * @param position the position to build the block in
-     * @param height the height of the block
-     */
-    @Override
-    public void buildBlock(Position position, int height) {
-        gameMap[position.getRow()][position.getColumn()] = tileGetter.getTile(0, height, false);
-        gameMap[position.getRow()][position.getColumn()].setHeight(height);
-    }
-
-    /**
-     * add a dome
-     * @param position the position to build the dome in
-     * @param height the height of the dome
-     */
-    @Override
-    public void buildDome(Position position, int height) {
-        gameMap[position.getRow()][position.getColumn()] = tileGetter.getTile(0, height, true);
-    }
-
-    /**
-     * update the screen
-     */
-    @Override
-    public void updateScreen() {
-        System.out.println(String.format("\n%11d" + "%14d" + "%14d" + "%14d" + "%14d", 1, 2, 3, 4, 5));
-        System.out.println("    -----------------------------------------------------------------------");
-        for(int raw = 0; raw < 5; raw++) {
-            for(int line = 0; line < 5; line++) {
-                if(line == 2) {
-                    System.out.print(" " + (raw + 1) + "  ");
-                } else {
-                    System.out.print("    ");
-                }
-                for(int column = 0; column < 5; column++) {
-                    System.out.print("|" + gameMap[raw][column].getLine(line));
-                }
-                System.out.print("|\n");
-            }
-            System.out.println("    -----------------------------------------------------------------------");
-        }
-    }
-
-    /**
      * ask the player if he wants to load a saved game
      */
     @Override
@@ -202,71 +123,6 @@ public class CLIHandler implements ViewInterface {
     }
 
     /**
-     * lets the player select the position
-     * @param list the list of all possible positions
-     */
-    @Override
-    public void choosePosition(List<Position> list) {
-        this.posList = list;
-        for(Position pos: list) {
-            gameMap[pos.getRow()][pos.getColumn()].setIdentifier('x');
-        }
-        updateScreen();
-        scannerListener.setRequest(Request.position);
-        System.out.print("Choose the position (row, column): ");
-    }
-
-    /**
-     * verify and return the position entered by the player is available
-     * @param pos the position chosen by the player
-     */
-    public void verifyPosition(Position pos) {
-        for (Position curr : posList) {
-            if (pos.getRow() == curr.getRow() && pos.getColumn() == curr.getColumn()) {
-                for(Position currPos: posList) {
-                    gameMap[currPos.getRow()][currPos.getColumn()].setIdentifier(' ');
-                }
-                socketClient.send(new ChoosePosNotification(pos));
-                return;
-            }
-        }
-        System.out.print("Not valid choice, choose another position: ");
-        scannerListener.setRequest(Request.position);
-    }
-
-    /**
-     * lets the player choose the card to play with
-     * @param cardList the list of cards
-     */
-    @Override
-    public void chooseCard(List<Integer> cardList) {
-        intList = cardList;
-        List<Card> cards = new IOHandler().getCardList();
-        System.out.println("\nChoose a card\n");
-        for(Integer curr: cardList) {
-            System.out.println(curr + ": " + cards.get(curr).getName());
-            System.out.println(cards.get(curr).getDescription() + "\n");
-        }
-        scannerListener.setRequest(Request.card);
-    }
-
-    /**
-     * verify and return the index of the card chosen by the player
-     * @param selected the selected card
-     */
-    public void verifyCard(int selected) {
-        for (Integer i : intList) {
-            if (i == selected) {
-                socketClient.send(new ChooseCardNotification(selected));
-                intList.clear();
-                return;
-            }
-        }
-        System.out.print("Not valid card, choose another one: ");
-        scannerListener.setRequest(Request.card);
-    }
-
-    /**
      * lets the player choose all the cards that will be in the game
      * @param num the number of cards that the player have to choose
      */
@@ -304,6 +160,38 @@ public class CLIHandler implements ViewInterface {
     }
 
     /**
+     * lets the player choose the card to play with
+     * @param cardList the list of cards
+     */
+    @Override
+    public void chooseCard(List<Integer> cardList) {
+        intList = cardList;
+        List<Card> cards = new IOHandler().getCardList();
+        System.out.println("\nChoose a card\n");
+        for(Integer curr: cardList) {
+            System.out.println(curr + ": " + cards.get(curr).getName());
+            System.out.println(cards.get(curr).getDescription() + "\n");
+        }
+        scannerListener.setRequest(Request.card);
+    }
+
+    /**
+     * verify and return the index of the card chosen by the player
+     * @param selected the selected card
+     */
+    public void verifyCard(int selected) {
+        for (Integer i : intList) {
+            if (i == selected) {
+                socketClient.send(new ChooseCardNotification(selected));
+                intList.clear();
+                return;
+            }
+        }
+        System.out.print("Not valid card, choose another one: ");
+        scannerListener.setRequest(Request.card);
+    }
+
+    /**
      * lets the player set the position of his workers
      * @param availablePos the list of all the available positions
      * @param godNames the name of the chosen god
@@ -312,6 +200,7 @@ public class CLIHandler implements ViewInterface {
     @Override
     public void firstPositioning(List<Position> availablePos, List<String> godNames, List<String> userName, int client, boolean isMyTurn) {
         this.godNames = godNames;
+        currPlayer = client;
         posList = availablePos;
         if(isMyTurn) {
             chosenPos = new ArrayList<>();
@@ -334,7 +223,6 @@ public class CLIHandler implements ViewInterface {
      * @param pos the chosen position
      */
     public void verifyFirstPos(Position pos) {
-        System.out.println(pos);
         if(notAvailablePos(pos)) {
             System.out.println("Position not available");
             scannerListener.setRequest(Request.firstPos);
@@ -420,6 +308,118 @@ public class CLIHandler implements ViewInterface {
         } else {
             System.out.print("Y/N: ");
             scannerListener.setRequest(Request.power);
+        }
+    }
+
+    /**
+     * lets the player select the position
+     * @param list the list of all possible positions
+     */
+    @Override
+    public void choosePosition(List<Position> list) {
+        this.posList = list;
+        for(Position pos: list) {
+            gameMap[pos.getRow()][pos.getColumn()].setIdentifier('x');
+        }
+        updateScreen();
+        scannerListener.setRequest(Request.position);
+        System.out.print("Choose the position (row, column): ");
+    }
+
+    /**
+     * verify and return the position entered by the player is available
+     * @param pos the position chosen by the player
+     */
+    public void verifyPosition(Position pos) {
+        for (Position curr : posList) {
+            if (pos.getRow() == curr.getRow() && pos.getColumn() == curr.getColumn()) {
+                for(Position currPos: posList) {
+                    gameMap[currPos.getRow()][currPos.getColumn()].setIdentifier(' ');
+                }
+                socketClient.send(new ChoosePosNotification(pos));
+                return;
+            }
+        }
+        System.out.print("Not valid choice, choose another position: ");
+        scannerListener.setRequest(Request.position);
+    }
+
+    /**
+     * change the position of all players in movement
+     * @param movements the old and new position of the worker
+     */
+    @Override
+    public void move(List<Movement> movements) {
+        int height;
+        List<String> godNames;
+        //remove old positions
+        godNames = new ArrayList<>();
+        for(Movement currMove: movements) {
+            Position oldPos = currMove.getOldPos();
+            godNames.add(gameMap[oldPos.getRow()][oldPos.getColumn()].getGodName());
+            height = gameMap[oldPos.getRow()][oldPos.getColumn()].getHeight();
+            gameMap[oldPos.getRow()][oldPos.getColumn()] = tileGetter.getTile(0, height, false);
+        }
+        //add the new positions
+        for(int i = 0; i < movements.size(); i++) {
+            Position newPos = movements.get(i).getNewPos();
+            addPosition(newPos, godNames.get(i));
+        }
+    }
+
+    /**
+     * add the position of a worker in the map
+     * @param pos the position of the worker
+     * @param godName the name of the worker's god
+     */
+    private void addPosition(Position pos, String godName) {
+        int height;
+        height = gameMap[pos.getRow()][pos.getColumn()].getHeight();
+        gameMap[pos.getRow()][pos.getColumn()] = tileGetter.getTile(1, height, false);
+        gameMap[pos.getRow()][pos.getColumn()].setPlayerInfo(godName);
+    }
+
+    /**
+     * add a block in position
+     * @param position the position to build the block in
+     * @param height the height of the block
+     */
+    @Override
+    public void buildBlock(Position position, int height) {
+        gameMap[position.getRow()][position.getColumn()] = tileGetter.getTile(0, height, false);
+        gameMap[position.getRow()][position.getColumn()].setHeight(height);
+    }
+
+    /**
+     * add a dome
+     * @param position the position to build the dome in
+     * @param height the height of the dome
+     */
+    @Override
+    public void buildDome(Position position, int height) {
+        gameMap[position.getRow()][position.getColumn()] = tileGetter.getTile(0, height, true);
+    }
+
+    /**
+     * update the screen
+     */
+    @Override
+    public void updateScreen() {
+        System.out.println(String.format("\n%11d" + "%14d" + "%14d" + "%14d" + "%14d", 1, 2, 3, 4, 5));
+        System.out.println("    -----------------------------------------------------------------------");
+        for(int raw = 0; raw < 5; raw++) {
+            for(int line = 0; line < 5; line++) {
+                if(line == 2) {
+                    System.out.print(" " + (raw + 1) + "  ");
+                } else {
+                    System.out.print("    ");
+                }
+                for(int column = 0; column < 5; column++) {
+                    System.out.print("|" + gameMap[raw][column].getLine(line));
+                }
+                System.out.print("|\n");
+            }
+            System.out.println("    -----------------------------------------------------------------------");
         }
     }
 

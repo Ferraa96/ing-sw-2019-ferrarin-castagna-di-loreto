@@ -28,7 +28,7 @@ public class ClientUpdater implements MessageVisitor {
         if(msg.getClientID() == playerID) {
             view.askForReloadState();
         } else {
-            view.notificationForOtherClient(allNames.get(msg.getClientID()) + " is choosing if he wants to reload the game");
+            view.notificationForOtherClient("Player " + msg.getClientID() + " is choosing if he wants to reload the game");
         }
     }
 
@@ -81,6 +81,10 @@ public class ClientUpdater implements MessageVisitor {
 
     @Override
     public void visit(FirstPositioningNotification msg) {
+        for(String s: msg.getGodName()) {
+            System.out.print(s + " ");
+        }
+        System.out.println("\nTurn of " + msg.getGodName().get(msg.getClientID()));
         if(msg.getClientID() == playerID) {
             if(!msg.isLoadPos()) {
                 view.firstPositioning(msg.getPositions(), msg.getGodName(), allNames, msg.getClientID(), true);
