@@ -206,7 +206,7 @@ public class MapController extends GUIController {
 
     private String findColor(int playerId) {
         switch (playerId) {
-            case 0: return "/images/WorkerYellow.png";
+            case 0: return "/images/WorkerBlack.png";
             case 1: return "/images/WorkerBlue.png";
             case 2: return "/images/WorkerRed.png";
             default: return "Error loading images!";
@@ -299,7 +299,7 @@ public class MapController extends GUIController {
 
         switch(count){
             case 0:
-                return "#fffb00";
+                return "#0a0a0a";
             case 1:
                 return "#0300ff";
             case 2:

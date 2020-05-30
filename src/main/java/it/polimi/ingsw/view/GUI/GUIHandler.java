@@ -8,6 +8,7 @@ import it.polimi.ingsw.model.Position;
 import it.polimi.ingsw.view.ViewInterface;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -253,7 +254,32 @@ public class GUIHandler implements ViewInterface {
 
     @Override
     public void reloadState(Cell[][] map, List<String> godNames, List<String> userNames) {
-
+        HashMap<Integer, Position> workerPos = new HashMap<>();
+        message = "Loading game...";
+        gui.showMessage();
+        for(int row = 0; row < 5; row++) {
+            for(int column = 0; column < 5; column++) {
+                int height = map[row][column].getHeight();
+                if(height > 0) {
+                    if(map[row][column].isDome()) {
+                        buildDome(new Position(row, column), height);
+                    } else {
+                        buildBlock(new Position(row, column), height);
+                    }
+                }
+                if(map[row][column].getWorkerID() != -1) {
+                    workerPos.put(map[row][column].getWorkerID(), new Position(row, column));
+                }
+            }
+        }
+        for(int i = 0; i < godNames.size(); i++) {
+            List<Position> myWorker = new ArrayList<>();
+            myWorker.add(workerPos.get(i * 2));
+            myWorker.add(workerPos.get(i * 2 + 1));
+            int id = i;
+            imagepath = convertGod(godNames.get(id));
+            firstPositioning(myWorker, godNames, userNames, id, false);
+        }
     }
 
     @Override
@@ -300,6 +326,41 @@ public class GUIHandler implements ViewInterface {
         }
         socketClient.closeClient();
         gui.showMessage();
+    }
+
+    private String convertGod(String godName){
+        switch(godName){
+            case "Apollo":{
+                return "/images/01.png";
+            }
+            case "Artemis":{
+                return "/images/02.png";
+            }
+            case "Athena":{
+                return "/images/03.png";
+            }
+            case "Atlas":{
+                return "/images/04.png";
+            }
+            case "Demeter":{
+                return "/images/05.png";
+            }
+            case "Hephaestus":{
+                return "/images/06.png";
+            }
+            case "Minotaur":{
+                return "/images/08.png";
+            }
+            case "Pan":{
+                return "/images/09.png";
+            }
+            case "Prometheus":{
+                return "/images/10.png";
+            }
+            default:{
+                return "Invalid Choicqe";
+            }
+        }
     }
 
     public List<String> getGodName() {
