@@ -81,10 +81,6 @@ public class ClientUpdater implements MessageVisitor {
 
     @Override
     public void visit(FirstPositioningNotification msg) {
-        for(String s: msg.getGodName()) {
-            System.out.print(s + " ");
-        }
-        System.out.println("\nTurn of " + msg.getGodName().get(msg.getClientID()));
         if(msg.getClientID() == playerID) {
             if(!msg.isLoadPos()) {
                 view.firstPositioning(msg.getPositions(), msg.getGodName(), allNames, msg.getClientID(), true);
@@ -135,7 +131,7 @@ public class ClientUpdater implements MessageVisitor {
 
     @Override
     public void visit(EliminationNotification msg) {
-        view.elimination(msg.getClientID() == playerID, msg.getPlayerName());
+        view.elimination(msg.getClientID() == playerID, msg.getPlayerName(), msg.getEliminatedWorkers());
     }
 
     @Override

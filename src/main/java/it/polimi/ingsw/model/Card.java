@@ -40,6 +40,7 @@ public class Card {
     private List<Card> enemies;
     private Worker enemy;
     private boolean activePower;
+    private SaveState state;
 
     /**
      * gives the enemy corresponding input id
@@ -83,20 +84,13 @@ public class Card {
      * check for athena move up
      * @param difference difference between final and initial position
      */
-    private void checkMoveUp( int difference) {
+    private void checkMoveUp(int difference) {
         boolean temp = false;
         if (this.name.equals("Athena")) {
             if (difference > 0)
                 temp = true;
-            for (Card curr : enemies) {
-                for (int j = 0; j < curr.getStandardRoutine().size(); j++)
-                    curr.getStandardRoutine().get(j).setNoUp(temp);
-                for (int j = 0; j < curr.getCardRoutine().size(); j++)
-                    curr.getCardRoutine().get(j).setNoUp(temp);
-            }
+            setNoClimb(temp);
         }
-        if (temp)
-            System.out.println("Athena attiva");
     }
 
     /**
@@ -216,13 +210,14 @@ public class Card {
      * @param map game board
      * @param playerId player's Identifier
      */
-    public void setCard(Cell[][] map, int playerId) {
+    public void setCard(Cell[][] map, int playerId, SaveState state) {
         this.map = map;
         this.playerId = playerId;
         this.worker1 = new Worker(playerId, 0);
         this.worker2 = new Worker(playerId, 1);
         this.setStandardRoutine();
         this.setCardRoutine();
+        this.state = state;
     }
 
     /**
@@ -285,5 +280,17 @@ public class Card {
     }
     public void setActivePower(boolean activePower) {
         this.activePower = activePower;
+    }
+    public void setNoClimb(boolean temp) {
+        for (Card curr : enemies) {
+            for (int j = 0; j < curr.getStandardRoutine().size(); j++) {
+                curr.getStandardRoutine().get(j).setNoUp(temp);
+                state.setNoClimb(temp);
+            }
+            for (int j = 0; j < curr.getCardRoutine().size(); j++) {
+                curr.getCardRoutine().get(j).setNoUp(temp);
+                state.setNoClimb(temp);
+            }
+        }
     }
 }

@@ -22,7 +22,7 @@ public class GameTest {
         //set players
         for (int i = 0; i < 3; i++) {
             Card card = ioHandler.getCardList().get(i*2);
-            card.setCard(board.getMap(), i);
+            card.setCard(board.getMap(), i, new SaveState());
             cardlist.add(card);
         }
 

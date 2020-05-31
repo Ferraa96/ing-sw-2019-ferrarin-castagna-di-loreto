@@ -307,7 +307,7 @@ public class GUIHandler implements ViewInterface {
     }
 
     @Override
-    public void elimination(boolean elim, String eliminatedPlayer) {
+    public void elimination(boolean elim, String eliminatedPlayer, List<Position> eliminatedWorkers) {
         if(elim) {
             this.message = "You lost";
         } else {
