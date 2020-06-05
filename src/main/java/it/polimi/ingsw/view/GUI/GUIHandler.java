@@ -23,7 +23,7 @@ public class GUIHandler implements ViewInterface {
     private int playernumber;
     private String name = "";
     private String imagepath;
-    private List<String> godName = new ArrayList<>();
+    private final List<String> godName = new ArrayList<>();
     private String message;
     private final List<String> userName = new ArrayList<>();
     private String state;
@@ -87,7 +87,7 @@ public class GUIHandler implements ViewInterface {
     @Override
     public void chooseCard(List<Integer> cardList) {
         chosen.clear();
-        this.chosen.addAll(cardList);
+        chosen.addAll(cardList);
         state = "SET CARD";
         gui.showCardSelection();
     }
@@ -104,16 +104,18 @@ public class GUIHandler implements ViewInterface {
     /**
      * Method called for every player to set the initial positions
      * @param availablePos list of the available postions
-     * @param godName the god card of the player who is playing in this turn
+     * @param godName list of the god cards chosen
+     * @param userName list of the usernames
+     * @param client id of the player that recives the call
      * scanId is used to identify the player and connect it to the worker
      */
     @Override
     public void firstPositioning(List<Position> availablePos, List<String> godName, List<String> userName, int client, boolean isMyTurn) {
         scanId++;
-        if (client == 0) {
-            this.userName.addAll(userName);
-            this.godName.addAll(godName);
-        }
+        this.userName.clear();
+        this.godName.clear();
+        this.userName.addAll(userName);
+        this.godName.addAll(godName);
         this.playernumber = userName.size();
         if(isMyTurn) {
             this.isMyTurn = true;
@@ -122,12 +124,12 @@ public class GUIHandler implements ViewInterface {
             this.state = "FIRSTPOS";
         }else {
             this.isMyTurn = false;
-            state = "WAIT";
+            state = "WAITFIRST";
             for(Position currPos: availablePos) {
                 map[currPos.getRow()][currPos.getColumn()].setWorker(scanId);
             }
         }
-        updateScreen();
+        gui.showMap();
     }
 
     /**
@@ -136,12 +138,12 @@ public class GUIHandler implements ViewInterface {
      */
     public void setSelectedPos(Position pos){
         currentChoice.add(pos);
-        this.state = "POS";
+        state = "POS";
         map[pos.getRow()][pos.getColumn()].setWorker(scanId);
     }
 
     public void definePositions(){
-        this.state = "WAIT";
+        state = "WAIT";
         socketClient.send(new FirstPositioningNotification(currentChoice));
     }
 
@@ -159,7 +161,7 @@ public class GUIHandler implements ViewInterface {
     }
 
     public void defineWorker(Position pos){
-        this.state = "WAIT";
+        state = "WAIT";
         socketClient.send(new ChooseWorkerNotification(pos));
     }
 
@@ -168,15 +170,16 @@ public class GUIHandler implements ViewInterface {
      */
     @Override
     public void choosePower() {
-        this.message = "Do you want to activate the card power?";
+        message = "Do you want to activate the card power?";
         isMyTurn = true;
         state = "POWER";
         gui.showRequest();
     }
 
     public void getPowerSelection(boolean power){
-        this.state = "WAIT";
+        state = "POWER";
         socketClient.send(new SetPowerNotification(power));
+        updateScreen();
     }
 
     /**
@@ -188,13 +191,13 @@ public class GUIHandler implements ViewInterface {
         availablePos.clear();
         availablePos.addAll(list);
         isMyTurn = true;
-        this.message = "Do your moves & buildings";
+        message = "Do your moves & buildings";
         state = "SELECTPOSITION";
         updateScreen();
     }
 
     public void defineMovement(Position pos){
-        this.state = "WAIT";
+        state = "WAIT";
         socketClient.send(new ChoosePosNotification(pos));
     }
 
@@ -238,7 +241,9 @@ public class GUIHandler implements ViewInterface {
 
     @Override
     public void updateScreen() {
-        gui.showMap();
+        if(state.equals("POWER"))
+            gui.showMap();
+        gui.refreshMap();
     }
 
     @Override
@@ -253,7 +258,7 @@ public class GUIHandler implements ViewInterface {
     }
 
     @Override
-    public void reloadState(Cell[][] map, List<String> godNames, List<String> userNames) {
+    public void reloadState(Cell[][] map, List<String> godNames, List<String> userNames, int clientId) {
         HashMap<Integer, Position> workerPos = new HashMap<>();
         message = "Loading game...";
         gui.showMessage();
@@ -276,9 +281,10 @@ public class GUIHandler implements ViewInterface {
             List<Position> myWorker = new ArrayList<>();
             myWorker.add(workerPos.get(i * 2));
             myWorker.add(workerPos.get(i * 2 + 1));
-            int id = i;
-            imagepath = convertGod(godNames.get(id));
-            firstPositioning(myWorker, godNames, userNames, id, false);
+            imagepath = convertGod(godNames.get(clientId));
+            godName.addAll(godNames);
+            userName.addAll(userNames);
+            firstPositioning(myWorker, godNames, userNames, clientId, false);
         }
     }
 
@@ -358,7 +364,7 @@ public class GUIHandler implements ViewInterface {
                 return "/images/10.png";
             }
             default:{
-                return "Invalid Choicqe";
+                return "Invalid Choice";
             }
         }
     }

@@ -95,7 +95,7 @@ public class CLIHandler implements ViewInterface {
      * @param godNames the name of all the gods in game
      */
     @Override
-    public void reloadState(Cell[][] map, List<String> godNames, List<String> userNames) {
+    public void reloadState(Cell[][] map, List<String> godNames, List<String> userNames, int clientId) {
         HashMap<Integer, Position> workerPos = new HashMap<>();
         System.out.println("Loading game...");
         for(int row = 0; row < 5; row++) {

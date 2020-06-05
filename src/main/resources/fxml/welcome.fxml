@@ -8,52 +8,65 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<Scene xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.view.GUI.WelcomeController">
+<Scene xmlns="http://javafx.com/javafx/11.0.1"
+       xmlns:fx="http://javafx.com/fxml/1"
+       fx:controller="it.polimi.ingsw.view.GUI.WelcomeController">
 
-<AnchorPane prefHeight="344.0" prefWidth="604.0">
-   <children>
-         <ImageView fitHeight="150.0" fitWidth="200.0" layoutX="-1.0" pickOnBounds="true" preserveRatio="true">
+  <AnchorPane prefHeight="344.0" prefWidth="604.0">
+
+      <children>
+
+          <ImageView fitHeight="150.0" fitWidth="200.0" layoutX="-1.0" pickOnBounds="true" preserveRatio="true">
             <image>
                <Image url="@../images/title_cloud_back_horizon.png" />
             </image>
-         </ImageView>
-         <ImageView fitHeight="422.0" fitWidth="892.0" layoutX="-1.0" layoutY="46.0" pickOnBounds="true" preserveRatio="true">
+          </ImageView>
+
+          <ImageView fitHeight="422.0" fitWidth="892.0" layoutX="-1.0" layoutY="46.0" pickOnBounds="true" preserveRatio="true">
             <image>
                <Image url="@../images/title_water.png" />
             </image>
-         </ImageView>
-         <ImageView fitHeight="159.0" fitWidth="334.0" layoutX="322.0" pickOnBounds="true" preserveRatio="true">
+          </ImageView>
+
+          <ImageView fitHeight="159.0" fitWidth="334.0" layoutX="322.0" pickOnBounds="true" preserveRatio="true">
             <image>
                <Image url="@../images/title_cloud_back_right.png" />
             </image>
-         </ImageView>
-         <ImageView fitHeight="240.0" fitWidth="245.0" layoutX="109.0" layoutY="-11.0" pickOnBounds="true" preserveRatio="true">
+          </ImageView>
+
+          <ImageView fitHeight="240.0" fitWidth="245.0" layoutX="109.0" layoutY="-11.0" pickOnBounds="true" preserveRatio="true">
             <image>
                <Image url="@../images/title_poseidon.png" />
             </image>
-         </ImageView>
-         <ImageView fitHeight="230.0" fitWidth="687.0" layoutY="238.0" pickOnBounds="true" preserveRatio="true">
+          </ImageView>
+
+          <ImageView fitHeight="230.0" fitWidth="687.0" layoutY="238.0" pickOnBounds="true" preserveRatio="true">
             <image>
                <Image url="@../images/title_FG_grass.png" />
             </image>
-         </ImageView>
-      <ImageView fitHeight="272.0" fitWidth="344.0" layoutX="182.0" layoutY="46.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@../images/title_island.png" />
-         </image>
-      </ImageView>
+          </ImageView>
+
+          <ImageView fitHeight="272.0" fitWidth="344.0" layoutX="182.0" layoutY="46.0" pickOnBounds="true" preserveRatio="true">
+              <image>
+                <Image url="@../images/title_island.png" />
+              </image>
+           </ImageView>
+
          <ImageView fitHeight="57.0" fitWidth="51.0" layoutX="229.0" layoutY="109.0" pickOnBounds="true" preserveRatio="true">
             <image>
                <Image url="@../images/title_poseidon_hand.png" />
             </image>
          </ImageView>
-      <Label layoutX="216.0" layoutY="353.0" prefHeight="61.0" prefWidth="172.0" text="Welcome">
-         <font>
-            <Font name="Franklin Gothic Medium" size="34.0" />
-         </font>
-      </Label>
-      <Button fx:id="startgame" layoutX="229.0" layoutY="415.0" mnemonicParsing="false" onAction="#startGame" prefHeight="45.0" prefWidth="118.0" text="PLAY" />
-   </children>
-</AnchorPane>
+
+         <Label layoutX="216.0" layoutY="353.0" prefHeight="61.0" prefWidth="172.0" text="Welcome">
+            <font>
+               <Font name="Franklin Gothic Medium" size="34.0" />
+            </font>
+         </Label>
+
+         <Button fx:id="startgame" layoutX="229.0" layoutY="415.0" mnemonicParsing="false" onAction="#startGame" prefHeight="45.0" prefWidth="118.0" text="PLAY" />
+
+       </children>
+   </AnchorPane>
 
 </Scene>

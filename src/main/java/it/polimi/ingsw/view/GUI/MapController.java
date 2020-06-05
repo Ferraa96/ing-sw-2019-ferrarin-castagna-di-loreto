@@ -23,7 +23,9 @@ public class MapController extends GUIController {
     @FXML
     ImageView godcard,godcard1,godcard2;
     @FXML
-    ImageView worker,building;
+    ImageView building;
+    @FXML
+    List<ImageView> worker = new ArrayList<>();
 
     @FXML
     Label playername1 = new Label("");
@@ -43,7 +45,7 @@ public class MapController extends GUIController {
 
     private Square[][] mappa;
 
-    private int counter = 0;
+    private int counter = 0,refresh = 0;
 
     private int NumofPlayers;
 
@@ -57,6 +59,8 @@ public class MapController extends GUIController {
 
     private final List<String> godname = new ArrayList<>();
 
+    private  boolean isMyturn = false;
+
     @Override
     public void start(){
 
@@ -67,13 +71,98 @@ public class MapController extends GUIController {
         this.guiHandler = super.getGuiHandler();
         godcard.setImage(new Image(guiHandler.getGodOnMap(), 300, 450, true, true));
 
+        listavailable.clear();
         listavailable.addAll(guiHandler.getAvailablePos());
         mappa = guiHandler.getMap();
         currentstate = guiHandler.getState();
-        boolean isMyturn = guiHandler.isMyTurn();
+        isMyturn = guiHandler.isMyTurn();
         NumofPlayers = guiHandler.getPlayers();
 
         //get the already chosen workers/buildings
+        drawExistent();
+
+        refresh++;
+
+        if(refresh>0) {
+            players.clear();
+            for (String curr : guiHandler.getUsername()) {
+                allPlayers.add(curr);
+                if (!curr.equals(guiHandler.getName()))
+                    players.add(curr);
+            }
+
+            //set the playername and the action
+            playername1.setText(guiHandler.getName());
+            playername1.setLayoutX(77);
+            playername1.setLayoutY(470);
+            playername1.setFont(Font.font("Franklin Gothic Medium", 12));
+            playername1.setTextFill(Color.web(getPlayerColor(guiHandler.getName())));
+            playername1.setEffect(ds);
+            playername1.setCache(true);
+            pane1.setVisible(false);
+            pane2.setVisible(false);
+
+            godname.clear();
+            for (String curr : guiHandler.getGodName()) {
+                if (!convertGod(curr).equals(guiHandler.getGodOnMap()))
+                    godname.add(curr);
+            }
+
+            if (godname.size() >= 1) {
+                pane1.setVisible(true);
+                godcard1.setImage(new Image(convertGod(godname.get(0)), 300, 450, true, true));
+                playername2.setText(players.get(0));
+                playername2.setLayoutX(824);
+                playername2.setLayoutY(470);
+                playername2.setFont(Font.font("Franklin Gothic Medium", 12));
+                playername2.setTextFill(Color.web(getPlayerColor(players.get(0))));
+                playername2.setEffect(ds);
+                playername2.setCache(true);
+            }
+
+            if (godname.size() >= 2) {
+                pane2.setVisible(true);
+                godcard2.setImage(new Image(convertGod(godname.get(1)), 300, 450, true, true));
+                playername3.setText(players.get(1));
+                playername3.setLayoutX(824);
+                playername3.setLayoutY(173);
+                playername3.setFont(Font.font("Franklin Gothic Medium", 12));
+                playername3.setTextFill(Color.web(getPlayerColor(players.get(1))));
+                playername3.setEffect(ds);
+                playername3.setCache(true);
+            }
+        }
+            setMessage();
+            if (isMyturn) {
+                doAction();
+            }
+
+    }
+
+    @Override
+    public void refresh(){
+        clearExistent();
+        clearButtons();
+        disableAll();
+        listavailable.clear();
+        listavailable.addAll(guiHandler.getAvailablePos());
+        currentstate = guiHandler.getState();
+        isMyturn = guiHandler.isMyTurn();
+        drawExistent();
+
+        setMessage();
+        if(isMyturn) {
+            doAction();
+        }
+    }
+
+    private void clearButtons(){
+        for(Button[] button : position) {
+            pane.getChildren().remove(button);
+        }
+    }
+
+    private void drawExistent() {
         for (int i = 0; i < 5; i++) {
             for (int j = 0; j < 5; j++) {
                 if(mappa[i][j].getHeight()!=-1){
@@ -84,64 +173,18 @@ public class MapController extends GUIController {
                 }
             }
         }
-
-
-        players.clear();
-        for(String curr : guiHandler.getUsername()){
-            allPlayers.add(curr);
-            if(!curr.equals(guiHandler.getName()))
-            players.add(curr);
-        }
-
-        //set the playername and the action
-        playername1.setText(guiHandler.getName());
-        playername1.setLayoutX(77);
-        playername1.setLayoutY(470);
-        playername1.setFont(Font.font ("Franklin Gothic Medium", 12));
-        playername1.setTextFill(Color.web(getPlayerColor(guiHandler.getName())));
-        playername1.setEffect(ds);
-        playername1.setCache(true);
-        pane1.setVisible(false);
-        pane2.setVisible(false);
-
-        godname.clear();
-        for(String curr : guiHandler.getGodName()){
-            if(!convertGod(curr).equals(guiHandler.getGodOnMap()))
-                godname.add(curr);
-        }
-
-        if(godname.size()>=1) {
-            pane1.setVisible(true);
-            godcard1.setImage(new Image(convertGod(godname.get(0)), 300, 450, true, true));
-            playername2.setText(players.get(0));
-            playername2.setLayoutX(824);
-            playername2.setLayoutY(470);
-            playername2.setFont(Font.font("Franklin Gothic Medium", 12));
-            playername2.setTextFill(Color.web(getPlayerColor(players.get(0))));
-            playername2.setEffect(ds);
-            playername2.setCache(true);
-        }
-
-        if(godname.size()>=2){
-            pane2.setVisible(true);
-            godcard2.setImage(new Image(convertGod(godname.get(1)), 300, 450, true, true));
-            playername3.setText(players.get(1));
-            playername3.setLayoutX(824);
-            playername3.setLayoutY(173);
-            playername3.setFont(Font.font ("Franklin Gothic Medium", 12));
-            playername3.setTextFill(Color.web(getPlayerColor(players.get(1))));
-            playername3.setEffect(ds);
-            playername3.setCache(true);
-        }
-
-        setMessage();
-        if(isMyturn) {
-            doAction();
-        }
-
     }
 
+    private void clearExistent() {
+        for(ImageView t : worker){
+            t.setVisible(false);
+        }
+    }
+
+
     private void setMessage() {
+        if(refresh>0)
+        pane.getChildren().removeAll(playername1,playername2,action);
         action.setText(guiHandler.getMessage());
         action.setLayoutX(20);
         action.setLayoutY(20);
@@ -181,6 +224,7 @@ public class MapController extends GUIController {
                                 drawWorker(finalI,finalJ);
                                 if(counter==2) {
                                     disableAll();
+                                    clearExistent();
                                     guiHandler.definePositions();
                                 }
                                 break;
@@ -188,6 +232,7 @@ public class MapController extends GUIController {
                                 guiHandler.defineWorker(pos);
                                 break;
                             case "SELECTPOSITION":
+                                clearExistent();
                                 guiHandler.defineMovement(pos);
                                 break;
                         }
@@ -198,10 +243,11 @@ public class MapController extends GUIController {
     }
 
     private void drawWorker(int row, int column){
-        worker = new ImageView(new Image(findColor(mappa[row][column].getWorker())));
-        worker.setLayoutX(288 + (80 * column));
-        worker.setLayoutY(75 + (75 * row));
-        pane.getChildren().add(worker);
+        ImageView temp = new ImageView(new Image(findColor(mappa[row][column].getWorker())));
+        worker.add(temp);
+        temp.setLayoutX(288 + (80 * column));
+        temp.setLayoutY(75 + (75 * row));
+        pane.getChildren().add(temp);
     }
 
     private String findColor(int playerId) {
@@ -281,7 +327,7 @@ public class MapController extends GUIController {
                 return "/images/10.png";
             }
             default:{
-                return "Invalid Choicqe";
+                return "Invalid Choice";
             }
         }
     }

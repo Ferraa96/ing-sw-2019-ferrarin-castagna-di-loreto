@@ -13,6 +13,8 @@ abstract class GUIController {
 
     public void start(){}
 
+    public void refresh(){};
+
     public GUIHandler getGuiHandler(){
         return this.guiHandler;
     }

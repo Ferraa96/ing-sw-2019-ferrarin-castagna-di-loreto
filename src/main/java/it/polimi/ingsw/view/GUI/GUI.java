@@ -18,6 +18,8 @@ public class GUI extends Application implements UIRender{
 
     private GUIHandler guiHandler;
 
+    private GUIController currentController;
+
     private Stage stage;
 
     private static Logger logger = Logger.getLogger(GUI.class.getName());
@@ -43,7 +45,7 @@ public class GUI extends Application implements UIRender{
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(getClass().getResource(fxmlResource));
             Scene scene = loader.load();
-            GUIController currentController = loader.getController();
+            currentController = loader.getController();
 
             if (this.stage != null) {
                 this.stage.hide();
@@ -124,6 +126,15 @@ public class GUI extends Application implements UIRender{
         Platform.runLater(() -> {
             showScene("/fxml/request.fxml", false);
             updateStageInfo("ACTION NEEDED");
+        });
+    }
+
+    @Override
+    public void refreshMap(){
+        Platform.runLater(() -> {
+            if(currentController!=null){
+                currentController.refresh();
+            }
         });
     }
 

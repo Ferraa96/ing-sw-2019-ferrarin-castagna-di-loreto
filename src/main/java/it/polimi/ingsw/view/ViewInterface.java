@@ -84,7 +84,7 @@ public interface ViewInterface {
      * loads the saved game
      * @param map contains all the workers and buildings positions and informations
      */
-    void reloadState(Cell[][] map, List<String> godNames, List<String> userNames);
+    void reloadState(Cell[][] map, List<String> godNames, List<String> userNames, int clientId);
 
     void handleDisconnection(String message);
 

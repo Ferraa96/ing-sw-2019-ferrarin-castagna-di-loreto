@@ -16,4 +16,6 @@ public interface UIRender {
 
     void showRequest();
 
+    void refreshMap();
+
 }

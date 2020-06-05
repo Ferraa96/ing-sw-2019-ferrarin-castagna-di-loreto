@@ -129,7 +129,7 @@ public class ClientUpdater implements MessageVisitor {
     @Override
     public void visit(LoadGameNotification msg) {
         allNames = msg.getUserNames();
-        view.reloadState(msg.getMap(), msg.getGodNames(), msg.getUserNames());
+        view.reloadState(msg.getMap(), msg.getGodNames(), msg.getUserNames(), playerID);
         view.updateScreen();
     }
 

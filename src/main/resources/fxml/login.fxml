@@ -13,10 +13,14 @@
     <children>
 
         <Button fx:id="button" layoutX="99.0" layoutY="200.0" mnemonicParsing="false" onAction="#logIn" text="LogIn" />
+
         <Label layoutX="18.0" layoutY="83.0" text="Username:" />
+
         <TextField fx:id="playerName" layoutX="87.0" layoutY="79.0" />
-         <TextField fx:id="IP" layoutX="87.0" layoutY="126.0" />
-         <Label layoutX="32.0" layoutY="130.0" text="IP:" />
+
+        <TextField fx:id="IP" layoutX="87.0" layoutY="126.0" />
+
+        <Label layoutX="32.0" layoutY="130.0" text="IP:" />
 
     </children>
 

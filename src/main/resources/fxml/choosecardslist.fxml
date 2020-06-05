@@ -8,70 +8,81 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<Scene xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.view.GUI.CardsSelectionController">
+<Scene xmlns="http://javafx.com/javafx/11.0.1"
+       xmlns:fx="http://javafx.com/fxml/1"
+       fx:controller="it.polimi.ingsw.view.GUI.CardsSelectionController">
 
     <AnchorPane prefHeight="514.0" prefWidth="674.0">
 
        <children>
 
-         <ImageView fitHeight="490.0" fitWidth="676.0" layoutY="43.0" pickOnBounds="true" preserveRatio="true">
+          <ImageView fitHeight="490.0" fitWidth="676.0" layoutY="43.0" pickOnBounds="true" preserveRatio="true">
             <image>
                <Image url="@../images/title_water.png" />
             </image>
-         </ImageView>
-         <ImageView fx:id="Apollo" fitHeight="150.0" fitWidth="200.0" layoutX="24.0" layoutY="78.0" onMouseClicked="#selectApollo" pickOnBounds="true" preserveRatio="true">
+          </ImageView>
+
+           <ImageView fx:id="Apollo" fitHeight="150.0" fitWidth="200.0" layoutX="24.0" layoutY="78.0" onMouseClicked="#selectApollo" pickOnBounds="true" preserveRatio="true">
             <image>
                <Image url="@../images/01.png" />
             </image>
-         </ImageView>
-         <ImageView fx:id="Artemis" fitHeight="150.0" fitWidth="200.0" layoutX="154.0" layoutY="78.0" onMouseClicked="#selectArtemis" pickOnBounds="true" preserveRatio="true">
+           </ImageView>
+
+           <ImageView fx:id="Artemis" fitHeight="150.0" fitWidth="200.0" layoutX="154.0" layoutY="78.0" onMouseClicked="#selectArtemis" pickOnBounds="true" preserveRatio="true">
             <image>
                <Image url="@../images/02.png" />
             </image>
-         </ImageView>
-         <ImageView fx:id="Athena" fitHeight="150.0" fitWidth="200.0" layoutX="283.0" layoutY="78.0" onMouseClicked="#selectAthena" pickOnBounds="true" preserveRatio="true">
+          </ImageView>
+
+           <ImageView fx:id="Athena" fitHeight="150.0" fitWidth="200.0" layoutX="283.0" layoutY="78.0" onMouseClicked="#selectAthena" pickOnBounds="true" preserveRatio="true">
             <image>
                <Image url="@../images/03.png" />
             </image>
-         </ImageView>
-         <ImageView fx:id="Atlas" fitHeight="150.0" fitWidth="200.0" layoutX="421.0" layoutY="78.0" onMouseClicked="#selectAtlas" pickOnBounds="true" preserveRatio="true">
+           </ImageView>
+
+           <ImageView fx:id="Atlas" fitHeight="150.0" fitWidth="200.0" layoutX="421.0" layoutY="78.0" onMouseClicked="#selectAtlas" pickOnBounds="true" preserveRatio="true">
             <image>
                <Image url="@../images/04.png" />
             </image>
-         </ImageView>
-         <ImageView fx:id="Demeter" fitHeight="150.0" fitWidth="200.0" layoutX="555.0" layoutY="78.0" onMouseClicked="#selectDemeter" pickOnBounds="true" preserveRatio="true">
+           </ImageView>
+
+           <ImageView fx:id="Demeter" fitHeight="150.0" fitWidth="200.0" layoutX="555.0" layoutY="78.0" onMouseClicked="#selectDemeter" pickOnBounds="true" preserveRatio="true">
             <image>
                <Image url="@../images/05.png" />
             </image>
-         </ImageView>
-         <ImageView fx:id="Hephaestus" fitHeight="150.0" fitWidth="200.0" layoutX="77.0" layoutY="290.0" onMouseClicked="#selectHephaestus" pickOnBounds="true" preserveRatio="true">
+           </ImageView>
+
+           <ImageView fx:id="Hephaestus" fitHeight="150.0" fitWidth="200.0" layoutX="77.0" layoutY="290.0" onMouseClicked="#selectHephaestus" pickOnBounds="true" preserveRatio="true">
             <image>
                <Image url="@../images/06.png" />
             </image>
-         </ImageView>
-         <ImageView fx:id="Minotaur" fitHeight="150.0" fitWidth="200.0" layoutX="219.0" layoutY="290.0" onMouseClicked="#selectMinotaur" pickOnBounds="true" preserveRatio="true">
+           </ImageView>
+
+           <ImageView fx:id="Minotaur" fitHeight="150.0" fitWidth="200.0" layoutX="219.0" layoutY="290.0" onMouseClicked="#selectMinotaur" pickOnBounds="true" preserveRatio="true">
             <image>
                <Image url="@../images/08.png" />
             </image>
-         </ImageView>
-         <ImageView fx:id="Pam" fitHeight="150.0" fitWidth="200.0" layoutX="355.0" layoutY="290.0" onMouseClicked="#selectPam" pickOnBounds="true" preserveRatio="true">
+           </ImageView>
+
+           <ImageView fx:id="Pam" fitHeight="150.0" fitWidth="200.0" layoutX="355.0" layoutY="290.0" onMouseClicked="#selectPam" pickOnBounds="true" preserveRatio="true">
             <image>
                <Image url="@../images/09.png" />
             </image>
-         </ImageView>
-         <ImageView fx:id="Prometheus" fitHeight="150.0" fitWidth="200.0" layoutX="496.0" layoutY="290.0" onMouseClicked="#selectPrometheus" pickOnBounds="true" preserveRatio="true">
+           </ImageView>
+
+           <ImageView fx:id="Prometheus" fitHeight="150.0" fitWidth="200.0" layoutX="496.0" layoutY="290.0" onMouseClicked="#selectPrometheus" pickOnBounds="true" preserveRatio="true">
             <image>
                <Image url="@../images/10.png" />
             </image>
-         </ImageView>
+           </ImageView>
 
-         <Button fx:id="cardbutton" layoutX="262.0" layoutY="482.0" mnemonicParsing="false" onAction="#chooseCards" text="CONFIRM SELECTION" />
+          <Button fx:id="cardbutton" layoutX="262.0" layoutY="482.0" mnemonicParsing="false" onAction="#chooseCards" text="CONFIRM SELECTION" />
 
-         <Label layoutX="201.0" layoutY="26.0" prefHeight="34.0" prefWidth="254.0" text="CHOOSE CARDS LIST">
+          <Label layoutX="201.0" layoutY="26.0" prefHeight="34.0" prefWidth="254.0" text="CHOOSE CARDS LIST">
             <font>
                <Font name="Franklin Gothic Demi Cond" size="29.0" />
             </font>
-         </Label>
+          </Label>
 
       </children>
 
