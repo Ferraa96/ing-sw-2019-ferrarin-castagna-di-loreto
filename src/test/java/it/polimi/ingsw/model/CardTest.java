@@ -23,14 +23,14 @@ public class CardTest {
         //set players
         for (int i = 0; i < 5; i++) {
             Card card = ioHandler.getCardList().get(i*2);
-            card.setCard(board.getMap(), i);
+            card.setCard(board.getMap(), i, new SaveState());
             cardlist.add(card);
         }
         //extra
         assertEquals(false, cardlist.get(0).getDescription().isEmpty());
         for (int i = 0; i < 4; i++) {
             Card card = ioHandler.getCardList().get(i*2+1);
-            card.setCard(board.getMap(), i);
+            card.setCard(board.getMap(), i, new SaveState());
             cardlist.add(card);
         }
 

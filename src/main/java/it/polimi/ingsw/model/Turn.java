@@ -52,7 +52,6 @@ public class Turn implements ModelInterface {
                     players.add(new PlayerInfo(nameMap.get(i)));
                     nameList.add(nameMap.get(i));
                 }
-                System.out.println(this);
                 if (ioHandler.verifyFileExistance(saveState.generateName(new ArrayList<>(nameList)))) {
                     socket.broadcast(new AskForReloadStateNotification(actualPlayer));
                     return;
@@ -91,31 +90,18 @@ public class Turn implements ModelInterface {
                 cardList.get(actualPlayer).firstPositioning(currPlayer.getWorkerPos().get(0), currPlayer.getWorkerPos().get(1));
                 nextTurn();
             }
+            mapPlayers();
             setEnemiesLists();
             LoadGameNotification oldState = new LoadGameNotification(board.getMap());
             oldState.setGodNames(godNames);
             oldState.setUserNames(nameList);
             socket.broadcast(oldState);
-            socket.sortPlayers(mapPlayers(saveState));
             actualPlayer = saveState.getActualPlayer();
             if(saveState.getActualEffect() == 0) {
                 System.out.println("Start turn player" + " " + actualPlayer);
                 askWhichWorker();
             } else {
-                if(saveState.getChosenWorker() == 0) {
-                    currWorker = cardList.get(actualPlayer).getWorker1();
-                } else {
-                    currWorker = cardList.get(actualPlayer).getWorker2();
-                }
-                currEffect = saveState.getActualEffect();
-                if(saveState.isGodPower()) {
-                    if(currEffect == 1) {
-                        cardList.get(actualPlayer).getCardRoutine().get(currEffect).setLastMoveInitialPosition(saveState.getPreviousPos());
-                    } else if(currEffect == 2) {
-                        cardList.get(actualPlayer).getCardRoutine().get(currEffect).setLastBuildPosition(saveState.getPreviousPos());
-                    }
-                }
-                providePosition(saveState.isGodPower());
+                reloadTurn();
             }
         } else {
             //initial cards choose
@@ -124,21 +110,59 @@ public class Turn implements ModelInterface {
     }
 
     /**
-     * puts all the players in the same order of the game loaded
-     * @param state the file with all the configurations saved
-     * @return maps the actual players order to the saved game order
+     * reload the state of the turn, including the chosen worker, the current effect and all the powers involved
      */
-    private Map<Integer, Integer> mapPlayers(SaveState state) {
+    private void reloadTurn() {
+        if(saveState.getChosenWorker() == 0) {
+            currWorker = cardList.get(actualPlayer).getWorker1();
+        } else {
+            currWorker = cardList.get(actualPlayer).getWorker2();
+        }
+        currEffect = saveState.getActualEffect();
+        if(saveState.isGodPower()) {
+            cardList.get(actualPlayer).setActivePower(true);
+            totalEffects = cardList.get(actualPlayer).getCardRoutine().size();
+            if(currEffect == 1) {               //Artemis power
+                cardList.get(actualPlayer).getCardRoutine().get(currEffect).setLastMoveInitialPosition(saveState.getPreviousPos());
+            } else if(currEffect == 2) {        //Demeter power
+                cardList.get(actualPlayer).getCardRoutine().get(currEffect).setLastBuildPosition(saveState.getPreviousPos());
+            }
+        } else {
+            totalEffects = cardList.get(actualPlayer).getStandardRoutine().size();
+        }
+        if(saveState.isNoClimb()) {
+            //sets true the parameter noClimb to all the player before Athena
+            int i = actualPlayer;
+            while (true) {
+                cardList.get(i).setNoClimb(true);
+                i++;
+                if(cardList.get(i).getName().equals("Athena")) {
+                    break;
+                } else if(i == numPlayer) {
+                    i = 0;
+                }
+            }
+        }
+        providePosition(saveState.isGodPower());
+    }
+
+    /**
+     * puts all the players in the same order of the loaded game
+     */
+    private void mapPlayers() {
         Map<Integer, Integer> playerMap = new HashMap<>();
         for(int i = 0; i < numPlayer; i++) {
             for(int j = 0; j < numPlayer; j++) {
-                if(players.get(i).getPlayerName().equals(state.getPlayers().get(j).getPlayerName())) {
+                if(players.get(i).getPlayerName().equals(saveState.getPlayers().get(j).getPlayerName())) {
                     playerMap.put(j, i);
                     break;
                 }
             }
         }
-        return playerMap;
+        socket.sortPlayers(playerMap);
+        for(int i = 0; i < numPlayer; i++) {
+            socket.sendTo(i, new SetNameNotification(i, true));         //riassegno i clientID riordinati
+        }
     }
 
     private void askWhichWorker() {
@@ -191,7 +215,7 @@ public class Turn implements ModelInterface {
     private void addCardToGame(int chosenCard) {
         players.get(actualPlayer).setChosenCard(chosenCard);
         Card card = ioHandler.getCardList().get(chosenCard);
-        card.setCard(board.getMap(), actualPlayer);
+        card.setCard(board.getMap(), actualPlayer, saveState);
         cardList.add(card);
     }
 
@@ -267,9 +291,9 @@ public class Turn implements ModelInterface {
      */
     @Override
     public void providePosition(boolean use) {
+        cardList.get(actualPlayer).setActivePower(use);
         if (currEffect == 0) {
             powerUsed = use;
-            cardList.get(actualPlayer).setActivePower(use);
             if (powerUsed) {
                 totalEffects = cardList.get(actualPlayer).getCardRoutine().size();
             } else {
@@ -285,9 +309,17 @@ public class Turn implements ModelInterface {
     }
 
     private void playerElimination() {
+        Position toBeEliminated;
+        List<Position> eliminatedWorkers = new ArrayList<>();
+        eliminatedWorkers.add(cardList.get(actualPlayer).getWorker1().getPosition());
+        eliminatedWorkers.add(cardList.get(actualPlayer).getWorker2().getPosition());
+        toBeEliminated = cardList.get(actualPlayer).getWorker1().getPosition();
+        board.getMap()[toBeEliminated.getRow()][toBeEliminated.getColumn()].setWorkerID(0);
+        toBeEliminated = cardList.get(actualPlayer).getWorker2().getPosition();
+        board.getMap()[toBeEliminated.getRow()][toBeEliminated.getColumn()].setWorkerID(0);
         System.out.println("Player " + actualPlayer + " eliminated");
         eliminatedPlayers.add(actualPlayer);
-        socket.broadcast(new EliminationNotification(actualPlayer, nameList.get(actualPlayer)));
+        socket.broadcast(new EliminationNotification(actualPlayer, nameList.get(actualPlayer), eliminatedWorkers));
         if(eliminatedPlayers.size() == numPlayer - 1) {
             for(int i = 0; i < numPlayer; i++) {
                 if(!eliminatedPlayers.contains(i)) {
@@ -364,8 +396,8 @@ public class Turn implements ModelInterface {
             positions.add(cardList.get(i).getWorker2().getPosition());
             players.get(i).setWorkerPos(positions);
         }
-        saveState.setActualPlayer(actualPlayer);
         saveState.setGameMap(board.getMap());
+        saveState.setActualPlayer(actualPlayer);
         saveState.setActualEffect(currEffect);
         saveState.setChosenWorker(currWorker.getWorkerID());
         saveState.setGodPower(powerUsed);

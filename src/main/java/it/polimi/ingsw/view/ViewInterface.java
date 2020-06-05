@@ -90,7 +90,7 @@ public interface ViewInterface {
 
     void notificationForOtherClient(String message);
 
-    void elimination(boolean elim, String eliminatedPlayer);
+    void elimination(boolean elim, String eliminatedPlayer, List<Position> eliminatedWorkers);
 
     void win(boolean win, String winnerName);
 }

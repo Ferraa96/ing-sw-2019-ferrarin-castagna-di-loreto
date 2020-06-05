@@ -5,9 +5,7 @@ import it.polimi.ingsw.controller.Instructions.MessageVisitor;
 import it.polimi.ingsw.model.ModelInterface;
 import it.polimi.ingsw.model.Turn;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class LobbyHandler {

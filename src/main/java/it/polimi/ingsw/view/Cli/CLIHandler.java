@@ -235,6 +235,7 @@ public class CLIHandler implements ViewInterface {
             for (Position currPos : posList) {
                 gameMap[currPos.getRow()][currPos.getColumn()].setIdentifier(' ');
             }
+            updateScreen();
             socketClient.send(new FirstPositioningNotification(chosenPos));
             return;
         }
@@ -449,7 +450,15 @@ public class CLIHandler implements ViewInterface {
      * @param eliminatedPlayer the name of the eliminated player
      */
     @Override
-    public void elimination(boolean elim, String eliminatedPlayer) {
+    public void elimination(boolean elim, String eliminatedPlayer, List<Position> eliminatedWorkers) {
+        int r, c, height;
+        for(Position pos: eliminatedWorkers) {
+            r = pos.getRow();
+            c = pos.getColumn();
+            height = gameMap[r][c].getHeight();
+            gameMap[r][c] = tileGetter.getTile(0, height, false);
+        }
+        updateScreen();
         if(elim) {
             System.out.println("You lose");
         } else {
