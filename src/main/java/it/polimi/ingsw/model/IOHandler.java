@@ -34,13 +34,13 @@ public class IOHandler {
      */
     public List<Card> getCardList() {
         if(godsList != null) {
-            return godsList;
+            return new ArrayList<>(godsList);
         }
         InputStream input = getClass().getResourceAsStream("/godsList.json");
         BufferedReader bf = new BufferedReader(new InputStreamReader(input));
         Type selectedCard = new TypeToken<ArrayList<Card>>() {}.getType();
         godsList = gson.fromJson(bf, selectedCard);
-        return godsList;
+        return new ArrayList<>(godsList);
     }
 
     /**

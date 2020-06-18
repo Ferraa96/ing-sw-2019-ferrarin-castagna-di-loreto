@@ -24,6 +24,7 @@ public class TileGetter {
     public Tile getTile(int player, int build, boolean dome) {
         if(!dome) {
             Tile tile = new Tile(allTiles.get(2 * build + player));
+            tile.setIdentifier("\u001b[48;5;22m");
             tile.setHeight(build);
             return tile;
         }

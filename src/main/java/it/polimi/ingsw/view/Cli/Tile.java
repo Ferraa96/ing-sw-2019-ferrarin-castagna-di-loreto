@@ -4,23 +4,29 @@ import com.google.gson.annotations.SerializedName;
 
 public class Tile {
     @SerializedName("line0")
-    private final String line0;
+    private String line0;
     @SerializedName("line1")
-    private final String line1;
+    private String line1;
     @SerializedName("line2")
-    private final String line2;
+    private String line2;
     @SerializedName("line3")
-    private final String line3;
+    private String line3;
     @SerializedName("line4")
     private String line4;
     private int height;
+    private final String origLine0;
+    private final String origLine1;
+    private final String origLine2;
+    private final String origLine3;
+    private final String origLine4;
+    private String playerColor = "";
 
     public Tile(Tile otherTile) {
-        this.line0 = otherTile.getLine(0);
-        this.line1 = otherTile.getLine(1);
-        this.line2 = otherTile.getLine(2);
-        this.line3 = otherTile.getLine(3);
-        this.line4 = otherTile.getLine(4);
+        this.line0 = origLine0 = otherTile.getLine(0);
+        this.line1 = origLine1 = otherTile.getLine(1);
+        this.line2 = origLine2 = otherTile.getLine(2);
+        this.line3 = origLine3 = otherTile.getLine(3);
+        this.line4 = origLine4 = otherTile.getLine(4);
         this.height = otherTile.getHeight();
     }
 
@@ -47,19 +53,18 @@ public class Tile {
         return height;
     }
 
-    public void setIdentifier(char id) {
-        String line = line4;
-        line = line.substring(0, 12);
-        line4 = line + id;
+    public void setIdentifier(String color) {
+        line0 = color + origLine0;
+        line1 = color + playerColor + origLine1;
+        line2 = color + playerColor + origLine2;
+        line3 = color + playerColor + origLine3;
+        line4 = color + origLine4;
     }
 
-    public void setPlayerInfo(String godName) {
-        String line = line4;
-        line = line.substring(3, 13);
-        line4 = godName.substring(0, 3) + line;
-    }
-
-    public String getGodName() {
-        return line4.substring(0, 3);
+    public void setPlayerInfo(String playerColor) {
+        this.playerColor = playerColor;
+        line1 = playerColor + line1;
+        line2 = playerColor + line2;
+        line3 = playerColor + line3;
     }
 }

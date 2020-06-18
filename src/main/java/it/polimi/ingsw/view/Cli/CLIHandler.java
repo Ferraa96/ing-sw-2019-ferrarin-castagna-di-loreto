@@ -11,6 +11,10 @@ import java.util.*;
  * the CLI
  */
 public class CLIHandler implements ViewInterface {
+    private final String greenColor = "\u001b[48;5;22m";
+    private final String yellowColor = "\u001b[48;5;228m";
+    private final String reset = "\u001B[0m";
+    private final List<String> playerColors;
     private final SocketClient socketClient;
     private final Tile[][] gameMap;
     private final TileGetter tileGetter;
@@ -21,6 +25,7 @@ public class CLIHandler implements ViewInterface {
     private List<Position> chosenPos;
     private int numPlayers;
     private List<String> godNames;
+    private List<String> userNames;
     private int currPlayer;
 
     /**
@@ -36,6 +41,10 @@ public class CLIHandler implements ViewInterface {
                 gameMap[i][j] = tileGetter.getTile(0, 0, false);
             }
         }
+        playerColors = new ArrayList<>();
+        playerColors.add("\u001b[31m");   //red
+        playerColors.add("\u001b[36;1m");   //cyan
+        playerColors.add("\u001b[35;1m");   //magenta
         printLogo();
         scannerListener = new ScannerListener(this);
         scannerListener.start();
@@ -145,6 +154,11 @@ public class CLIHandler implements ViewInterface {
      * @param card the chosen card
      */
     public void verifyCardList(int card) {
+        if(card == -1) {
+            System.out.print("Please insert a valid card index: ");
+            scannerListener.setRequest(Request.cardList);
+            return;
+        }
         if(card < new IOHandler().getCardList().size()) {
             chosenCards.add(card);
             if(chosenCards.size() == numPlayers) {
@@ -154,7 +168,7 @@ public class CLIHandler implements ViewInterface {
             }
             System.out.print("Card " + (chosenCards.size() + 1) + ": ");
         } else {
-            System.out.println("Not valid choice");
+            System.out.print("Please insert a card in the list: ");
         }
         scannerListener.setRequest(Request.cardList);
     }
@@ -180,11 +194,13 @@ public class CLIHandler implements ViewInterface {
      * @param selected the selected card
      */
     public void verifyCard(int selected) {
-        for (Integer i : intList) {
-            if (i == selected) {
-                socketClient.send(new ChooseCardNotification(selected));
-                intList.clear();
-                return;
+        if(selected != -1) {
+            for (Integer i : intList) {
+                if (i == selected) {
+                    socketClient.send(new ChooseCardNotification(selected));
+                    intList.clear();
+                    return;
+                }
             }
         }
         System.out.print("Not valid card, choose another one: ");
@@ -198,21 +214,22 @@ public class CLIHandler implements ViewInterface {
      * @param isMyTurn indicates if is the turn of the player
      */
     @Override
-    public void firstPositioning(List<Position> availablePos, List<String> godNames, List<String> userName, int client, boolean isMyTurn) {
+    public void firstPositioning(List<Position> availablePos, List<String> godNames, List<String> userNames, int client, boolean isMyTurn) {
         this.godNames = godNames;
+        this.userNames = userNames;
         currPlayer = client;
         posList = availablePos;
         if(isMyTurn) {
             chosenPos = new ArrayList<>();
             for (Position currPos : availablePos) {
-                gameMap[currPos.getRow()][currPos.getColumn()].setIdentifier('x');
+                gameMap[currPos.getRow()][currPos.getColumn()].setIdentifier(yellowColor);
             }
             updateScreen();
             System.out.print("Initial position worker 1 (row, column): ");
             scannerListener.setRequest(Request.firstPos);
         } else {
             for(Position currPos: availablePos) {
-                addPosition(currPos, godNames.get(client));
+                addPosition(currPos, client);
             }
             updateScreen();
         }
@@ -223,17 +240,22 @@ public class CLIHandler implements ViewInterface {
      * @param pos the chosen position
      */
     public void verifyFirstPos(Position pos) {
+        if(pos == null) {
+            System.out.print("Input not valid, please insert row column: ");
+            scannerListener.setRequest(Request.firstPos);
+            return;
+        }
         if(notAvailablePos(pos)) {
-            System.out.println("Position not available");
+            System.out.print("Position not available, insert a valid position: ");
             scannerListener.setRequest(Request.firstPos);
             return;
         }
         chosenPos.add(pos);
-        addPosition(pos, godNames.get(currPlayer));
+        addPosition(pos, currPlayer);
         updateScreen();
         if(chosenPos.size() == 2) {
             for (Position currPos : posList) {
-                gameMap[currPos.getRow()][currPos.getColumn()].setIdentifier(' ');
+                gameMap[currPos.getRow()][currPos.getColumn()].setIdentifier(greenColor);
             }
             updateScreen();
             socketClient.send(new FirstPositioningNotification(chosenPos));
@@ -265,7 +287,7 @@ public class CLIHandler implements ViewInterface {
     public void chooseWorker(List<Position> availableWorkers) {
         posList = availableWorkers;
         for(Position pos: availableWorkers) {
-            gameMap[pos.getRow()][pos.getColumn()].setIdentifier('x');
+            gameMap[pos.getRow()][pos.getColumn()].setIdentifier(yellowColor);
         }
         updateScreen();
         System.out.print("Choose the worker: ");
@@ -277,13 +299,18 @@ public class CLIHandler implements ViewInterface {
      * @param pos the position of the chosen worker
      */
     public void verifyWorker(Position pos) {
+        if(pos == null) {
+            System.out.print("Input not valid, please insert row column: ");
+            scannerListener.setRequest(Request.worker);
+            return;
+        }
         if(notAvailablePos(pos)) {
-            System.out.println("Choose a valid worker");
+            System.out.print("Choose a valid worker: ");
             scannerListener.setRequest(Request.worker);
             return;
         }
         for(Position currPos: posList) {
-            gameMap[currPos.getRow()][currPos.getColumn()].setIdentifier(' ');
+            gameMap[currPos.getRow()][currPos.getColumn()].setIdentifier(greenColor);
         }
         socketClient.send(new ChooseWorkerNotification(pos));
     }
@@ -320,7 +347,7 @@ public class CLIHandler implements ViewInterface {
     public void choosePosition(List<Position> list) {
         this.posList = list;
         for(Position pos: list) {
-            gameMap[pos.getRow()][pos.getColumn()].setIdentifier('x');
+            gameMap[pos.getRow()][pos.getColumn()].setIdentifier(yellowColor);
         }
         updateScreen();
         scannerListener.setRequest(Request.position);
@@ -332,10 +359,15 @@ public class CLIHandler implements ViewInterface {
      * @param pos the position chosen by the player
      */
     public void verifyPosition(Position pos) {
+        if(pos == null) {
+            System.out.println("Input not valid, please insert row column");
+            scannerListener.setRequest(Request.position);
+            return;
+        }
         for (Position curr : posList) {
             if (pos.getRow() == curr.getRow() && pos.getColumn() == curr.getColumn()) {
                 for(Position currPos: posList) {
-                    gameMap[currPos.getRow()][currPos.getColumn()].setIdentifier(' ');
+                    gameMap[currPos.getRow()][currPos.getColumn()].setIdentifier(greenColor);
                 }
                 socketClient.send(new ChoosePosNotification(pos));
                 return;
@@ -352,32 +384,29 @@ public class CLIHandler implements ViewInterface {
     @Override
     public void move(List<Movement> movements) {
         int height;
-        List<String> godNames;
         //remove old positions
-        godNames = new ArrayList<>();
         for(Movement currMove: movements) {
             Position oldPos = currMove.getOldPos();
-            godNames.add(gameMap[oldPos.getRow()][oldPos.getColumn()].getGodName());
             height = gameMap[oldPos.getRow()][oldPos.getColumn()].getHeight();
             gameMap[oldPos.getRow()][oldPos.getColumn()] = tileGetter.getTile(0, height, false);
         }
         //add the new positions
         for(int i = 0; i < movements.size(); i++) {
             Position newPos = movements.get(i).getNewPos();
-            addPosition(newPos, godNames.get(i));
+            addPosition(newPos, i);
         }
     }
 
     /**
      * add the position of a worker in the map
      * @param pos the position of the worker
-     * @param godName the name of the worker's god
+     * @param playerID the player's ID
      */
-    private void addPosition(Position pos, String godName) {
+    private void addPosition(Position pos, int playerID) {
         int height;
         height = gameMap[pos.getRow()][pos.getColumn()].getHeight();
         gameMap[pos.getRow()][pos.getColumn()] = tileGetter.getTile(1, height, false);
-        gameMap[pos.getRow()][pos.getColumn()].setPlayerInfo(godName);
+        gameMap[pos.getRow()][pos.getColumn()].setPlayerInfo(playerColors.get(playerID));
     }
 
     /**
@@ -406,21 +435,53 @@ public class CLIHandler implements ViewInterface {
      */
     @Override
     public void updateScreen() {
+        int legendLine = 0;
         System.out.println(String.format("\n%11d" + "%14d" + "%14d" + "%14d" + "%14d", 1, 2, 3, 4, 5));
-        System.out.println("    -----------------------------------------------------------------------");
-        for(int raw = 0; raw < 5; raw++) {
+        System.out.print("    " + "\u2554");
+        for(int i = 0; i < 4; i++) {
+            System.out.print("\u2550".repeat(13) + "\u2566");
+        }
+        System.out.println("\u2550".repeat(13) + "\u2557");
+        for(int row = 0; row < 5; row++) {
             for(int line = 0; line < 5; line++) {
                 if(line == 2) {
-                    System.out.print(" " + (raw + 1) + "  ");
+                    System.out.print(" " + (row + 1) + "  ");
                 } else {
                     System.out.print("    ");
                 }
                 for(int column = 0; column < 5; column++) {
-                    System.out.print("|" + gameMap[raw][column].getLine(line));
+                    System.out.print("\u2551" + reset + gameMap[row][column].getLine(line));
                 }
-                System.out.print("|\n");
+                System.out.print("\u2551" + reset);
+                if(row == 2 && legendLine < godNames.size() + 2) {
+                    printLegend(legendLine);
+                    legendLine++;
+                } else {
+                    System.out.println();
+                }
             }
-            System.out.println("    -----------------------------------------------------------------------");
+            if(row != 4) {
+                System.out.print("    " + "\u2560");
+                for (int i = 0; i < 4; i++) {
+                    System.out.print("\u2550".repeat(13) + "\u256C");
+                }
+                System.out.println("\u2550".repeat(13) + "\u2563");
+            }
+        }
+        System.out.print("    " + "\u255A");
+        for(int i = 0; i < 4; i++) {
+            System.out.print("\u2550".repeat(13) + "\u2569");
+        }
+        System.out.println("\u2550".repeat(13) + "\u255D");
+    }
+
+    private void printLegend(int row) {
+        if(row == 0) {
+            System.out.println("\t\t\u2554" + "\u2550".repeat(20) + "\u2557");
+        } else if(row > godNames.size()) {
+            System.out.println("\t\t\u255A" + "\u2550".repeat(20) + "\u255D");
+        }else {
+            System.out.println("\t\t\u2551 " + playerColors.get(row - 1) + userNames.get(row - 1) + " " + godNames.get(row - 1) + reset);
         }
     }
 
