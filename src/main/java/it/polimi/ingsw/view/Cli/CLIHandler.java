@@ -229,7 +229,7 @@ public class CLIHandler implements ViewInterface {
             scannerListener.setRequest(Request.firstPos);
         } else {
             for(Position currPos: availablePos) {
-                addPosition(currPos, client);
+                addPosition(currPos, playerColors.get(client));
             }
             updateScreen();
         }
@@ -251,7 +251,7 @@ public class CLIHandler implements ViewInterface {
             return;
         }
         chosenPos.add(pos);
-        addPosition(pos, currPlayer);
+        addPosition(pos, playerColors.get(currPlayer));
         updateScreen();
         if(chosenPos.size() == 2) {
             for (Position currPos : posList) {
@@ -384,29 +384,31 @@ public class CLIHandler implements ViewInterface {
     @Override
     public void move(List<Movement> movements) {
         int height;
+        List<String> oldColors = new ArrayList<>();
         //remove old positions
-        for(Movement currMove: movements) {
-            Position oldPos = currMove.getOldPos();
+        for (Movement movement : movements) {
+            Position oldPos = movement.getOldPos();
             height = gameMap[oldPos.getRow()][oldPos.getColumn()].getHeight();
+            oldColors.add(gameMap[oldPos.getRow()][oldPos.getColumn()].getPlayerColor());
             gameMap[oldPos.getRow()][oldPos.getColumn()] = tileGetter.getTile(0, height, false);
         }
         //add the new positions
         for(int i = 0; i < movements.size(); i++) {
             Position newPos = movements.get(i).getNewPos();
-            addPosition(newPos, i);
+            addPosition(newPos, oldColors.get(i));
         }
     }
 
     /**
      * add the position of a worker in the map
      * @param pos the position of the worker
-     * @param playerID the player's ID
+     * @param color the color of the player
      */
-    private void addPosition(Position pos, int playerID) {
+    private void addPosition(Position pos, String color) {
         int height;
         height = gameMap[pos.getRow()][pos.getColumn()].getHeight();
         gameMap[pos.getRow()][pos.getColumn()] = tileGetter.getTile(1, height, false);
-        gameMap[pos.getRow()][pos.getColumn()].setPlayerInfo(playerColors.get(playerID));
+        gameMap[pos.getRow()][pos.getColumn()].setPlayerColor(color);
     }
 
     /**

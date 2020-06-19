@@ -30,6 +30,10 @@ public class Tile {
         this.height = otherTile.getHeight();
     }
 
+    /**
+     * @param x the index of the line
+     * @return the line indicated by the index x
+     */
     public String getLine(int x) {
         switch (x) {
             case 0:
@@ -53,6 +57,10 @@ public class Tile {
         return height;
     }
 
+    /**
+     * color the tile
+     * @param color the ansi code for the color
+     */
     public void setIdentifier(String color) {
         line0 = color + origLine0;
         line1 = color + playerColor + origLine1;
@@ -61,10 +69,18 @@ public class Tile {
         line4 = color + origLine4;
     }
 
-    public void setPlayerInfo(String playerColor) {
+    /**
+     * assign the color to the image of the player
+     * @param playerColor the ansi code for the color
+     */
+    public void setPlayerColor(String playerColor) {
         this.playerColor = playerColor;
         line1 = playerColor + line1;
         line2 = playerColor + line2;
         line3 = playerColor + line3;
+    }
+
+    public String getPlayerColor() {
+        return playerColor;
     }
 }
