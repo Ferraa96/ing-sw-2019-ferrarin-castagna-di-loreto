@@ -493,7 +493,7 @@ public class CLIHandler implements ViewInterface {
      */
     @Override
     public void handleDisconnection(String message) {
-        System.out.println(message);
+        System.out.println("\n" + message);
         socketClient.closeClient();
         scannerListener.stopReading();
     }

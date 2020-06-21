@@ -25,35 +25,51 @@ public class ScannerListener extends Thread {
                 switch (request) {
                     case name:
                         request = Request.ignore;
-                        cliHandler.verifyName(scanner.nextLine());
+                        if(running) {
+                            cliHandler.verifyName(scanner.nextLine());
+                        }
                         break;
                     case askReload:
                         request = Request.ignore;
-                        cliHandler.reloadStateAnswer(scanner.nextLine());
+                        if(running) {
+                            cliHandler.reloadStateAnswer(scanner.nextLine());
+                        }
                         break;
                     case cardList:
                         request = Request.ignore;
-                        cliHandler.verifyCardList(waitForInt(scanner.nextLine()));
+                        if(running) {
+                            cliHandler.verifyCardList(waitForInt(scanner.nextLine()));
+                        }
                         break;
                     case card:
                         request = Request.ignore;
-                        cliHandler.verifyCard(waitForInt(scanner.nextLine()));
+                        if(running) {
+                            cliHandler.verifyCard(waitForInt(scanner.nextLine()));
+                        }
                         break;
                     case firstPos:
                         request = Request.ignore;
-                        cliHandler.verifyFirstPos(controlTwoInt(scanner.nextLine()));
+                        if(running) {
+                            cliHandler.verifyFirstPos(controlTwoInt(scanner.nextLine()));
+                        }
                         break;
                     case worker:
                         request = Request.ignore;
-                        cliHandler.verifyWorker(controlTwoInt(scanner.nextLine()));
+                        if(running) {
+                            cliHandler.verifyWorker(controlTwoInt(scanner.nextLine()));
+                        }
                         break;
                     case power:
                         request = Request.ignore;
-                        cliHandler.verifyPower(scanner.nextLine());
+                        if(running) {
+                            cliHandler.verifyPower(scanner.nextLine());
+                        }
                         break;
                     case position:
                         request = Request.ignore;
-                        cliHandler.verifyPosition(controlTwoInt(scanner.nextLine()));
+                        if(running) {
+                            cliHandler.verifyPosition(controlTwoInt(scanner.nextLine()));
+                        }
                         break;
                     default:
                         scanner.nextLine();

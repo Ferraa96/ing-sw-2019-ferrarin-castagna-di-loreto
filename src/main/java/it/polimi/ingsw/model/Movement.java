@@ -3,8 +3,7 @@ package it.polimi.ingsw.model;
 import java.io.Serializable;
 
 /**
- * nome giocatore vincente, worker selezionabile
- * nomi giocatori, fix bug mino apollo
+ * store the old and the new position of a moving worker
  */
 public class Movement implements Serializable {
     private final Position oldPos;

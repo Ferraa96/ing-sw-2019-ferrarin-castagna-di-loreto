@@ -76,7 +76,6 @@ public class SocketClient extends Thread {
         } catch(IOException | ClassNotFoundException e) {
             MessageInterface msg = new DisconnectionNotification("Server offline");
             msg.accept(clientUpdater);
-            System.out.println("Server offline");
             closeClient();
         }
     }

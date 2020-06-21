@@ -8,6 +8,11 @@ import java.util.List;
 public interface ModelInterface {
 
     /**
+     * start the game
+     */
+    void startGame(int numPlayers);
+
+    /**
      * set player name
      * @param name the name chosen
      */

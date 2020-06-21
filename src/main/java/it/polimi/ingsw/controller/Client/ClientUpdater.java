@@ -83,12 +83,13 @@ public class ClientUpdater implements MessageVisitor {
     public void visit(FirstPositioningNotification msg) {
         if(msg.getClientID() == playerID) {
             if(!msg.isLoadPos()) {
-                view.firstPositioning(msg.getPositions(), msg.getGodName(), allNames, msg.getClientID(), true);
+                view.firstPositioning(msg.getPositions(), msg.getGodNames(), allNames, msg.getClientID(), true);
             }
         } else {
             if(msg.isLoadPos()) {
-                view.firstPositioning(msg.getPositions(), msg.getGodName(), allNames, msg.getClientID(), false);
+                view.firstPositioning(msg.getPositions(), msg.getGodNames(), allNames, msg.getClientID(), false);
             } else {
+                view.firstPositioning(new ArrayList<>(), msg.getGodNames(), allNames, msg.getClientID(), false);
                 view.notificationForOtherClient(allNames.get(msg.getClientID()) + " is choosing where to position his workers");
             }
         }

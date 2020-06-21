@@ -18,7 +18,7 @@ public class TurnTest {
     @Test
     public void tryTurn(){
         Map<Integer, ServerThread> players = new HashMap<>();
-        Turn turn = new Turn(new LobbyHandler(players),1);
+        Turn turn = new Turn(new LobbyHandler(null));
         //turn.setPlayerName("anna",0);
         turn.loadState(false);
         List<Integer> gods = new ArrayList<>();

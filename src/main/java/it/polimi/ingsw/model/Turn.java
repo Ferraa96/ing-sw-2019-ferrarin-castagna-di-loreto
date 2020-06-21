@@ -9,7 +9,7 @@ import java.util.*;
  * handle all the turns
  */
 public class Turn implements ModelInterface {
-    private final int numPlayer;
+    private int numPlayer = 0;
     private int actualPlayer = 0;
     private final LobbyHandler socket;
     private final List<Card> cardList;
@@ -22,20 +22,23 @@ public class Turn implements ModelInterface {
     private boolean powerUsed;
     private final List<PlayerInfo> players;
     private final Map<Integer, String> nameMap;
-    private final List<String> nameList;
     private List<Integer> chosenCards;
     private final List<Integer> eliminatedPlayers;
 
-    public Turn(LobbyHandler socket, int numPlayer) {
+    public Turn(LobbyHandler socket) {
         this.socket = socket;
-        this.numPlayer = numPlayer;
         saveState = new SaveState();
         cardList = new ArrayList<>();
         board = new Board();
         players = new ArrayList<>();
-        nameList = new ArrayList<>();
         eliminatedPlayers = new ArrayList<>();
         nameMap = new HashMap<>();
+    }
+
+    @Override
+    public void startGame(int numPlayers) {
+        this.numPlayer = numPlayers;
+        controlPlayerNum();
     }
 
     /**
@@ -47,21 +50,24 @@ public class Turn implements ModelInterface {
         if(controlName(name)) {
             socket.sendTo(playerID, new SetNameNotification(playerID, true));
             nameMap.put(playerID, name);
-            if (nameMap.size() == numPlayer) {
-                for(int i = 0; i < numPlayer; i++) {
-                    players.add(new PlayerInfo(nameMap.get(i)));
-                    nameList.add(nameMap.get(i));
-                }
-                if (ioHandler.verifyFileExistance(saveState.generateName(new ArrayList<>(nameList)))) {
-                    socket.broadcast(new AskForReloadStateNotification(actualPlayer));
-                    return;
-                }
-                //initial cards choose
-                socket.broadcast(new ChooseCardListNotification(numPlayer, actualPlayer, nameList));
-            }
+            controlPlayerNum();
         }
         else {
             socket.sendTo(playerID, new SetNameNotification(playerID, false));
+        }
+    }
+
+    private void controlPlayerNum() {
+        if (nameMap.size() == numPlayer) {
+            for(int i = 0; i < numPlayer; i++) {
+                players.add(new PlayerInfo(nameMap.get(i)));
+            }
+            if (ioHandler.verifyFileExistance(saveState.generateName(new ArrayList<>(nameMap.values())))) {
+                socket.broadcast(new AskForReloadStateNotification(actualPlayer));
+                return;
+            }
+            //initial cards choose
+            socket.broadcast(new ChooseCardListNotification(numPlayer, actualPlayer, new ArrayList<>(nameMap.values())));
         }
     }
 
@@ -94,7 +100,7 @@ public class Turn implements ModelInterface {
             setEnemiesLists();
             LoadGameNotification oldState = new LoadGameNotification(board.getMap());
             oldState.setGodNames(godNames);
-            oldState.setUserNames(nameList);
+            oldState.setUserNames(new ArrayList<>(nameMap.values()));
             socket.broadcast(oldState);
             actualPlayer = saveState.getActualPlayer();
             if(saveState.getActualEffect() == 0) {
@@ -105,7 +111,7 @@ public class Turn implements ModelInterface {
             }
         } else {
             //initial cards choose
-            socket.broadcast(new ChooseCardListNotification(numPlayer, actualPlayer, nameList));
+            socket.broadcast(new ChooseCardListNotification(numPlayer, actualPlayer, new ArrayList<>(nameMap.values())));
         }
     }
 
@@ -180,6 +186,10 @@ public class Turn implements ModelInterface {
     public void setInitialCards(List<Integer> cards) {
         nextTurn();
         chosenCards = cards;
+        if(cards.size() == 1) {
+            setCards(cards.get(0));
+            return;
+        }
         socket.broadcast(new ChooseCardNotification(cards, actualPlayer));
     }
 
@@ -191,10 +201,14 @@ public class Turn implements ModelInterface {
     public void setCards(int chosenCard) {
         addCardToGame(chosenCard);
         chosenCards.remove(Integer.valueOf(chosenCard));
-        if(chosenCards.size() != 0) {
+        if(chosenCards.size() > 1) {
             nextTurn();
             socket.broadcast(new ChooseCardNotification(chosenCards, actualPlayer));
         } else {
+            if(chosenCards.size() == 1) {
+                nextTurn();
+                addCardToGame(chosenCards.get(0));
+            }
             List<String> godNames = new ArrayList<>();
             Card temp = cardList.get(numPlayer - 1);
             cardList.remove(temp);
@@ -209,7 +223,7 @@ public class Turn implements ModelInterface {
     }
 
     /**
-     * instanciate the card chosen
+     * instantiates the card chosen
      * @param chosenCard the index of the card chosen
      */
     private void addCardToGame(int chosenCard) {
@@ -319,7 +333,7 @@ public class Turn implements ModelInterface {
         board.getMap()[toBeEliminated.getRow()][toBeEliminated.getColumn()].setWorkerID(0);
         System.out.println("Player " + actualPlayer + " eliminated");
         eliminatedPlayers.add(actualPlayer);
-        socket.broadcast(new EliminationNotification(actualPlayer, nameList.get(actualPlayer), eliminatedWorkers));
+        socket.broadcast(new EliminationNotification(actualPlayer, nameMap.get(actualPlayer), eliminatedWorkers));
         if(eliminatedPlayers.size() == numPlayer - 1) {
             for(int i = 0; i < numPlayer; i++) {
                 if(!eliminatedPlayers.contains(i)) {
@@ -355,7 +369,6 @@ public class Turn implements ModelInterface {
                 nextTurn();
                 askWhichWorker();
             }
-            //System.out.println(this);
             saveGame();
         }
     }
@@ -365,9 +378,9 @@ public class Turn implements ModelInterface {
      */
     private void handleWin(int winner) {
         System.out.println("Player " + winner + " wins");
-        socket.broadcast(new WinNotification(winner, nameList.get(winner)));
-        ioHandler.deleteFile();
         socket.closeServer();
+        socket.broadcast(new WinNotification(winner, nameMap.get(winner)));
+        ioHandler.deleteFile();
     }
 
     /**
@@ -415,11 +428,16 @@ public class Turn implements ModelInterface {
         System.out.println("Client " + deadClient + " disconnected");
         socket.removeObserver(deadClient);
         if(!eliminatedPlayers.contains(deadClient)) {
-            String message = "Player " + deadClient + " disconnected, the game is cancelled";
+            socket.closeServer();
+            String message;
+            if(nameMap.containsKey(deadClient)) {
+                message = nameMap.get(deadClient) + " disconnected, the game is cancelled";
+            } else {
+                message = "Player " + deadClient + " disconnected, the game is cancelled";
+            }
             DisconnectionNotification gameEnd = new DisconnectionNotification(message);
             gameEnd.setClientID(deadClient);
             socket.broadcast(gameEnd);
-            socket.closeServer();
         }
     }
 

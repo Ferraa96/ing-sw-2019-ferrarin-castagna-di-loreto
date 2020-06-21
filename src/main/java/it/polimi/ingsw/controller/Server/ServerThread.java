@@ -40,16 +40,27 @@ public class ServerThread extends Thread {
     @Override
     public void run() {
         try {
-            while(running) {
+            while(true) {
                 MessageInterface msg = (MessageInterface) inStream.readObject();
-                msg.setClientID(clientID);
-                msg.accept(modelUpdater);
+                if(running) {
+                    msg.setClientID(clientID);
+                    msg.accept(modelUpdater);
+                } else {
+                    return;
+                }
             }
         } catch(IOException | ClassNotFoundException e) {
-            DisconnectionNotification disconnection = new DisconnectionNotification("");
-            disconnection.setClientID(clientID);
-            disconnection.accept(modelUpdater);
-            Thread.currentThread().interrupt();
+            if(running) {
+                DisconnectionNotification disconnection = new DisconnectionNotification("");
+                disconnection.setClientID(clientID);
+                disconnection.accept(modelUpdater);
+                Thread.currentThread().interrupt();
+            }
+            try {
+                socketClient.close();
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
+            }
         }
     }
 
@@ -66,20 +77,25 @@ public class ServerThread extends Thread {
         }
     }
 
+    /**
+     * associate the current serverThread with the clientID
+     * @param clientID the id of the connected player
+     */
     public void setClientID(int clientID) {
         this.clientID = clientID;
     }
 
+    /**
+     * closes the connection
+     */
     public void closeConnection() {
         running = false;
-        try {
-            socketClient.close();
-            interrupt();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
+    /**
+     * set the modelUpdater
+     * @param modelUpdater the modelUpdater
+     */
     public void setModelUpdater(MessageVisitor modelUpdater) {
         this.modelUpdater = modelUpdater;
     }

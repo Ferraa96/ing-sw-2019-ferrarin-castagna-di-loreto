@@ -10,21 +10,36 @@ import java.util.Map;
 
 public class LobbyHandler {
     private Map<Integer, ServerThread> observer;
+    private final MessageVisitor modelUpdater;
+    private final ModelInterface turn;
+    private final boolean[] aborted;
+    private boolean playing = false;
 
-    public LobbyHandler(Map<Integer, ServerThread> observer) {
-        this.observer = observer;
-        ModelInterface turn = new Turn(this, observer.size());
-        MessageVisitor modelUpdater = new ModelUpdater(turn);
-        for(Map.Entry<Integer, ServerThread> currThread : observer.entrySet()) {
-            currThread.getValue().setModelUpdater(modelUpdater);
-            currThread.getValue().start();
-        }
+    public LobbyHandler(boolean[] aborted) {
+        this.aborted = aborted;
+        observer = new HashMap<>();
+        turn = new Turn(this);
+        modelUpdater = new ModelUpdater(turn);
+    }
+
+    public void numPlayerReached() {
+        playing = true;
+        turn.startGame(observer.size());
+    }
+
+    public void addClient(int clientID, ServerThread socketClient) {
+        observer.put(clientID, socketClient);
+        socketClient.setModelUpdater(modelUpdater);
+        socketClient.start();
     }
 
     /**
      * closes the server
      */
     public void closeServer() {
+        if(!playing) {
+            aborted[0] = true;
+        }
         for(Map.Entry<Integer, ServerThread> currThread : observer.entrySet()) {
             currThread.getValue().closeConnection();
         }

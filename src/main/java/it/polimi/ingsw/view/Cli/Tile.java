@@ -19,7 +19,7 @@ public class Tile {
     private final String origLine2;
     private final String origLine3;
     private final String origLine4;
-    private String playerColor = "";
+    private String playerColor;
 
     public Tile(Tile otherTile) {
         this.line0 = origLine0 = otherTile.getLine(0);
@@ -28,6 +28,7 @@ public class Tile {
         this.line3 = origLine3 = otherTile.getLine(3);
         this.line4 = origLine4 = otherTile.getLine(4);
         this.height = otherTile.getHeight();
+        playerColor = "";
     }
 
     /**
