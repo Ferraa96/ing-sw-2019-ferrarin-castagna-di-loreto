@@ -27,38 +27,22 @@ public class SocketClient extends Thread {
 
     public SocketClient() { }
 
-    public void connectCLI() {
-        int port = 59898;
-        ViewInterface view;
-        Scanner scanner = new Scanner(System.in);
-        System.out.print("IP: ");
-        String ip = scanner.nextLine();
+    /**
+     * connect the view to the server
+     * @param ip the ip of the server
+     * @param view the view
+     * @return true if the connection is successful, false otherwise
+     */
+    public boolean connect(String ip, int port, ViewInterface view) {
+//        int port = 59898;
         try {
             socket = new Socket(ip, port);
             outStream = new ObjectOutputStream(socket.getOutputStream());
             inStream = new ObjectInputStream(socket.getInputStream());
-            view = new CLIHandler(this);
-            clientUpdater = new ClientUpdater(view);
-            start();
-        } catch (IOException e) {
-            System.out.println("Server non trovato");
-            connectCLI();
-        }
-    }
-
-    public boolean connectGUI(String ip, GUIHandler guiHandler) {
-        int port = 59898;
-        ViewInterface view;
-        try {
-            socket = new Socket(ip, port);
-            outStream = new ObjectOutputStream(socket.getOutputStream());
-            inStream = new ObjectInputStream(socket.getInputStream());
-            view = guiHandler;
             clientUpdater = new ClientUpdater(view);
             start();
             return true;
         } catch (IOException e) {
-            System.out.println("Server non trovato");
             return false;
         }
     }

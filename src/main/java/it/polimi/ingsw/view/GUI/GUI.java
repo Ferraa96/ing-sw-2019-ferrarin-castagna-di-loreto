@@ -30,7 +30,7 @@ public class GUI extends Application implements UIRender{
     }
 
     @Override
-    public void start(Stage primaryStage) throws Exception{
+    public void start(Stage primaryStage) {
             this.stage = primaryStage;
             this.guiHandler = new GUIHandler(this);
             showScene("/fxml/welcome.fxml", false);
@@ -85,6 +85,7 @@ public class GUI extends Application implements UIRender{
     public void showLogin(){
         Platform.runLater( () -> {
             showScene("/fxml/login.fxml", false);
+            currentController.start();
             updateStageInfo("LOGIN");
         });
     }

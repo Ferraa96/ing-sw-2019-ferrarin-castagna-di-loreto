@@ -23,6 +23,10 @@ public class ScannerListener extends Thread {
         while (running) {
             if (scanner.hasNextLine()) {
                 switch (request) {
+                    case ip:
+                        request = Request.ignore;
+                        cliHandler.verifyIP(scanner.nextLine());
+                        break;
                     case name:
                         request = Request.ignore;
                         if(running) {

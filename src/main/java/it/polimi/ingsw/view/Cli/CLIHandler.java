@@ -14,14 +14,14 @@ public class CLIHandler implements ViewInterface {
     private final String greenColor = "\u001b[48;5;22m";
     private final String yellowColor = "\u001b[48;5;228m";
     private final String reset = "\u001B[0m";
-    private final List<String> playerColors;
-    private final SocketClient socketClient;
-    private final Tile[][] gameMap;
-    private final TileGetter tileGetter;
+    private List<String> playerColors;
+    private SocketClient socketClient;
+    private Tile[][] gameMap;
+    private TileGetter tileGetter;
     private List<Position> posList;
     private List<Integer> intList = new ArrayList<>();
     private List<Integer> chosenCards;
-    private final ScannerListener scannerListener;
+    private ScannerListener scannerListener;
     private List<Position> chosenPos;
     private int numPlayers;
     private List<String> godNames;
@@ -30,10 +30,8 @@ public class CLIHandler implements ViewInterface {
 
     /**
      * creates the CLI
-     * @param socketClient the server socket
      */
-    public CLIHandler(SocketClient socketClient) {
-        this.socketClient = socketClient;
+    private void initiate() {
         gameMap = new Tile[5][5];
         tileGetter = new TileGetter();
         for(int i = 0; i < 5; i++) {
@@ -46,9 +44,28 @@ public class CLIHandler implements ViewInterface {
         playerColors.add("\u001b[36;1m");   //cyan
         playerColors.add("\u001b[35;1m");   //magenta
         printLogo();
+        setName();
+    }
+
+    public void connect() {
         scannerListener = new ScannerListener(this);
         scannerListener.start();
-        setName();
+        socketClient = new SocketClient();
+        System.out.print("Server ip: ");
+        setIP();
+    }
+
+    private void setIP() {
+        scannerListener.setRequest(Request.ip);
+    }
+
+    public void verifyIP(String ip) {
+        if(!socketClient.connect(ip, 59898, this)) {
+            System.out.print("Set a valid IP: ");
+            setIP();
+        } else {
+            initiate();
+        }
     }
 
     /**

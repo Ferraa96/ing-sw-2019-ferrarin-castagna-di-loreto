@@ -6,7 +6,6 @@ import com.google.gson.reflect.TypeToken;
 
 import java.io.*;
 import java.lang.reflect.Type;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,11 +20,7 @@ public class IOHandler {
 
     public IOHandler() {
         gson = new GsonBuilder().setPrettyPrinting().create();
-        try {
-            saveStatePath = new File(IOHandler.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
+        saveStatePath = (new File("").getAbsolutePath());
     }
 
     /**

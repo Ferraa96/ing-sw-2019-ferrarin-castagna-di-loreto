@@ -33,6 +33,7 @@ public class GUIHandler implements ViewInterface {
     private final List<Integer> chosen = new ArrayList<>();
     private final List<Position> availablePos = new ArrayList<>();
     private final List<Position> currentChoice = new ArrayList<>();
+    private int port;
 
     public GUIHandler(GUI gui){
         this.gui = gui;
@@ -43,7 +44,7 @@ public class GUIHandler implements ViewInterface {
      * @param name the input
      *
      */
-    public void getLoginInfo(String name,String ip){
+    public void getLoginInfo(String name, String ip){
         this.name = name;
         socketClient = new SocketClient();
         map = new Square[5][5];
@@ -52,16 +53,26 @@ public class GUIHandler implements ViewInterface {
                 map[i][j] = new Square();
             }
         }
-        if(socketClient.connectGUI(ip,this)){
+        if(socketClient.connect(ip, port, this)){
             socketClient.send(new SetNameNotification(name));
         }else{
             setName();
         }
     }
 
+    public void GetUserName(String name){
+        this.name = name;
+        socketClient.send(new SetNameNotification(name));
+    }
+
+    public void Login(){
+        state = "SET NAME";
+        gui.showLogin();
+    }
+
     @Override
     public void setName(){
-        state = "SET NAME";
+        state = "RESET NAME";
         gui.showLogin();
     }
 
@@ -302,6 +313,7 @@ public class GUIHandler implements ViewInterface {
         isMyTurn = false;
         switch (state){
             case "SET NAME":
+            case "RESET NAME":
             case "CARD LIST":
             case "SET CARD":
                 gui.showMessage();

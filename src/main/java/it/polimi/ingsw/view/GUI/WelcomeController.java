@@ -7,7 +7,7 @@ public class WelcomeController extends GUIController{
     @FXML
     public void startGame(){
         GUIHandler guiHandler = super.getGuiHandler();
-        guiHandler.setName();
+        guiHandler.Login();
     }
 
 }

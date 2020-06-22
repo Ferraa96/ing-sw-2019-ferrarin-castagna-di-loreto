@@ -14,20 +14,35 @@ public class LogController extends GUIController{
     @FXML
     Button button;
 
-    @FXML
-    private void logIn() {
-        GUIHandler guiHandler = super.getGuiHandler();
+    private GUIHandler guiHandler;
+    private String state;
 
-        if((playerName.getText().equals("")) || (IP.getText().equals(""))) {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("ERROR");
-            alert.setHeaderText(null);
-            alert.setContentText("Invalid Username or IP");
-            alert.showAndWait();
-        }else{
-            guiHandler.getLoginInfo(playerName.getText(), IP.getText());
-            button.disableProperty().setValue(true);
+    @Override
+    public void start(){
+        guiHandler = super.getGuiHandler();
+        state = guiHandler.getState();
+        if(state.equals("RESET NAME")){
+            IP.setVisible(false);
         }
     }
 
+    @FXML
+    private void logIn() {
+
+        if (state.equals("RESET NAME")) {
+            guiHandler.GetUserName(playerName.getText());
+            button.disableProperty().setValue(true);
+        } else {
+            if ((playerName.getText().equals("")) || (IP.getText().equals(""))) {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("ERROR");
+                alert.setHeaderText(null);
+                alert.setContentText("Invalid Username or IP");
+                alert.showAndWait();
+            } else {
+                guiHandler.getLoginInfo(playerName.getText(), IP.getText());
+                button.disableProperty().setValue(true);
+            }
+        }
+    }
 }

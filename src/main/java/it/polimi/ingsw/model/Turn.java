@@ -186,10 +186,6 @@ public class Turn implements ModelInterface {
     public void setInitialCards(List<Integer> cards) {
         nextTurn();
         chosenCards = cards;
-        if(cards.size() == 1) {
-            setCards(cards.get(0));
-            return;
-        }
         socket.broadcast(new ChooseCardNotification(cards, actualPlayer));
     }
 
@@ -201,14 +197,10 @@ public class Turn implements ModelInterface {
     public void setCards(int chosenCard) {
         addCardToGame(chosenCard);
         chosenCards.remove(Integer.valueOf(chosenCard));
-        if(chosenCards.size() > 1) {
+        if(chosenCards.size() > 0) {
             nextTurn();
             socket.broadcast(new ChooseCardNotification(chosenCards, actualPlayer));
         } else {
-            if(chosenCards.size() == 1) {
-                nextTurn();
-                addCardToGame(chosenCards.get(0));
-            }
             List<String> godNames = new ArrayList<>();
             Card temp = cardList.get(numPlayer - 1);
             cardList.remove(temp);
