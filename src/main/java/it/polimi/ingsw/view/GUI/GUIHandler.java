@@ -44,7 +44,7 @@ public class GUIHandler implements ViewInterface {
      * @param name the input
      *
      */
-    public void getLoginInfo(String name, String ip){
+    public void getLoginInfo(String name,int port, String ip){
         this.name = name;
         socketClient = new SocketClient();
         map = new Square[5][5];
@@ -56,7 +56,7 @@ public class GUIHandler implements ViewInterface {
         if(socketClient.connect(ip, port, this)){
             socketClient.send(new SetNameNotification(name));
         }else{
-            setName();
+            Login();
         }
     }
 

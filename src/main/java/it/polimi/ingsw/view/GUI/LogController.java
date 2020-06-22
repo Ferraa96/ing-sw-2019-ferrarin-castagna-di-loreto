@@ -10,7 +10,7 @@ public class LogController extends GUIController{
     @FXML
     TextField playerName;
     @FXML
-    TextField IP;
+    TextField IP, PORT;
     @FXML
     Button button;
 
@@ -23,6 +23,7 @@ public class LogController extends GUIController{
         state = guiHandler.getState();
         if(state.equals("RESET NAME")){
             IP.setVisible(false);
+            PORT.setVisible(false);
         }
     }
 
@@ -33,14 +34,14 @@ public class LogController extends GUIController{
             guiHandler.GetUserName(playerName.getText());
             button.disableProperty().setValue(true);
         } else {
-            if ((playerName.getText().equals("")) || (IP.getText().equals(""))) {
+            if ((playerName.getText().equals("")) || (PORT.getText().equals("")) || (IP.getText().equals(""))) {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("ERROR");
                 alert.setHeaderText(null);
-                alert.setContentText("Invalid Username or IP");
+                alert.setContentText("You have to insert valid input!");
                 alert.showAndWait();
             } else {
-                guiHandler.getLoginInfo(playerName.getText(), IP.getText());
+                guiHandler.getLoginInfo(playerName.getText(),Integer.parseInt(PORT.getText()), IP.getText());
                 button.disableProperty().setValue(true);
             }
         }
