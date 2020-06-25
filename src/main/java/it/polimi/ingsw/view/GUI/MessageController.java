@@ -18,11 +18,9 @@ public class MessageController extends GUIController {
     @FXML
     Button close;
 
-    private GUIHandler guiHandler;
-
     @Override
     public void start(){
-        this.guiHandler = super.getGuiHandler();
+        GUIHandler guiHandler = super.getGuiHandler();
         message.setText(guiHandler.getMessage());
         String state = guiHandler.getState();
         message.setLayoutY(300);
@@ -32,9 +30,7 @@ public class MessageController extends GUIController {
             close = new Button("END");
             close.setLayoutX(230);
             close.setLayoutY(240);
-            close.setOnAction(e->{
-                Platform.exit();
-            });
+            close.setOnAction(e-> Platform.exit());
             pane.getChildren().add(close);
         }
         pane.getChildren().add(message);

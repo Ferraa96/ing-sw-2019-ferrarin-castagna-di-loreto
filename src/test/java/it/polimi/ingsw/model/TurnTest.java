@@ -2,15 +2,13 @@ package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.controller.Server.LobbyHandler;
 import it.polimi.ingsw.controller.Server.ServerThread;
+import it.polimi.ingsw.model.Game.Turn;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.IntStream;
-
-import static org.junit.Assert.*;
 
 
 public class TurnTest {

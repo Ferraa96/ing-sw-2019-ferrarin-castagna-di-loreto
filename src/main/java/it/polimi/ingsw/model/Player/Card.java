@@ -1,7 +1,13 @@
-package it.polimi.ingsw.model;
+package it.polimi.ingsw.model.Player;
 
 import com.google.gson.annotations.SerializedName;
 import it.polimi.ingsw.controller.Instructions.MessageInterface;
+import it.polimi.ingsw.model.Game.Cell;
+import it.polimi.ingsw.model.Effects.Build;
+import it.polimi.ingsw.model.Effects.Effect;
+import it.polimi.ingsw.model.Effects.Move;
+import it.polimi.ingsw.model.Game.Position;
+import it.polimi.ingsw.model.IO.SaveState;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,7 +73,7 @@ public class Card {
      * @param chosenCell cell chosen by player
      * @param target interested worker
      */
-    private void setParameters(int i,Position chosenCell, Worker target) {
+    private void setParameters(int i, Position chosenCell, Worker target) {
         if (map[chosenCell.getRow()][chosenCell.getColumn()].getWorkerID() == -1) {
             if (i+1< cardRoutine.size()) {
                 cardRoutine.get(i + 1).setLastMoveInitialPosition(target.getPosition());

@@ -1,4 +1,6 @@
-package it.polimi.ingsw.model;
+package it.polimi.ingsw.model.Effects;
+
+import it.polimi.ingsw.model.Game.Position;
 
 import java.io.Serializable;
 

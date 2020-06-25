@@ -2,9 +2,9 @@ package it.polimi.ingsw.view.GUI;
 
 import it.polimi.ingsw.controller.Client.SocketClient;
 import it.polimi.ingsw.controller.Instructions.*;
-import it.polimi.ingsw.model.Cell;
-import it.polimi.ingsw.model.Movement;
-import it.polimi.ingsw.model.Position;
+import it.polimi.ingsw.model.Game.Cell;
+import it.polimi.ingsw.model.Effects.Movement;
+import it.polimi.ingsw.model.Game.Position;
 import it.polimi.ingsw.view.ViewInterface;
 
 import java.util.ArrayList;
@@ -33,7 +33,6 @@ public class GUIHandler implements ViewInterface {
     private final List<Integer> chosen = new ArrayList<>();
     private final List<Position> availablePos = new ArrayList<>();
     private final List<Position> currentChoice = new ArrayList<>();
-    private int port;
 
     public GUIHandler(GUI gui){
         this.gui = gui;

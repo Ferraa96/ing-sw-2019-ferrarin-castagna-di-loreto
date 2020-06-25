@@ -1,6 +1,6 @@
 package it.polimi.ingsw.controller.Instructions;
 
-import it.polimi.ingsw.model.Movement;
+import it.polimi.ingsw.model.Effects.Movement;
 
 import java.io.Serializable;
 import java.util.List;

@@ -2,7 +2,11 @@ package it.polimi.ingsw.view.Cli;
 
 import it.polimi.ingsw.controller.Instructions.*;
 import it.polimi.ingsw.controller.Client.SocketClient;
-import it.polimi.ingsw.model.*;
+import it.polimi.ingsw.model.Effects.Movement;
+import it.polimi.ingsw.model.Game.Cell;
+import it.polimi.ingsw.model.IO.IOHandler;
+import it.polimi.ingsw.model.Player.Card;
+import it.polimi.ingsw.model.Game.Position;
 import it.polimi.ingsw.view.ViewInterface;
 
 import java.util.*;
@@ -51,7 +55,7 @@ public class CLIHandler implements ViewInterface {
         scannerListener = new ScannerListener(this);
         scannerListener.start();
         socketClient = new SocketClient();
-        System.out.print("Server ip: ");
+        System.out.print("Server ip and port: ");
         setIP();
     }
 
@@ -59,9 +63,29 @@ public class CLIHandler implements ViewInterface {
         scannerListener.setRequest(Request.ip);
     }
 
-    public void verifyIP(String ip) {
-        if(!socketClient.connect(ip, 59898, this)) {
-            System.out.print("Set a valid IP: ");
+    public void verifyIP(String ipAndPort) {
+        String ip;
+        int port, index;
+        for(index = 0; index < ipAndPort.length(); index++) {
+            if(ipAndPort.charAt(index) == ' ') {
+                break;
+            }
+        }
+        if(index == ipAndPort.length()) {
+            System.out.print("Set a valid IP and port (ip port): ");
+            setIP();
+            return;
+        }
+        ip = ipAndPort.substring(0, index);
+        try {
+            port = Integer.parseInt(ipAndPort.substring(index + 1));
+        } catch (NumberFormatException e) {
+            System.out.print("Set a valid IP and port (ip port): ");
+            setIP();
+            return;
+        }
+        if(!socketClient.connect(ip, port, this)) {
+            System.out.print("Server not found: ");
             setIP();
         } else {
             initiate();

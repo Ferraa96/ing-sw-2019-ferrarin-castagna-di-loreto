@@ -1,6 +1,9 @@
-package it.polimi.ingsw.model;
+package it.polimi.ingsw.model.Effects;
 
 import it.polimi.ingsw.controller.Instructions.MoveNotification;
+import it.polimi.ingsw.model.Game.Cell;
+import it.polimi.ingsw.model.Game.Position;
+import it.polimi.ingsw.model.Player.Worker;
 
 import java.util.ArrayList;
 import java.util.List;

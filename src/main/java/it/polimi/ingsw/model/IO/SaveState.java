@@ -1,6 +1,9 @@
-package it.polimi.ingsw.model;
+package it.polimi.ingsw.model.IO;
 
 import com.google.gson.annotations.SerializedName;
+import it.polimi.ingsw.model.Game.Cell;
+import it.polimi.ingsw.model.Game.PlayerInfo;
+import it.polimi.ingsw.model.Game.Position;
 
 import java.io.*;
 import java.util.Collections;

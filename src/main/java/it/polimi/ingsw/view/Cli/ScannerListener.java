@@ -1,6 +1,6 @@
 package it.polimi.ingsw.view.Cli;
 
-import it.polimi.ingsw.model.Position;
+import it.polimi.ingsw.model.Game.Position;
 
 import java.util.Scanner;
 

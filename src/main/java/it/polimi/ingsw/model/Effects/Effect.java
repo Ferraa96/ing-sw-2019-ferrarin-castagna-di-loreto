@@ -1,6 +1,8 @@
-package it.polimi.ingsw.model;
+package it.polimi.ingsw.model.Effects;
 
 import it.polimi.ingsw.controller.Instructions.MessageInterface;
+import it.polimi.ingsw.model.Game.Position;
+import it.polimi.ingsw.model.Player.Worker;
 
 import java.util.List;
 

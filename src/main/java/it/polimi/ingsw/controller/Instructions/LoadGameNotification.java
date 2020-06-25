@@ -1,6 +1,6 @@
 package it.polimi.ingsw.controller.Instructions;
 
-import it.polimi.ingsw.model.Cell;
+import it.polimi.ingsw.model.Game.Cell;
 
 import java.io.Serializable;
 import java.util.List;

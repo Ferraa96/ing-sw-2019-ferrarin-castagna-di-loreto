@@ -1,6 +1,9 @@
-package it.polimi.ingsw.model;
+package it.polimi.ingsw.model.Effects;
 
 import it.polimi.ingsw.controller.Instructions.BuildNotification;
+import it.polimi.ingsw.model.Game.Cell;
+import it.polimi.ingsw.model.Game.Position;
+import it.polimi.ingsw.model.Player.Worker;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +12,7 @@ import java.util.List;
  * type of effect: give worker permission to build a block
  */
 public class Build implements Effect {
-    private final Cell [][] map;
+    private final Cell[][] map;
     private final Boolean nextBlock;
     private final Boolean specific;
     private Position lastBuildPosition;

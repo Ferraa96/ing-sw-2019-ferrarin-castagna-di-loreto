@@ -1,5 +1,10 @@
 package it.polimi.ingsw.model;
 
+import it.polimi.ingsw.model.Effects.Move;
+import it.polimi.ingsw.model.Game.Board;
+import it.polimi.ingsw.model.Game.Cell;
+import it.polimi.ingsw.model.Game.Position;
+import it.polimi.ingsw.model.Player.Worker;
 import org.junit.Test;
 
 import java.util.List;

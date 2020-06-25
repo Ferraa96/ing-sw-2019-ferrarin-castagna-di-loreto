@@ -22,7 +22,7 @@ public class GUI extends Application implements UIRender{
 
     private Stage stage;
 
-    private static Logger logger = Logger.getLogger(GUI.class.getName());
+    private static final Logger logger = Logger.getLogger(GUI.class.getName());
 
     @Override
     public void initialize() {

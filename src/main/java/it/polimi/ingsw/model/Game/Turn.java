@@ -1,7 +1,11 @@
-package it.polimi.ingsw.model;
+package it.polimi.ingsw.model.Game;
 
 import it.polimi.ingsw.controller.Server.LobbyHandler;
 import it.polimi.ingsw.controller.Instructions.*;
+import it.polimi.ingsw.model.IO.IOHandler;
+import it.polimi.ingsw.model.IO.SaveState;
+import it.polimi.ingsw.model.Player.Card;
+import it.polimi.ingsw.model.Player.Worker;
 
 import java.util.*;
 

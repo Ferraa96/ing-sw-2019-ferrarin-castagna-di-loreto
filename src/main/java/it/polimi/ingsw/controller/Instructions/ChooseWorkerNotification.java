@@ -1,6 +1,6 @@
 package it.polimi.ingsw.controller.Instructions;
 
-import it.polimi.ingsw.model.Position;
+import it.polimi.ingsw.model.Game.Position;
 
 import java.io.Serializable;
 import java.util.List;

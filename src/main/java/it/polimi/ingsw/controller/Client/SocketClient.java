@@ -3,13 +3,10 @@ package it.polimi.ingsw.controller.Client;
 import it.polimi.ingsw.controller.Instructions.DisconnectionNotification;
 import it.polimi.ingsw.controller.Instructions.MessageInterface;
 import it.polimi.ingsw.controller.Instructions.MessageVisitor;
-import it.polimi.ingsw.view.Cli.CLIHandler;
-import it.polimi.ingsw.view.GUI.GUIHandler;
 import it.polimi.ingsw.view.ViewInterface;
 
 import java.io.*;
 import java.net.Socket;
-import java.util.Scanner;
 
 /**
  * the socket client
@@ -34,7 +31,6 @@ public class SocketClient extends Thread {
      * @return true if the connection is successful, false otherwise
      */
     public boolean connect(String ip, int port, ViewInterface view) {
-//        int port = 59898;
         try {
             socket = new Socket(ip, port);
             outStream = new ObjectOutputStream(socket.getOutputStream());

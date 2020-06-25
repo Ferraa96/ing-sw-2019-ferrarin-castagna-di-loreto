@@ -1,7 +1,7 @@
 package it.polimi.ingsw.controller.Server;
 
 import it.polimi.ingsw.controller.Instructions.*;
-import it.polimi.ingsw.model.ModelInterface;
+import it.polimi.ingsw.model.Game.ModelInterface;
 
 /**
  * handle the messages from the client

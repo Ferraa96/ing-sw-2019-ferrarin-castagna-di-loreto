@@ -1,10 +1,15 @@
 package it.polimi.ingsw.model;
 
+import it.polimi.ingsw.model.Game.Board;
+import it.polimi.ingsw.model.Game.Cell;
+import it.polimi.ingsw.model.IO.IOHandler;
+import it.polimi.ingsw.model.IO.SaveState;
+import it.polimi.ingsw.model.Player.Card;
+import it.polimi.ingsw.model.Game.Position;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.IntStream;
 
 import static org.junit.Assert.*;
 

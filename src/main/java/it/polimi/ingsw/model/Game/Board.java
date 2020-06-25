@@ -1,4 +1,4 @@
-package it.polimi.ingsw.model;
+package it.polimi.ingsw.model.Game;
 
 /**
  * the 5x5 gamemap

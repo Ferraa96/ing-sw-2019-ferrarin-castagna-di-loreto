@@ -22,12 +22,14 @@ public class TileGetter {
     }
 
     public Tile getTile(int player, int build, boolean dome) {
+        Tile tile;
         if(!dome) {
-            Tile tile = new Tile(allTiles.get(2 * build + player));
-            tile.setIdentifier("\u001b[48;5;22m");
-            tile.setHeight(build);
-            return tile;
+            tile = new Tile(allTiles.get(2 * build + player));
+        } else {
+            tile = new Tile(allTiles.get(11 - build));
         }
-        return new Tile(allTiles.get(11 - build));
+        tile.setHeight(build);
+        tile.setIdentifier("\u001b[48;5;22m");
+        return tile;
     }
 }

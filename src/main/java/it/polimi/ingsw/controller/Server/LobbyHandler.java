@@ -2,8 +2,8 @@ package it.polimi.ingsw.controller.Server;
 
 import it.polimi.ingsw.controller.Instructions.MessageInterface;
 import it.polimi.ingsw.controller.Instructions.MessageVisitor;
-import it.polimi.ingsw.model.ModelInterface;
-import it.polimi.ingsw.model.Turn;
+import it.polimi.ingsw.model.Game.ModelInterface;
+import it.polimi.ingsw.model.Game.Turn;
 
 import java.util.HashMap;
 import java.util.Map;

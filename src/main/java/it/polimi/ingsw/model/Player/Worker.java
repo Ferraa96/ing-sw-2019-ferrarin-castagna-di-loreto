@@ -1,4 +1,6 @@
-package it.polimi.ingsw.model;
+package it.polimi.ingsw.model.Player;
+
+import it.polimi.ingsw.model.Game.Position;
 
 /**
  * store worker's informations

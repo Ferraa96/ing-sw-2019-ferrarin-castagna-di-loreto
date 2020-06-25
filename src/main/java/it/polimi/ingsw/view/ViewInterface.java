@@ -1,8 +1,8 @@
 package it.polimi.ingsw.view;
 
-import it.polimi.ingsw.model.Cell;
-import it.polimi.ingsw.model.Movement;
-import it.polimi.ingsw.model.Position;
+import it.polimi.ingsw.model.Game.Cell;
+import it.polimi.ingsw.model.Effects.Movement;
+import it.polimi.ingsw.model.Game.Position;
 
 import java.util.List;
 

@@ -37,7 +37,7 @@ public class SocketServer {
             return;
         }
         while (serverNum < maxLobbies) {
-            System.out.println("Server " + serverNum + " online");
+            System.out.println("Server " + serverNum + " online on port " + port);
             Thread thread = new Thread(this::createLobby);
             thread.start();
             try {

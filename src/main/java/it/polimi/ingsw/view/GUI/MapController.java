@@ -1,6 +1,6 @@
 package it.polimi.ingsw.view.GUI;
 
-import it.polimi.ingsw.model.Position;
+import it.polimi.ingsw.model.Game.Position;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.effect.DropShadow;

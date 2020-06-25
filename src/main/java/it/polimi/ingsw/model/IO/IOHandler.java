@@ -1,8 +1,9 @@
-package it.polimi.ingsw.model;
+package it.polimi.ingsw.model.IO;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import it.polimi.ingsw.model.Player.Card;
 
 import java.io.*;
 import java.lang.reflect.Type;
@@ -67,7 +68,6 @@ public class IOHandler {
             output = gson.toJson(state);
             printWriter.print(output);
             printWriter.close();
-            System.out.println("Saved in " + saveStatePath);
         } catch (IOException e) {
             e.printStackTrace();
         }

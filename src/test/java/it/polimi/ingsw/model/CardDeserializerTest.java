@@ -1,5 +1,8 @@
 package it.polimi.ingsw.model;
 
+import it.polimi.ingsw.model.IO.IOHandler;
+import it.polimi.ingsw.model.IO.SaveState;
+import it.polimi.ingsw.model.Player.Card;
 import org.junit.Test;
 
 import java.util.List;
