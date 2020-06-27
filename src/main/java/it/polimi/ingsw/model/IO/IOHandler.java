@@ -16,7 +16,6 @@ import java.util.List;
 public class IOHandler {
     private final Gson gson;
     private String saveStatePath;
-    private static List<Card> godsList;
 
 
     public IOHandler() {
@@ -29,13 +28,10 @@ public class IOHandler {
      * @return the list generated
      */
     public List<Card> getCardList() {
-        if(godsList != null) {
-            return new ArrayList<>(godsList);
-        }
         InputStream input = getClass().getResourceAsStream("/godsList.json");
         BufferedReader bf = new BufferedReader(new InputStreamReader(input));
         Type selectedCard = new TypeToken<ArrayList<Card>>() {}.getType();
-        godsList = gson.fromJson(bf, selectedCard);
+        List<Card> godsList = gson.fromJson(bf, selectedCard);
         return new ArrayList<>(godsList);
     }
 

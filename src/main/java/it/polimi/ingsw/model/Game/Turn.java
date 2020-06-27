@@ -91,20 +91,22 @@ public class Turn implements ModelInterface {
     @Override
     public void loadState(boolean reload) {
         if(reload) {
+            List<String> playerNames = new ArrayList<>();
             List<String> godNames = new ArrayList<>();
             saveState = ioHandler.getSaveState();
             board.setMap(saveState.getGameMap());
+            mapPlayers();
             for(PlayerInfo currPlayer: saveState.getPlayers()) {
+                playerNames.add(currPlayer.getPlayerName());
                 godNames.add(ioHandler.getCardList().get(currPlayer.getChosenCard()).getName());
                 addCardToGame(currPlayer.getChosenCard());
                 cardList.get(actualPlayer).firstPositioning(currPlayer.getWorkerPos().get(0), currPlayer.getWorkerPos().get(1));
                 nextTurn();
             }
-            mapPlayers();
             setEnemiesLists();
             LoadGameNotification oldState = new LoadGameNotification(board.getMap());
             oldState.setGodNames(godNames);
-            oldState.setUserNames(new ArrayList<>(nameMap.values()));
+            oldState.setUserNames(playerNames);
             socket.broadcast(oldState);
             actualPlayer = saveState.getActualPlayer();
             if(saveState.getActualEffect() == 0) {
@@ -324,9 +326,9 @@ public class Turn implements ModelInterface {
         eliminatedWorkers.add(cardList.get(actualPlayer).getWorker1().getPosition());
         eliminatedWorkers.add(cardList.get(actualPlayer).getWorker2().getPosition());
         toBeEliminated = cardList.get(actualPlayer).getWorker1().getPosition();
-        board.getMap()[toBeEliminated.getRow()][toBeEliminated.getColumn()].setWorkerID(0);
+        board.getMap()[toBeEliminated.getRow()][toBeEliminated.getColumn()].setWorkerID(-1);
         toBeEliminated = cardList.get(actualPlayer).getWorker2().getPosition();
-        board.getMap()[toBeEliminated.getRow()][toBeEliminated.getColumn()].setWorkerID(0);
+        board.getMap()[toBeEliminated.getRow()][toBeEliminated.getColumn()].setWorkerID(-1);
         System.out.println("Player " + actualPlayer + " eliminated");
         eliminatedPlayers.add(actualPlayer);
         socket.broadcast(new EliminationNotification(actualPlayer, nameMap.get(actualPlayer), eliminatedWorkers));
