@@ -32,8 +32,11 @@ public class GUI extends Application implements UIRender{
     @Override
     public void start(Stage primaryStage) {
             this.stage = primaryStage;
+            this.stage = new Stage();
             this.guiHandler = new GUIHandler(this);
             showScene("/fxml/welcome.fxml", false);
+            this.stage.show();
+            currentController.start();
             updateStageInfo("WELCOME");
     }
 
@@ -46,13 +49,6 @@ public class GUI extends Application implements UIRender{
             loader.setLocation(getClass().getResource(fxmlResource));
             Scene scene = loader.load();
             currentController = loader.getController();
-
-            if (this.stage != null) {
-                this.stage.hide();
-            } else {
-                this.stage = new Stage();
-                this.stage.resizableProperty().setValue(fullScreen);
-            }
 
             this.stage.setMaximized(fullScreen);
 
@@ -67,7 +63,7 @@ public class GUI extends Application implements UIRender{
             }
 
             this.stage.setScene(scene);
-            this.stage.show();
+            
         } catch (IOException e) {
             logger.log(Level.SEVERE, "Cannot load scene with resource {0}", fxmlResource);
             logger.log(Level.SEVERE, "Exception when loading scene", e);
@@ -136,6 +132,14 @@ public class GUI extends Application implements UIRender{
             if(currentController!=null){
                 currentController.refresh();
             }
+        });
+    }
+
+    @Override
+    public void winScreen(){
+        Platform.runLater(() -> {
+            showScene("/fxml/win.fxml", false);
+            updateStageInfo("GAME ENDED");
         });
     }
 

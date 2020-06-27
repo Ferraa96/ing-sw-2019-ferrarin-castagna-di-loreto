@@ -34,6 +34,8 @@ public class MapController extends GUIController {
     @FXML
     Label playername3 = new Label("");
     @FXML
+    Label pl1 = new Label(),pl2 = new Label(),pl3 = new Label();
+    @FXML
     Label action = new Label("");
 
     @FXML
@@ -61,6 +63,8 @@ public class MapController extends GUIController {
 
     private  boolean isMyturn = false;
 
+    private List<String> alive = new ArrayList<>();
+
     @Override
     public void start(){
 
@@ -77,6 +81,7 @@ public class MapController extends GUIController {
         currentstate = guiHandler.getState();
         isMyturn = guiHandler.isMyTurn();
         NumofPlayers = guiHandler.getPlayers();
+        alive = guiHandler.getAlive();
 
         //get the already chosen workers/buildings
         drawExistent();
@@ -93,12 +98,25 @@ public class MapController extends GUIController {
 
             //set the playername and the action
             playername1.setText(guiHandler.getName());
-            playername1.setLayoutX(77);
+            playername1.setLayoutX(81);
             playername1.setLayoutY(470);
             playername1.setFont(Font.font("Franklin Gothic Medium", 12));
             playername1.setTextFill(Color.web(getPlayerColor(guiHandler.getName())));
             playername1.setEffect(ds);
             playername1.setCache(true);
+            if(alive.get(0).equals("eliminated")){
+                pl1.setText(allPlayers.get(0)+ ": eliminated");
+                pl1.setLayoutX(1020);
+                pl1.setLayoutY(150);
+                pl1.setFont(Font.font("Franklin Gothic Medium", 12));
+                pl1.setTextFill(Color.web("#ea0000"));
+            }else {
+                pl1.setText(allPlayers.get(0) + ": online");
+                pl1.setLayoutX(1020);
+                pl1.setLayoutY(150);
+                pl1.setFont(Font.font("Franklin Gothic Medium", 12));
+                pl1.setTextFill(Color.web("#13ec00"));
+            }
             pane1.setVisible(false);
             pane2.setVisible(false);
 
@@ -112,24 +130,50 @@ public class MapController extends GUIController {
                 pane1.setVisible(true);
                 godcard1.setImage(new Image(convertGod(godname.get(0)), 300, 450, true, true));
                 playername2.setText(players.get(0));
-                playername2.setLayoutX(824);
+                playername2.setLayoutX(830);
                 playername2.setLayoutY(470);
                 playername2.setFont(Font.font("Franklin Gothic Medium", 12));
                 playername2.setTextFill(Color.web(getPlayerColor(players.get(0))));
                 playername2.setEffect(ds);
                 playername2.setCache(true);
+                if(alive.get(1).equals("eliminated")){
+                    pl2.setText(allPlayers.get(1)+ ": eliminated");
+                    pl2.setLayoutX(1020);
+                    pl2.setLayoutY(200);
+                    pl2.setFont(Font.font("Franklin Gothic Medium", 12));
+                    pl2.setTextFill(Color.web("#ea0000"));
+                }else {
+                    pl2.setText(allPlayers.get(1) + ": online");
+                    pl2.setLayoutX(1020);
+                    pl2.setLayoutY(200);
+                    pl2.setFont(Font.font("Franklin Gothic Medium", 12));
+                    pl2.setTextFill(Color.web("#13ec00"));
+                }
             }
 
             if (godname.size() >= 2) {
                 pane2.setVisible(true);
                 godcard2.setImage(new Image(convertGod(godname.get(1)), 300, 450, true, true));
                 playername3.setText(players.get(1));
-                playername3.setLayoutX(824);
+                playername3.setLayoutX(830);
                 playername3.setLayoutY(173);
                 playername3.setFont(Font.font("Franklin Gothic Medium", 12));
                 playername3.setTextFill(Color.web(getPlayerColor(players.get(1))));
                 playername3.setEffect(ds);
                 playername3.setCache(true);
+                if(alive.get(2).equals("eliminated")){
+                    pl3.setText(allPlayers.get(2) + ": eliminated");
+                    pl3.setLayoutX(1020);
+                    pl3.setLayoutY(250);
+                    pl3.setFont(Font.font("Franklin Gothic Medium", 12));
+                    pl3.setTextFill(Color.web("#ea0000"));
+                }else {
+                    pl3.setText(allPlayers.get(2) + ": online");
+                    pl3.setLayoutX(1020);
+                    pl3.setLayoutY(250);
+                    pl3.setFont(Font.font("Franklin Gothic Medium", 12));
+                    pl3.setTextFill(Color.web("#13ec00"));
+                }
             }
         }
             setMessage();
@@ -183,15 +227,18 @@ public class MapController extends GUIController {
 
 
     private void setMessage() {
-        if(refresh>0)
-        pane.getChildren().removeAll(playername1,playername2,action);
+        if(refresh>0) {
+            pane.getChildren().removeAll(playername1, playername2,pl1,pl2, action);
+            if(NumofPlayers == 3)
+                pane.getChildren().removeAll(playername3,pl3);
+        }
         action.setText(guiHandler.getMessage());
-        action.setLayoutX(20);
-        action.setLayoutY(20);
+        action.setLayoutX(50);
+        action.setLayoutY(550);
         action.setFont(Font.font("Franklin Gothic Medium", 20));
-        pane.getChildren().addAll(playername1,playername2,action);
+        pane.getChildren().addAll(playername1,playername2,pl1,pl2,action);
         if(NumofPlayers == 3)
-            pane.getChildren().add(playername3);
+            pane.getChildren().addAll(playername3,pl3);
     }
 
     private void doAction(){

@@ -18,4 +18,6 @@ public interface UIRender {
 
     void refreshMap();
 
+    void winScreen();
+
 }

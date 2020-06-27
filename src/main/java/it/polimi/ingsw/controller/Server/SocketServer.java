@@ -52,7 +52,7 @@ public class SocketServer {
     private void createLobby() {
         int time = 100000;
         int actualNum = 0;
-        int min = 2;
+        int min = 3;
         int max = 3;
         final boolean[] start = {false};
         LobbyHandler lobby = new LobbyHandler(aborted);

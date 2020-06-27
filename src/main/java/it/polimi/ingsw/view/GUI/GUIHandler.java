@@ -33,6 +33,7 @@ public class GUIHandler implements ViewInterface {
     private final List<Integer> chosen = new ArrayList<>();
     private final List<Position> availablePos = new ArrayList<>();
     private final List<Position> currentChoice = new ArrayList<>();
+    private final List<String> alive = new ArrayList<>();
 
     public GUIHandler(GUI gui){
         this.gui = gui;
@@ -127,6 +128,9 @@ public class GUIHandler implements ViewInterface {
         this.userName.addAll(userName);
         this.godName.addAll(godName);
         this.playernumber = userName.size();
+        for(int i=0;i<playernumber;i++){
+            alive.add("alive");
+        }
         if(isMyTurn) {
             this.isMyTurn = true;
             this.availablePos.addAll(availablePos);
@@ -325,12 +329,12 @@ public class GUIHandler implements ViewInterface {
 
     @Override
     public void elimination(boolean elim, String eliminatedPlayer, List<Position> eliminatedWorkers) {
-        if(elim) {
-            this.message = "You lost";
-        } else {
-            this.message = eliminatedPlayer + " lost.";
+        int index = userName.indexOf(eliminatedPlayer);
+        alive.set(index,"eliminated");
+        for(Position position: eliminatedWorkers) {
+            map[position.getRow()][position.getColumn()].setWorker(-1);
         }
-        gui.showMessage();
+        gui.refreshMap();
     }
 
     @Override
@@ -342,7 +346,7 @@ public class GUIHandler implements ViewInterface {
             this.message = winnerName + " won";
         }
         socketClient.closeClient();
-        gui.showMessage();
+        gui.winScreen();
     }
 
     private String convertGod(String godName){
@@ -382,6 +386,10 @@ public class GUIHandler implements ViewInterface {
 
     public List<String> getGodName() {
         return this.godName;
+    }
+
+    public List<String> getAlive() {
+        return this.alive;
     }
 
     public List<String> getUsername(){

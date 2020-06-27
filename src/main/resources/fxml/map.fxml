@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.Scene?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
 
-<Scene xmlns="http://javafx.com/javafx/11.0.1"
-       xmlns:fx="http://javafx.com/fxml/1"
-       fx:controller="it.polimi.ingsw.view.GUI.MapController">
+<Scene xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.view.GUI.MapController">
 
- <AnchorPane fx:id="pane" prefHeight="515.0" prefWidth="960.0">
+ <AnchorPane fx:id="pane" prefHeight="591.0" prefWidth="1246.0">
 
     <children>
 
@@ -42,6 +42,31 @@
        </ImageView>
 
        <ImageView fx:id="godcard2" fitHeight="148.0" fitWidth="87.0" layoutX="805.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true" />
+         <ImageView fitHeight="595.0" fitWidth="294.0" layoutX="960.0" pickOnBounds="true" preserveRatio="true">
+            <image>
+               <Image url="@../images/panelLeft.png" />
+            </image>
+         </ImageView>
+         <ImageView fitHeight="81.0" fitWidth="962.0" layoutX="-1.0" layoutY="515.0" pickOnBounds="true">
+            <image>
+               <Image url="@../images/grey.png" />
+            </image>
+         </ImageView>
+         <Label layoutX="1065.0" layoutY="83.0" text="STATUS">
+            <font>
+               <Font name="Franklin Gothic Medium" size="27.0" />
+            </font>
+         </Label>
+         <Label layoutX="59.0" layoutY="515.0" text="ACTION">
+            <font>
+               <Font name="Franklin Gothic Medium" size="26.0" />
+            </font>
+         </Label>
+         <Label layoutX="1015.0" layoutY="375.0" text="Server: online" textFill="#00e814">
+            <font>
+               <Font name="Franklin Gothic Medium" size="19.0" />
+            </font>
+         </Label>
 
     </children>
 

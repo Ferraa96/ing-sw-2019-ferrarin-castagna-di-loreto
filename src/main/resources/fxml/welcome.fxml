@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.Scene?>
-<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.effect.Blend?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<Scene xmlns="http://javafx.com/javafx/11.0.1"
-       xmlns:fx="http://javafx.com/fxml/1"
-       fx:controller="it.polimi.ingsw.view.GUI.WelcomeController">
+<Scene xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.view.GUI.WelcomeController">
 
   <AnchorPane prefHeight="344.0" prefWidth="604.0">
 
@@ -58,13 +57,16 @@
             </image>
          </ImageView>
 
-         <Label layoutX="216.0" layoutY="353.0" prefHeight="61.0" prefWidth="172.0" text="Welcome">
+         <Label fx:id="welcome" layoutX="185.0" layoutY="285.0" prefHeight="110.0" prefWidth="234.0" text="Welcome">
             <font>
-               <Font name="Franklin Gothic Medium" size="34.0" />
+               <Font name="Franklin Gothic Medium" size="57.0" />
             </font>
          </Label>
 
-         <Button fx:id="startgame" layoutX="229.0" layoutY="415.0" mnemonicParsing="false" onAction="#startGame" prefHeight="45.0" prefWidth="118.0" text="PLAY" />
+         <ToggleButton fx:id="startgame" layoutX="247.0" layoutY="381.0" mnemonicParsing="false" onAction="#startGame" prefHeight="46.0" prefWidth="108.0">
+            <effect>
+               <Blend />
+            </effect></ToggleButton>
 
        </children>
    </AnchorPane>

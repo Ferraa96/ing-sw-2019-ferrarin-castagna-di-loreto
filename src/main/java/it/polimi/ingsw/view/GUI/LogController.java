@@ -1,9 +1,7 @@
 package it.polimi.ingsw.view.GUI;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 
 public class LogController extends GUIController{
 
@@ -13,6 +11,10 @@ public class LogController extends GUIController{
     TextField IP, PORT;
     @FXML
     Button button;
+    @FXML
+    Label wait;
+    @FXML
+    ProgressIndicator wait1;
 
     private GUIHandler guiHandler;
     private String state;
@@ -21,6 +23,8 @@ public class LogController extends GUIController{
     public void start(){
         guiHandler = super.getGuiHandler();
         state = guiHandler.getState();
+        wait.setVisible(false);
+        wait1.setVisible(false);
         if(state.equals("RESET NAME")){
             IP.setVisible(false);
             PORT.setVisible(false);
@@ -43,6 +47,11 @@ public class LogController extends GUIController{
             } else {
                 guiHandler.getLoginInfo(playerName.getText(),Integer.parseInt(PORT.getText()), IP.getText());
                 button.disableProperty().setValue(true);
+                playerName.editableProperty().setValue(false);
+                IP.editableProperty().setValue(false);
+                PORT.editableProperty().setValue(false);
+                wait.setVisible(true);
+                wait1.setVisible(true);
             }
         }
     }
