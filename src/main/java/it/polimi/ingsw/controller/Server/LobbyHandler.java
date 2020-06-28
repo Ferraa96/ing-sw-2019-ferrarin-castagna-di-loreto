@@ -1,7 +1,7 @@
 package it.polimi.ingsw.controller.Server;
 
-import it.polimi.ingsw.controller.Instructions.MessageInterface;
-import it.polimi.ingsw.controller.Instructions.MessageVisitor;
+import it.polimi.ingsw.controller.Instructions.NotificationInterface;
+import it.polimi.ingsw.controller.Instructions.NotificationVisitor;
 import it.polimi.ingsw.model.Game.ModelInterface;
 import it.polimi.ingsw.model.Game.Turn;
 
@@ -10,7 +10,7 @@ import java.util.Map;
 
 public class LobbyHandler {
     private Map<Integer, ServerThread> observer;
-    private final MessageVisitor modelUpdater;
+    private final NotificationVisitor modelUpdater;
     private final ModelInterface turn;
     private final boolean[] aborted;
     private boolean playing = false;
@@ -50,7 +50,7 @@ public class LobbyHandler {
      * @param clientID the ID of the client
      * @param command the command to send
      */
-    public void sendTo(int clientID, MessageInterface command) {
+    public void sendTo(int clientID, NotificationInterface command) {
         observer.get(clientID).send(command);
     }
 
@@ -58,7 +58,7 @@ public class LobbyHandler {
      * broadcasts the command to all the clients
      * @param command the command to be sent to all the clients
      */
-    public void broadcast(MessageInterface command) {
+    public void broadcast(NotificationInterface command) {
         for(Map.Entry<Integer, ServerThread> currThread : observer.entrySet()) {
             currThread.getValue().send(command);
         }

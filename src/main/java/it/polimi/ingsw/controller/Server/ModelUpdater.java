@@ -6,7 +6,7 @@ import it.polimi.ingsw.model.Game.ModelInterface;
 /**
  * handle the messages from the client
  */
-public class ModelUpdater implements MessageVisitor {
+public class ModelUpdater implements NotificationVisitor {
     private final ModelInterface turn;
 
     public ModelUpdater(ModelInterface turn) {

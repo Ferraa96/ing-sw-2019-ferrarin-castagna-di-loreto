@@ -1,8 +1,8 @@
 package it.polimi.ingsw.controller.Client;
 
 import it.polimi.ingsw.controller.Instructions.DisconnectionNotification;
-import it.polimi.ingsw.controller.Instructions.MessageInterface;
-import it.polimi.ingsw.controller.Instructions.MessageVisitor;
+import it.polimi.ingsw.controller.Instructions.NotificationInterface;
+import it.polimi.ingsw.controller.Instructions.NotificationVisitor;
 import it.polimi.ingsw.view.ViewInterface;
 
 import java.io.*;
@@ -14,7 +14,7 @@ import java.net.Socket;
 public class SocketClient extends Thread {
     private ObjectOutputStream outStream;
     private ObjectInputStream inStream;
-    private MessageVisitor clientUpdater;
+    private NotificationVisitor clientUpdater;
     private Socket socket;
     private boolean running = true;
 
@@ -27,6 +27,7 @@ public class SocketClient extends Thread {
     /**
      * connect the view to the server
      * @param ip the ip of the server
+     * @param port the port of the server
      * @param view the view
      * @return true if the connection is successful, false otherwise
      */
@@ -50,11 +51,11 @@ public class SocketClient extends Thread {
     public void run() {
         try {
             while(running){
-                MessageInterface msg = (MessageInterface) inStream.readObject();
+                NotificationInterface msg = (NotificationInterface) inStream.readObject();
                 msg.accept(clientUpdater);
             }
         } catch(IOException | ClassNotFoundException e) {
-            MessageInterface msg = new DisconnectionNotification("Server offline");
+            NotificationInterface msg = new DisconnectionNotification("Server offline");
             msg.accept(clientUpdater);
             closeClient();
         }
@@ -77,7 +78,7 @@ public class SocketClient extends Thread {
      * send the command to the server
      * @param commands the command to send
      */
-    public void send(MessageInterface commands) {
+    public void send(NotificationInterface commands) {
         try {
             outStream.writeObject(commands);
             outStream.reset();

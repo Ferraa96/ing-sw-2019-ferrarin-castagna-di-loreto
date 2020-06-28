@@ -354,7 +354,7 @@ public class Turn implements ModelInterface {
      */
     @Override
     public void apply(Position pos) {
-        MessageInterface command = cardList.get(actualPlayer).applyEffect(currEffect, currWorker, pos);
+        NotificationInterface command = cardList.get(actualPlayer).applyEffect(currEffect, currWorker, pos);
         socket.broadcast(command);
         if(cardList.get(actualPlayer).checkWin(currEffect, pos)) {
             handleWin(actualPlayer);

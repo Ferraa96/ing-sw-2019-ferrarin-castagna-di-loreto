@@ -1,7 +1,7 @@
 package it.polimi.ingsw.model.Player;
 
 import com.google.gson.annotations.SerializedName;
-import it.polimi.ingsw.controller.Instructions.MessageInterface;
+import it.polimi.ingsw.controller.Instructions.NotificationInterface;
 import it.polimi.ingsw.model.Game.Cell;
 import it.polimi.ingsw.model.Effects.Build;
 import it.polimi.ingsw.model.Effects.Effect;
@@ -175,8 +175,8 @@ public class Card {
      * @param chosenCell cell chosen by player
      * @return command to send to view
      */
-    public MessageInterface applyEffect(int i, Worker target, Position chosenCell) {
-        MessageInterface actionMessage;
+    public NotificationInterface applyEffect(int i, Worker target, Position chosenCell) {
+        NotificationInterface actionMessage;
         if (!activePower) {
             actionMessage = standardRoutine.get(i).executeAction(chosenCell, target);
             if (i == 0)
@@ -215,6 +215,7 @@ public class Card {
      * set card ready for first turn
      * @param map game board
      * @param playerId player's Identifier
+     * @param state the save state
      */
     public void setCard(Cell[][] map, int playerId, SaveState state) {
         this.map = map;

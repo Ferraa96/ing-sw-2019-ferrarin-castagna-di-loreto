@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  * allows the player activate the power of his card
  */
-public class SetPowerNotification implements Serializable, MessageInterface {
+public class SetPowerNotification implements Serializable, NotificationInterface {
     private int clientID;
     private boolean isPower;
 
@@ -22,7 +22,7 @@ public class SetPowerNotification implements Serializable, MessageInterface {
     }
 
     @Override
-    public void accept(MessageVisitor v) {
+    public void accept(NotificationVisitor v) {
         v.visit(this);
     }
 

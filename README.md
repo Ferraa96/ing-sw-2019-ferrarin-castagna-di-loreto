@@ -24,3 +24,37 @@
 [![YELLOW](https://placehold.it/15/ffdd00/ffdd00)](#)
 [![GREEN](https://placehold.it/15/44bb44/44bb44)](#)
 -->
+
+![](https://www.projectnerd.it/wp-content/uploads/2018/05/copertina.jpg)
+
+**Setup JavaFX**
+
+
+
+**JAR file**
+
+The jar file can be found [here](https://github.com/Ferraa96/ing-sw-2019-ferrarin-castagna-di-loreto/tree/master/DELIVERABLES/JAR)
+
+**Server** 
+
+The server can be run with
+
+    java -jar Santorini.jar s port
+If the `port` attribute is not specified, the server will run on the default port 10000
+
+After at least 2 players are connected, the server waits for one other player for 2 minutes before starting the game.
+
+**Client (GUI version)**
+Double click on the jar file or
+
+    java -jar Santorini.jar    
+
+**Client (CLI version)**
+
+    java -jar Santorini.jar c
+    
+For a better game experience we suggest to run the client from a terminal that supports UTF-8 and ANSI escape
+    
+**Documentation**
+
+The complete documentation can be found [here](https://github.com/Ferraa96/ing-sw-2019-ferrarin-castagna-di-loreto/tree/master/DELIVERABLES/JavaDoc/index.html)

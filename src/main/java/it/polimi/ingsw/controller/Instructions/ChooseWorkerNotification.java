@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * lets the player choose which worker he wants to play with
  */
-public class ChooseWorkerNotification implements Serializable, MessageInterface {
+public class ChooseWorkerNotification implements Serializable, NotificationInterface {
     private int clientID;
     private Position chosenWorker;
     private List<Position> availableWorkers;
@@ -31,7 +31,7 @@ public class ChooseWorkerNotification implements Serializable, MessageInterface 
     }
 
     @Override
-    public void accept(MessageVisitor v) {
+    public void accept(NotificationVisitor v) {
         v.visit(this);
     }
 

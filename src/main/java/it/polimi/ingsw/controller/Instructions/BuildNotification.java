@@ -7,7 +7,7 @@ import java.io.Serializable;
 /**
  * notify to the client a build move done by a player
  */
-public class BuildNotification implements Serializable, MessageInterface {
+public class BuildNotification implements Serializable, NotificationInterface {
     private int clientID;
     private final Position pos;
     private final int height;
@@ -32,7 +32,7 @@ public class BuildNotification implements Serializable, MessageInterface {
     }
 
     @Override
-    public void accept(MessageVisitor v) {
+    public void accept(NotificationVisitor v) {
         v.visit(this);
     }
 

@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * lets the player choose where he wants to position his workers in the first turn
  */
-public class FirstPositioningNotification implements Serializable, MessageInterface {
+public class FirstPositioningNotification implements Serializable, NotificationInterface {
     private int clientID;
     private final List<Position> positions;
     private List<String> godNames;
@@ -41,7 +41,7 @@ public class FirstPositioningNotification implements Serializable, MessageInterf
     }
 
     @Override
-    public void accept(MessageVisitor v) {
+    public void accept(NotificationVisitor v) {
         v.visit(this);
     }
 

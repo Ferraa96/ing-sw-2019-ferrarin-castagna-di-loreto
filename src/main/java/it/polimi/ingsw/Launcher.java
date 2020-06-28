@@ -7,7 +7,7 @@ import it.polimi.ingsw.view.GUI.GUI;
 public class Launcher {
 
     public static void main(String[] args) {
-        int port = 59898;
+        int port = 10000;
         if(args.length > 0) {
             switch (args[0]) {
                 case "s":

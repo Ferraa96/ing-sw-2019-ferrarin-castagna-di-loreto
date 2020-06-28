@@ -2,7 +2,7 @@ package it.polimi.ingsw.controller.Instructions;
 
 import java.io.Serializable;
 
-public class WinNotification implements Serializable, MessageInterface {
+public class WinNotification implements Serializable, NotificationInterface {
     private int clientID;
     private final String playerName;
 
@@ -16,7 +16,7 @@ public class WinNotification implements Serializable, MessageInterface {
     }
 
     @Override
-    public void accept(MessageVisitor v) {
+    public void accept(NotificationVisitor v) {
         v.visit(this);
     }
 

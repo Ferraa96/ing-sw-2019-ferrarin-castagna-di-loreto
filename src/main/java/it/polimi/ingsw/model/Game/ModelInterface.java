@@ -9,12 +9,14 @@ public interface ModelInterface {
 
     /**
      * start the game
+     * @param numPlayers the number of players in game
      */
     void startGame(int numPlayers);
 
     /**
      * set player name
      * @param name the name chosen
+     * @param id the id of the player
      */
     void setPlayerName(String name, int id);
 
