@@ -33,7 +33,7 @@ public class GUIHandler implements ViewInterface {
     private final List<Integer> chosen = new ArrayList<>();
     private final List<Position> availablePos = new ArrayList<>();
     private final List<Position> currentChoice = new ArrayList<>();
-    private final List<String> alive = new ArrayList<>();
+    private final List<String> isAlive = new ArrayList<>();
 
     public GUIHandler(GUI gui){
         this.gui = gui;
@@ -129,7 +129,7 @@ public class GUIHandler implements ViewInterface {
         this.godName.addAll(godName);
         this.playernumber = userName.size();
         for(int i=0;i<playernumber;i++){
-            alive.add("alive");
+            isAlive.add("alive");
         }
         if(isMyTurn) {
             this.isMyTurn = true;
@@ -330,7 +330,7 @@ public class GUIHandler implements ViewInterface {
     @Override
     public void elimination(boolean elim, String eliminatedPlayer, List<Position> eliminatedWorkers) {
         int index = userName.indexOf(eliminatedPlayer);
-        alive.set(index,"eliminated");
+        isAlive.set(index,"eliminated");
         for(Position position: eliminatedWorkers) {
             map[position.getRow()][position.getColumn()].setWorker(-1);
         }
@@ -349,6 +349,10 @@ public class GUIHandler implements ViewInterface {
         gui.winScreen();
     }
 
+    /**
+     * Returns the correct path to the god image
+     * @param godName God name that has to be converted
+     */
     private String convertGod(String godName){
         switch(godName){
             case "Apollo":{
@@ -388,8 +392,8 @@ public class GUIHandler implements ViewInterface {
         return this.godName;
     }
 
-    public List<String> getAlive() {
-        return this.alive;
+    public List<String> getIsAlive() {
+        return this.isAlive;
     }
 
     public List<String> getUsername(){

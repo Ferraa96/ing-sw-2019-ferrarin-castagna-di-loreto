@@ -90,6 +90,7 @@ public class GUI extends Application implements UIRender{
     public void showSelectionCards(){
         Platform.runLater( () -> {
           showScene("/fxml/choosecardslist.fxml",false);
+          currentController.start();
           updateStageInfo("SELECT CARDS");
         });
     }

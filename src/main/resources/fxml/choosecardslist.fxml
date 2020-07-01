@@ -64,7 +64,7 @@
             </image>
            </ImageView>
 
-           <ImageView fx:id="Pam" fitHeight="150.0" fitWidth="200.0" layoutX="355.0" layoutY="290.0" onMouseClicked="#selectPam" pickOnBounds="true" preserveRatio="true">
+           <ImageView fx:id="Pan" fitHeight="150.0" fitWidth="200.0" layoutX="355.0" layoutY="290.0" onMouseClicked="#selectPan" pickOnBounds="true" preserveRatio="true">
             <image>
                <Image url="@../images/09.png" />
             </image>
@@ -76,7 +76,7 @@
             </image>
            </ImageView>
 
-          <Button fx:id="cardbutton" layoutX="262.0" layoutY="482.0" mnemonicParsing="false" onAction="#chooseCards" text="CONFIRM SELECTION" />
+          <Button fx:id="Renameselectionbutton" layoutX="262.0" layoutY="482.0" mnemonicParsing="false" onAction="#chooseCards" text="CONFIRM SELECTION" />
 
           <Label layoutX="201.0" layoutY="26.0" prefHeight="34.0" prefWidth="254.0" text="CHOOSE CARDS LIST">
             <font>

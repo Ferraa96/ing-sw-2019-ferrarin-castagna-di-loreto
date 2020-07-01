@@ -34,7 +34,7 @@ public class MapController extends GUIController {
     @FXML
     Label playername3 = new Label("");
     @FXML
-    Label pl1 = new Label(),pl2 = new Label(),pl3 = new Label();
+    Label player1Status = new Label(), player2Status = new Label(), player3Status = new Label();
     @FXML
     Label action = new Label("");
 
@@ -63,13 +63,13 @@ public class MapController extends GUIController {
 
     private  boolean isMyturn = false;
 
-    private List<String> alive = new ArrayList<>();
+    private List<String> isAlive = new ArrayList<>();
 
     @Override
     public void start(){
 
         DropShadow ds = new DropShadow();
-        ds.setOffsetY(3.0f);
+        ds.setOffsetY(2.5f);
         ds.setColor(Color.color(0.4f, 0.4f, 0.4f));
 
         this.guiHandler = super.getGuiHandler();
@@ -81,7 +81,7 @@ public class MapController extends GUIController {
         currentstate = guiHandler.getState();
         isMyturn = guiHandler.isMyTurn();
         NumofPlayers = guiHandler.getPlayers();
-        alive = guiHandler.getAlive();
+        isAlive = guiHandler.getIsAlive();
 
         //get the already chosen workers/buildings
         drawExistent();
@@ -104,18 +104,22 @@ public class MapController extends GUIController {
             playername1.setTextFill(Color.web(getPlayerColor(guiHandler.getName())));
             playername1.setEffect(ds);
             playername1.setCache(true);
-            if(alive.get(0).equals("eliminated")){
-                pl1.setText(allPlayers.get(0)+ ": eliminated");
-                pl1.setLayoutX(1020);
-                pl1.setLayoutY(150);
-                pl1.setFont(Font.font("Franklin Gothic Medium", 12));
-                pl1.setTextFill(Color.web("#ea0000"));
+            if(isAlive.get(0).equals("eliminated")){
+                player1Status.setText(allPlayers.get(0)+ ": eliminated");
+                player1Status.setLayoutX(1020);
+                player1Status.setLayoutY(150);
+                player1Status.setFont(Font.font("Franklin Gothic Medium", 16));
+                player1Status.setTextFill(Color.web("#ea0000"));
+                player1Status.setEffect(ds);
+                player1Status.setCache(true);
             }else {
-                pl1.setText(allPlayers.get(0) + ": online");
-                pl1.setLayoutX(1020);
-                pl1.setLayoutY(150);
-                pl1.setFont(Font.font("Franklin Gothic Medium", 12));
-                pl1.setTextFill(Color.web("#13ec00"));
+                player1Status.setText(allPlayers.get(0) + ": online");
+                player1Status.setLayoutX(1020);
+                player1Status.setLayoutY(150);
+                player1Status.setFont(Font.font("Franklin Gothic Medium", 16));
+                player1Status.setTextFill(Color.web("#1f8627"));
+                player1Status.setEffect(ds);
+                player1Status.setCache(true);
             }
             pane1.setVisible(false);
             pane2.setVisible(false);
@@ -136,18 +140,22 @@ public class MapController extends GUIController {
                 playername2.setTextFill(Color.web(getPlayerColor(players.get(0))));
                 playername2.setEffect(ds);
                 playername2.setCache(true);
-                if(alive.get(1).equals("eliminated")){
-                    pl2.setText(allPlayers.get(1)+ ": eliminated");
-                    pl2.setLayoutX(1020);
-                    pl2.setLayoutY(200);
-                    pl2.setFont(Font.font("Franklin Gothic Medium", 12));
-                    pl2.setTextFill(Color.web("#ea0000"));
+                if(isAlive.get(1).equals("eliminated")){
+                    player2Status.setText(allPlayers.get(1)+ ": eliminated");
+                    player2Status.setLayoutX(1020);
+                    player2Status.setLayoutY(200);
+                    player2Status.setFont(Font.font("Franklin Gothic Medium", 16));
+                    player2Status.setTextFill(Color.web("#ea0000"));
+                    player2Status.setEffect(ds);
+                    player2Status.setCache(true);
                 }else {
-                    pl2.setText(allPlayers.get(1) + ": online");
-                    pl2.setLayoutX(1020);
-                    pl2.setLayoutY(200);
-                    pl2.setFont(Font.font("Franklin Gothic Medium", 12));
-                    pl2.setTextFill(Color.web("#13ec00"));
+                    player2Status.setText(allPlayers.get(1) + ": online");
+                    player2Status.setLayoutX(1020);
+                    player2Status.setLayoutY(200);
+                    player2Status.setFont(Font.font("Franklin Gothic Medium", 16));
+                    player2Status.setTextFill(Color.web("#1f8627"));
+                    player2Status.setEffect(ds);
+                    player2Status.setCache(true);
                 }
             }
 
@@ -161,18 +169,22 @@ public class MapController extends GUIController {
                 playername3.setTextFill(Color.web(getPlayerColor(players.get(1))));
                 playername3.setEffect(ds);
                 playername3.setCache(true);
-                if(alive.get(2).equals("eliminated")){
-                    pl3.setText(allPlayers.get(2) + ": eliminated");
-                    pl3.setLayoutX(1020);
-                    pl3.setLayoutY(250);
-                    pl3.setFont(Font.font("Franklin Gothic Medium", 12));
-                    pl3.setTextFill(Color.web("#ea0000"));
+                if(isAlive.get(2).equals("eliminated")){
+                    player3Status.setText(allPlayers.get(2) + ": eliminated");
+                    player3Status.setLayoutX(1020);
+                    player3Status.setLayoutY(250);
+                    player3Status.setFont(Font.font("Franklin Gothic Medium", 16));
+                    player3Status.setTextFill(Color.web("#ea0000"));
+                    player3Status.setEffect(ds);
+                    player3Status.setCache(true);
                 }else {
-                    pl3.setText(allPlayers.get(2) + ": online");
-                    pl3.setLayoutX(1020);
-                    pl3.setLayoutY(250);
-                    pl3.setFont(Font.font("Franklin Gothic Medium", 12));
-                    pl3.setTextFill(Color.web("#13ec00"));
+                    player3Status.setText(allPlayers.get(2) + ": online");
+                    player3Status.setLayoutX(1020);
+                    player3Status.setLayoutY(250);
+                    player3Status.setFont(Font.font("Franklin Gothic Medium", 16));
+                    player3Status.setTextFill(Color.web("#1f8627"));
+                    player3Status.setEffect(ds);
+                    player3Status.setCache(true);
                 }
             }
         }
@@ -228,17 +240,17 @@ public class MapController extends GUIController {
 
     private void setMessage() {
         if(refresh>0) {
-            pane.getChildren().removeAll(playername1, playername2,pl1,pl2, action);
+            pane.getChildren().removeAll(playername1, playername2, player1Status, player2Status, action);
             if(NumofPlayers == 3)
-                pane.getChildren().removeAll(playername3,pl3);
+                pane.getChildren().removeAll(playername3, player3Status);
         }
         action.setText(guiHandler.getMessage());
         action.setLayoutX(50);
         action.setLayoutY(550);
         action.setFont(Font.font("Franklin Gothic Medium", 20));
-        pane.getChildren().addAll(playername1,playername2,pl1,pl2,action);
+        pane.getChildren().addAll(playername1,playername2, player1Status, player2Status,action);
         if(NumofPlayers == 3)
-            pane.getChildren().addAll(playername3,pl3);
+            pane.getChildren().addAll(playername3, player3Status);
     }
 
     private void doAction(){

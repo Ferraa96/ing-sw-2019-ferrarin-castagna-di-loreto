@@ -10,10 +10,10 @@ import java.util.List;
 public class CardsSelectionController extends GUIController{
 
     @FXML
-    Button cardbutton;
+    Button Renameselectionbutton;
 
     @FXML
-    ImageView Apollo,Artemis,Athena,Atlas,Demeter,Hephaestus,Minotaur,Pam,Prometheus;
+    ImageView Apollo,Artemis,Athena,Atlas,Demeter,Hephaestus,Minotaur,Pan,Prometheus;
 
     private GUIHandler guiHandler;
 
@@ -24,6 +24,11 @@ public class CardsSelectionController extends GUIController{
     private boolean setted = false;
 
     private final List<Integer> chosen = new ArrayList<>();
+
+    @Override
+    public void start(){
+        Renameselectionbutton.setVisible(false);
+    }
 
     @FXML
     private void selectApollo(){
@@ -117,13 +122,13 @@ public class CardsSelectionController extends GUIController{
     }
 
     @FXML
-    private void selectPam(){
+    private void selectPan(){
         if(!setted){
             getPlayers();
         }
             chosen.add(counter,7);
             counter ++;
-            Pam.setVisible(false);
+            Pan.setVisible(false);
             if(counter==NumofPlayers){
                 disableAll();
             }
@@ -150,8 +155,9 @@ public class CardsSelectionController extends GUIController{
         Demeter.setVisible(false);
         Hephaestus.setVisible(false);
         Minotaur.setVisible(false);
-        Pam.setVisible(false);
+        Pan.setVisible(false);
         Prometheus.setVisible(false);
+        Renameselectionbutton.setVisible(true);
     }
 
     @FXML

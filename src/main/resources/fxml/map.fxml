@@ -62,7 +62,7 @@
                <Font name="Franklin Gothic Medium" size="26.0" />
             </font>
          </Label>
-         <Label layoutX="1015.0" layoutY="375.0" text="Server: online" textFill="#00e814">
+         <Label layoutX="1015.0" layoutY="375.0" text="Server: online" textFill="#1f8627">
             <font>
                <Font name="Franklin Gothic Medium" size="19.0" />
             </font>
