@@ -31,11 +31,16 @@ public interface ViewInterface {
     /**
      * lets the player choose the initial position of his workers
      * @param availablePos the list of all the available positions
+     * @param godNames the names of all the gods in game
+     * @param userNames the names of all the players
+     * @param client the player who have to do the first positioning
+     * @param isMyTurn indicates if the player have to set the position of his worker or if he has to load the position of other player's workers
      */
-    void firstPositioning(List<Position> availablePos, List<String> godName, List<String> userName, int client, boolean isMyTurn);
+    void firstPositioning(List<Position> availablePos, List<String> godNames, List<String> userNames, int client, boolean isMyTurn);
 
     /**
      * allows player to select the worker to use in current turn
+     * @param availableWorkers the positions of all the available workers
      */
     void chooseWorker(List<Position> availableWorkers);
 
@@ -83,6 +88,9 @@ public interface ViewInterface {
     /**
      * loads the saved game
      * @param map contains all the workers and buildings positions and informations
+     * @param godNames the names of all the gods in game
+     * @param userNames the names of all the players
+     * @param clientId the client ID
      */
     void reloadState(Cell[][] map, List<String> godNames, List<String> userNames, int clientId);
 

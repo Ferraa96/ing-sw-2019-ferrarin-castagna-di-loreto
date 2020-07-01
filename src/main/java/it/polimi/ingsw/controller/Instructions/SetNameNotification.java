@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  * allows the player to set the name
  */
-public class SetNameNotification implements Serializable, MessageInterface {
+public class SetNameNotification implements Serializable, NotificationInterface {
     private int clientID;
     private boolean ok;
     private String name;
@@ -28,7 +28,7 @@ public class SetNameNotification implements Serializable, MessageInterface {
     }
 
     @Override
-    public void accept(MessageVisitor v) {
+    public void accept(NotificationVisitor v) {
         v.visit(this);
     }
 

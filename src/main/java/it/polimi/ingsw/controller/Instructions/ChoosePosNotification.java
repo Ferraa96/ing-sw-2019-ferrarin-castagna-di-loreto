@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * lets the player choose the position of the move / build
  */
-public class ChoosePosNotification implements Serializable, MessageInterface {
+public class ChoosePosNotification implements Serializable, NotificationInterface {
     private int clientID;
     private List<Position> availablePositions;
     private Position chosenPos;
@@ -31,7 +31,7 @@ public class ChoosePosNotification implements Serializable, MessageInterface {
     }
 
     @Override
-    public void accept(MessageVisitor v) {
+    public void accept(NotificationVisitor v) {
         v.visit(this);
     }
 

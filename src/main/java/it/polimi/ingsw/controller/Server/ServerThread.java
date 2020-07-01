@@ -1,8 +1,8 @@
 package it.polimi.ingsw.controller.Server;
 
 import it.polimi.ingsw.controller.Instructions.DisconnectionNotification;
-import it.polimi.ingsw.controller.Instructions.MessageInterface;
-import it.polimi.ingsw.controller.Instructions.MessageVisitor;
+import it.polimi.ingsw.controller.Instructions.NotificationInterface;
+import it.polimi.ingsw.controller.Instructions.NotificationVisitor;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -15,7 +15,7 @@ import java.net.Socket;
 public class ServerThread extends Thread {
     private ObjectOutputStream outStream;
     private ObjectInputStream inStream;
-    private MessageVisitor modelUpdater;
+    private NotificationVisitor modelUpdater;
     private int clientID;
     private final Socket socketClient;
     private boolean running = true;
@@ -41,7 +41,7 @@ public class ServerThread extends Thread {
     public void run() {
         try {
             while(true) {
-                MessageInterface msg = (MessageInterface) inStream.readObject();
+                NotificationInterface msg = (NotificationInterface) inStream.readObject();
                 if(running) {
                     msg.setClientID(clientID);
                     msg.accept(modelUpdater);
@@ -68,7 +68,7 @@ public class ServerThread extends Thread {
      * send the command to the client
      * @param commands the command to send
      */
-    public void send(MessageInterface commands) {
+    public void send(NotificationInterface commands) {
         try {
             outStream.writeObject(commands);
             outStream.reset();
@@ -96,7 +96,7 @@ public class ServerThread extends Thread {
      * set the modelUpdater
      * @param modelUpdater the modelUpdater
      */
-    public void setModelUpdater(MessageVisitor modelUpdater) {
+    public void setModelUpdater(NotificationVisitor modelUpdater) {
         this.modelUpdater = modelUpdater;
     }
 }

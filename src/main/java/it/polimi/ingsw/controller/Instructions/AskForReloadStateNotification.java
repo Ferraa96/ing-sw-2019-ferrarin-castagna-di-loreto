@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  * ask the player if he wants to reload a previous game and return to the server his answer
  */
-public class AskForReloadStateNotification implements Serializable, MessageInterface {
+public class AskForReloadStateNotification implements Serializable, NotificationInterface {
     private int clientID;
     private boolean response;
 
@@ -22,7 +22,7 @@ public class AskForReloadStateNotification implements Serializable, MessageInter
     }
 
     @Override
-    public void accept(MessageVisitor v) {
+    public void accept(NotificationVisitor v) {
         v.visit(this);
     }
 

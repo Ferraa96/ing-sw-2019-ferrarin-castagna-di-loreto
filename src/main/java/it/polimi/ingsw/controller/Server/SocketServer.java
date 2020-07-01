@@ -17,6 +17,7 @@ public class SocketServer {
 
     /**
      * creates the server and creates a thread for all the clients
+     * @param port the port of the server
      */
     public SocketServer(int port) {
         this.port = port;
@@ -27,7 +28,6 @@ public class SocketServer {
      * instantiates a ServerThread for all the clients that connect
      */
     private void addClients() {
-        int maxLobbies = 100;
         int serverNum = 1;
         try {
             serverSocket = new ServerSocket(port);
@@ -36,7 +36,7 @@ public class SocketServer {
             e.printStackTrace();
             return;
         }
-        while (serverNum < maxLobbies) {
+        while (true) {
             System.out.println("Server " + serverNum + " online on port " + port);
             Thread thread = new Thread(this::createLobby);
             thread.start();
@@ -50,9 +50,9 @@ public class SocketServer {
     }
 
     private void createLobby() {
-        int time = 100000;
+        int time = 1000;
         int actualNum = 0;
-        int min = 3;
+        int min = 2;
         int max = 3;
         final boolean[] start = {false};
         LobbyHandler lobby = new LobbyHandler(aborted);

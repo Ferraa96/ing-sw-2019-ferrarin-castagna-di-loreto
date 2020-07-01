@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * handle the messages from the server
  */
-public class ClientUpdater implements MessageVisitor {
+public class ClientUpdater implements NotificationVisitor {
     private final ViewInterface view;
     private int playerID;
     private List<String> allNames;

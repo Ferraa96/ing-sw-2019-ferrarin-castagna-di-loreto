@@ -5,7 +5,7 @@ import it.polimi.ingsw.model.Game.Position;
 import java.io.Serializable;
 import java.util.List;
 
-public class EliminationNotification implements Serializable, MessageInterface {
+public class EliminationNotification implements Serializable, NotificationInterface {
     private int clientID;
     private final String playerName;
     private final List<Position> eliminatedWorkers;
@@ -25,7 +25,7 @@ public class EliminationNotification implements Serializable, MessageInterface {
     }
 
     @Override
-    public void accept(MessageVisitor v) {
+    public void accept(NotificationVisitor v) {
         v.visit(this);
     }
 

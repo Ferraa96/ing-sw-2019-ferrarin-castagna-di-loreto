@@ -1,0 +1,12 @@
+it.polimi.ingsw
+it.polimi.ingsw.controller.Client
+it.polimi.ingsw.controller.Instructions
+it.polimi.ingsw.controller.Server
+it.polimi.ingsw.model
+it.polimi.ingsw.model.Effects
+it.polimi.ingsw.model.Game
+it.polimi.ingsw.model.IO
+it.polimi.ingsw.model.Player
+it.polimi.ingsw.view
+it.polimi.ingsw.view.Cli
+it.polimi.ingsw.view.GUI

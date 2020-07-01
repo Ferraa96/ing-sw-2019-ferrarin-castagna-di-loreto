@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * contains all the informations that allow the client to reload a saved game
  */
-public class LoadGameNotification implements Serializable, MessageInterface {
+public class LoadGameNotification implements Serializable, NotificationInterface {
     private int clientID;
     private final Cell[][] map;
     private List<String> godNames;
@@ -39,7 +39,7 @@ public class LoadGameNotification implements Serializable, MessageInterface {
     }
 
     @Override
-    public void accept(MessageVisitor v) {
+    public void accept(NotificationVisitor v) {
         v.visit(this);
     }
 

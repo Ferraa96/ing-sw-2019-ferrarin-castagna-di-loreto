@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * notify to the player a move performed by another client
  */
-public class MoveNotification implements Serializable, MessageInterface {
+public class MoveNotification implements Serializable, NotificationInterface {
     private int clientID;
     private final List<Movement> movements;
 
@@ -21,7 +21,7 @@ public class MoveNotification implements Serializable, MessageInterface {
     }
 
     @Override
-    public void accept(MessageVisitor v) {
+    public void accept(NotificationVisitor v) {
         v.visit(this);
     }
 

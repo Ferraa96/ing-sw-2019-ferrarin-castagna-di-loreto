@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  * notify the disconnection of one client, the game end
  */
-public class DisconnectionNotification implements Serializable, MessageInterface {
+public class DisconnectionNotification implements Serializable, NotificationInterface {
     private int clientID;
     private final String message;
 
@@ -28,7 +28,7 @@ public class DisconnectionNotification implements Serializable, MessageInterface
     }
 
     @Override
-    public void accept(MessageVisitor v) {
+    public void accept(NotificationVisitor v) {
         v.visit(this);
     }
 }

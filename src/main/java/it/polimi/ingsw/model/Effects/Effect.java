@@ -1,6 +1,6 @@
 package it.polimi.ingsw.model.Effects;
 
-import it.polimi.ingsw.controller.Instructions.MessageInterface;
+import it.polimi.ingsw.controller.Instructions.NotificationInterface;
 import it.polimi.ingsw.model.Game.Position;
 import it.polimi.ingsw.model.Player.Worker;
 
@@ -24,7 +24,7 @@ public interface Effect {
      * @param worker target of action
      * @return message to send to view
      */
-    MessageInterface executeAction(Position chosenCell, Worker worker);
+    NotificationInterface executeAction(Position chosenCell, Worker worker);
 
     /**
      * set last move
@@ -41,9 +41,11 @@ public interface Effect {
     /**
      * auto move for forced targets
      * @param enemy worker forced by mino/apollo
+     * @param pos the position of the enemy
+     * @param worker the moving worker
      * @return message to send to view
      */
-    MessageInterface executeAutoAction(Worker enemy, Position pos, Worker worker);
+    NotificationInterface executeAutoAction(Worker enemy, Position pos, Worker worker);
 
     /**
      * set last build

@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * lets the player choose a card
  */
-public class ChooseCardNotification implements Serializable, MessageInterface {
+public class ChooseCardNotification implements Serializable, NotificationInterface {
     private int clientID;
     private List<Integer> availableCards;
     private int chosenCard;
@@ -29,7 +29,7 @@ public class ChooseCardNotification implements Serializable, MessageInterface {
     }
 
     @Override
-    public void accept(MessageVisitor v) {
+    public void accept(NotificationVisitor v) {
         v.visit(this);
     }
 
