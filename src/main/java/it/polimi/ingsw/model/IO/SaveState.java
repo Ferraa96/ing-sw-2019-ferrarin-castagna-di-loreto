@@ -12,6 +12,8 @@ import java.util.List;
 public class SaveState implements Serializable {
     @SerializedName("players")
     private List<PlayerInfo> players;
+    @SerializedName("eliminatedPlayers")
+    private List<Integer> eliminatedPlayers;
     @SerializedName("gameMap")
     private Cell[][] gameMap;
     @SerializedName("actualPlayer")
@@ -33,6 +35,14 @@ public class SaveState implements Serializable {
 
     public void setPlayers(List<PlayerInfo> players) {
         this.players = players;
+    }
+
+    public List<Integer> getEliminatedPlayers() {
+        return eliminatedPlayers;
+    }
+
+    public void setEliminatedPlayers(List<Integer> eliminatedPlayers) {
+        this.eliminatedPlayers = eliminatedPlayers;
     }
 
     /**

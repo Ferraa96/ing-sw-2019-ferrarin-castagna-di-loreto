@@ -63,8 +63,6 @@ public class MapController extends GUIController {
 
     private  boolean isMyturn = false;
 
-    private List<String> isAlive = new ArrayList<>();
-
     @Override
     public void start(){
 
@@ -81,7 +79,7 @@ public class MapController extends GUIController {
         currentstate = guiHandler.getState();
         isMyturn = guiHandler.isMyTurn();
         NumofPlayers = guiHandler.getPlayers();
-        isAlive = guiHandler.getIsAlive();
+        List<Boolean> isAlive = guiHandler.getIsAlive();
 
         //get the already chosen workers/buildings
         drawExistent();
@@ -104,23 +102,21 @@ public class MapController extends GUIController {
             playername1.setTextFill(Color.web(getPlayerColor(guiHandler.getName())));
             playername1.setEffect(ds);
             playername1.setCache(true);
-            if(isAlive.get(0).equals("eliminated")){
+            if(!isAlive.get(0)){
                 player1Status.setText(allPlayers.get(0)+ ": eliminated");
                 player1Status.setLayoutX(1020);
                 player1Status.setLayoutY(150);
                 player1Status.setFont(Font.font("Franklin Gothic Medium", 16));
                 player1Status.setTextFill(Color.web("#ea0000"));
-                player1Status.setEffect(ds);
-                player1Status.setCache(true);
             }else {
                 player1Status.setText(allPlayers.get(0) + ": online");
                 player1Status.setLayoutX(1020);
                 player1Status.setLayoutY(150);
                 player1Status.setFont(Font.font("Franklin Gothic Medium", 16));
                 player1Status.setTextFill(Color.web("#1f8627"));
-                player1Status.setEffect(ds);
-                player1Status.setCache(true);
             }
+            player1Status.setEffect(ds);
+            player1Status.setCache(true);
             pane1.setVisible(false);
             pane2.setVisible(false);
 
@@ -140,23 +136,21 @@ public class MapController extends GUIController {
                 playername2.setTextFill(Color.web(getPlayerColor(players.get(0))));
                 playername2.setEffect(ds);
                 playername2.setCache(true);
-                if(isAlive.get(1).equals("eliminated")){
+                if(!isAlive.get(1)){
                     player2Status.setText(allPlayers.get(1)+ ": eliminated");
                     player2Status.setLayoutX(1020);
                     player2Status.setLayoutY(200);
                     player2Status.setFont(Font.font("Franklin Gothic Medium", 16));
                     player2Status.setTextFill(Color.web("#ea0000"));
-                    player2Status.setEffect(ds);
-                    player2Status.setCache(true);
                 }else {
                     player2Status.setText(allPlayers.get(1) + ": online");
                     player2Status.setLayoutX(1020);
                     player2Status.setLayoutY(200);
                     player2Status.setFont(Font.font("Franklin Gothic Medium", 16));
                     player2Status.setTextFill(Color.web("#1f8627"));
-                    player2Status.setEffect(ds);
-                    player2Status.setCache(true);
                 }
+                player2Status.setEffect(ds);
+                player2Status.setCache(true);
             }
 
             if (godname.size() >= 2) {
@@ -169,23 +163,21 @@ public class MapController extends GUIController {
                 playername3.setTextFill(Color.web(getPlayerColor(players.get(1))));
                 playername3.setEffect(ds);
                 playername3.setCache(true);
-                if(isAlive.get(2).equals("eliminated")){
+                if(!isAlive.get(2)){
                     player3Status.setText(allPlayers.get(2) + ": eliminated");
                     player3Status.setLayoutX(1020);
                     player3Status.setLayoutY(250);
                     player3Status.setFont(Font.font("Franklin Gothic Medium", 16));
                     player3Status.setTextFill(Color.web("#ea0000"));
-                    player3Status.setEffect(ds);
-                    player3Status.setCache(true);
                 }else {
                     player3Status.setText(allPlayers.get(2) + ": online");
                     player3Status.setLayoutX(1020);
                     player3Status.setLayoutY(250);
                     player3Status.setFont(Font.font("Franklin Gothic Medium", 16));
                     player3Status.setTextFill(Color.web("#1f8627"));
-                    player3Status.setEffect(ds);
-                    player3Status.setCache(true);
                 }
+                player3Status.setEffect(ds);
+                player3Status.setCache(true);
             }
         }
             setMessage();

@@ -50,7 +50,7 @@ public class SocketServer {
     }
 
     private void createLobby() {
-        int time = 1000;
+        int time = 1000000;
         int actualNum = 0;
         int min = 2;
         int max = 3;

@@ -45,7 +45,13 @@ public class LogController extends GUIController{
                 alert.setContentText("You have to insert valid input!");
                 alert.showAndWait();
             } else {
-                guiHandler.getLoginInfo(playerName.getText(),Integer.parseInt(PORT.getText()), IP.getText());
+                int port;
+                try {
+                    port = Integer.parseInt(PORT.getText());
+                } catch (NumberFormatException e) {
+                    port = 0;
+                }
+                guiHandler.getLoginInfo(playerName.getText(), port, IP.getText());
                 button.disableProperty().setValue(true);
                 playerName.editableProperty().setValue(false);
                 IP.editableProperty().setValue(false);

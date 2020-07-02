@@ -7,6 +7,9 @@ import it.polimi.ingsw.model.Player.Card;
 
 import java.io.*;
 import java.lang.reflect.Type;
+import java.net.URISyntaxException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,6 +24,17 @@ public class IOHandler {
     public IOHandler() {
         gson = new GsonBuilder().setPrettyPrinting().create();
         saveStatePath = (new File("").getAbsolutePath());
+//        try {
+//            System.out.println(new File(IOHandler.class.getProtectionDomain().getCodeSource().getLocation()
+//                    .toURI()).getPath());
+//        } catch (URISyntaxException e) {
+//            e.printStackTrace();
+//        }
+//        String path = IOHandler.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+//        String decodedPath = URLDecoder.decode(path, StandardCharsets.UTF_8);
+//        System.out.println(decodedPath);
+//        ClassLoader loader = IOHandler.class.getClassLoader();
+//        System.out.println(loader.getResource("foo/Test.class"));
     }
 
     /**
@@ -74,11 +88,7 @@ public class IOHandler {
      */
     public void deleteFile() {
         File toBeDeleted = new File(saveStatePath);
-        if(toBeDeleted.delete()) {
-            System.out.println("Save state deleted");
-        } else {
-            System.out.println("Failed to delete file" + saveStatePath);
-        }
+        toBeDeleted.delete();
     }
 
     /**
@@ -87,7 +97,7 @@ public class IOHandler {
      * @return true if the file exists
      */
     public boolean verifyFileExistance(String fileName) {
-        saveStatePath = saveStatePath + "\\" + fileName + ".json";
+        saveStatePath = saveStatePath + "/" + fileName + ".json";
         System.out.println("Checking for savestate file in " + saveStatePath);
         File file = new File(saveStatePath);
         return file.exists();

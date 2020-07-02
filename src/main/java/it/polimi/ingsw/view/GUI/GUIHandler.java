@@ -33,7 +33,7 @@ public class GUIHandler implements ViewInterface {
     private final List<Integer> chosen = new ArrayList<>();
     private final List<Position> availablePos = new ArrayList<>();
     private final List<Position> currentChoice = new ArrayList<>();
-    private final List<String> isAlive = new ArrayList<>();
+    private final List<Boolean> isAlive = new ArrayList<>();
 
     public GUIHandler(GUI gui){
         this.gui = gui;
@@ -129,7 +129,7 @@ public class GUIHandler implements ViewInterface {
         this.godName.addAll(godName);
         this.playernumber = userName.size();
         for(int i=0;i<playernumber;i++){
-            isAlive.add("alive");
+            isAlive.add(true);
         }
         if(isMyTurn) {
             this.isMyTurn = true;
@@ -291,14 +291,22 @@ public class GUIHandler implements ViewInterface {
                 }
             }
         }
+        List<Integer> eliminated = new ArrayList<>();
         for(int i = 0; i < godNames.size(); i++) {
-            List<Position> myWorker = new ArrayList<>();
-            myWorker.add(workerPos.get(i * 2));
-            myWorker.add(workerPos.get(i * 2 + 1));
-            imagepath = convertGod(godNames.get(clientId));
-            godName.addAll(godNames);
-            userName.addAll(userNames);
-            firstPositioning(myWorker, godNames, userNames, clientId, false);
+            if(workerPos.containsKey(i * 2)) {
+                List<Position> myWorker = new ArrayList<>();
+                myWorker.add(workerPos.get(i * 2));
+                myWorker.add(workerPos.get(i * 2 + 1));
+                imagepath = convertGod(godNames.get(clientId));
+                godName.addAll(godNames);
+                userName.addAll(userNames);
+                firstPositioning(myWorker, godNames, userNames, clientId, false);
+            } else {
+                eliminated.add(i);
+            }
+        }
+        for(Integer i: eliminated) {
+            isAlive.set(i, false);
         }
     }
 
@@ -330,7 +338,7 @@ public class GUIHandler implements ViewInterface {
     @Override
     public void elimination(boolean elim, String eliminatedPlayer, List<Position> eliminatedWorkers) {
         int index = userName.indexOf(eliminatedPlayer);
-        isAlive.set(index,"eliminated");
+        isAlive.set(index, false);
         for(Position position: eliminatedWorkers) {
             map[position.getRow()][position.getColumn()].setWorker(-1);
         }
@@ -392,7 +400,7 @@ public class GUIHandler implements ViewInterface {
         return this.godName;
     }
 
-    public List<String> getIsAlive() {
+    public List<Boolean> getIsAlive() {
         return this.isAlive;
     }
 

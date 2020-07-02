@@ -25,9 +25,9 @@ public class Turn implements ModelInterface {
     private Worker currWorker;
     private boolean powerUsed;
     private final List<PlayerInfo> players;
-    private final Map<Integer, String> nameMap;
+    private Map<Integer, String> nameMap;
     private List<Integer> chosenCards;
-    private final List<Integer> eliminatedPlayers;
+    private List<Integer> eliminatedPlayers;
 
     public Turn(LobbyHandler socket) {
         this.socket = socket;
@@ -95,12 +95,16 @@ public class Turn implements ModelInterface {
             List<String> godNames = new ArrayList<>();
             saveState = ioHandler.getSaveState();
             board.setMap(saveState.getGameMap());
-            mapPlayers();
-            for(PlayerInfo currPlayer: saveState.getPlayers()) {
-                playerNames.add(currPlayer.getPlayerName());
-                godNames.add(ioHandler.getCardList().get(currPlayer.getChosenCard()).getName());
-                addCardToGame(currPlayer.getChosenCard());
-                cardList.get(actualPlayer).firstPositioning(currPlayer.getWorkerPos().get(0), currPlayer.getWorkerPos().get(1));
+            mapPlayers(playerNames, godNames);
+            eliminatedPlayers = saveState.getEliminatedPlayers();
+            for(int i = 0; i < saveState.getPlayers().size(); i++) {
+                if(!eliminatedPlayers.contains(i)) {
+                    PlayerInfo currPlayer = saveState.getPlayers().get(i);
+                    addCardToGame(currPlayer.getChosenCard());
+                    cardList.get(actualPlayer).firstPositioning(currPlayer.getWorkerPos().get(0), currPlayer.getWorkerPos().get(1));
+                } else {
+                    addCardToGame(saveState.getPlayers().get(i).getChosenCard());
+                }
                 nextTurn();
             }
             setEnemiesLists();
@@ -110,7 +114,6 @@ public class Turn implements ModelInterface {
             socket.broadcast(oldState);
             actualPlayer = saveState.getActualPlayer();
             if(saveState.getActualEffect() == 0) {
-                System.out.println("Start turn player" + " " + actualPlayer);
                 askWhichWorker();
             } else {
                 reloadTurn();
@@ -161,16 +164,23 @@ public class Turn implements ModelInterface {
     /**
      * puts all the players in the same order of the loaded game
      */
-    private void mapPlayers() {
+    private void mapPlayers(List<String> playerNames, List<String> godNames) {
         Map<Integer, Integer> playerMap = new HashMap<>();
-        for(int i = 0; i < numPlayer; i++) {
-            for(int j = 0; j < numPlayer; j++) {
+        for(int j = 0; j < numPlayer; j++) {
+            for(int i = 0; i < numPlayer; i++) {
                 if(players.get(i).getPlayerName().equals(saveState.getPlayers().get(j).getPlayerName())) {
+                    playerNames.add(players.get(i).getPlayerName());
+                    godNames.add(ioHandler.getCardList().get(saveState.getPlayers().get(j).getChosenCard()).getName());
                     playerMap.put(j, i);
                     break;
                 }
             }
         }
+        Map<Integer, String> newOrder = new HashMap<>();
+        for(int i = 0; i < nameMap.size(); i++) {
+            newOrder.put(i, nameMap.get(playerMap.get(i)));
+        }
+        nameMap = newOrder;
         socket.sortPlayers(playerMap);
         for(int i = 0; i < numPlayer; i++) {
             socket.sendTo(i, new SetNameNotification(i, true));         //riassegno i clientID riordinati
@@ -407,6 +417,7 @@ public class Turn implements ModelInterface {
             positions.add(cardList.get(i).getWorker2().getPosition());
             players.get(i).setWorkerPos(positions);
         }
+        saveState.setEliminatedPlayers(eliminatedPlayers);
         saveState.setGameMap(board.getMap());
         saveState.setActualPlayer(actualPlayer);
         saveState.setActualEffect(currEffect);

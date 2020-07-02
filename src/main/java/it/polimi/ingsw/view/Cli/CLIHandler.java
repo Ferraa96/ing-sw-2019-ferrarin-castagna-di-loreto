@@ -164,11 +164,13 @@ public class CLIHandler implements ViewInterface {
             }
         }
         for(int i = 0; i < godNames.size(); i++) {
-            List<Position> myWorker = new ArrayList<>();
-            myWorker.add(workerPos.get(i * 2));
-            myWorker.add(workerPos.get(i * 2 + 1));
-            currPlayer = i;
-            firstPositioning(myWorker, godNames, userNames, currPlayer, false);
+            if(workerPos.containsKey(i * 2)) {
+                List<Position> myWorker = new ArrayList<>();
+                myWorker.add(workerPos.get(i * 2));
+                myWorker.add(workerPos.get(i * 2 + 1));
+                currPlayer = i;
+                firstPositioning(myWorker, godNames, userNames, currPlayer, false);
+            }
         }
     }
 

@@ -6,6 +6,7 @@ import it.polimi.ingsw.controller.Instructions.NotificationVisitor;
 import it.polimi.ingsw.view.ViewInterface;
 
 import java.io.*;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 
 /**
@@ -33,13 +34,14 @@ public class SocketClient extends Thread {
      */
     public boolean connect(String ip, int port, ViewInterface view) {
         try {
-            socket = new Socket(ip, port);
+            socket = new Socket();
+            socket.connect(new InetSocketAddress(ip, port), 2000);
             outStream = new ObjectOutputStream(socket.getOutputStream());
             inStream = new ObjectInputStream(socket.getInputStream());
             clientUpdater = new ClientUpdater(view);
             start();
             return true;
-        } catch (IOException e) {
+        } catch (IOException | IllegalArgumentException e) {
             return false;
         }
     }
