@@ -249,9 +249,9 @@ public class Card {
      * @param w2 position of w2
      */
     public void firstPositioning(Position w1, Position w2) {
-        worker1.setPosition(new Position(w1.getRow(), w1.getColumn()));
+        worker1.setPosition(w1);
         map[w1.getRow()][w1.getColumn()].setWorkerID(worker1.getWorkerID());
-        worker2.setPosition(new Position(w2.getRow(), w2.getColumn()));
+        worker2.setPosition(w2);
         map[w2.getRow()][w2.getColumn()].setWorkerID(worker2.getWorkerID());
     }
 

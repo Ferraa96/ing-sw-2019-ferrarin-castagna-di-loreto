@@ -24,7 +24,7 @@ public class Turn implements ModelInterface {
     private int currEffect = 0;
     private Worker currWorker;
     private boolean powerUsed;
-    private final List<PlayerInfo> players;
+    private List<PlayerInfo> players;
     private Map<Integer, String> nameMap;
     private List<Integer> chosenCards;
     private List<Integer> eliminatedPlayers;
@@ -107,6 +107,15 @@ public class Turn implements ModelInterface {
                 }
                 nextTurn();
             }
+            for(PlayerInfo p: players) {
+                for(PlayerInfo s: saveState.getPlayers()) {
+                    if(p.getPlayerName().equals(s.getPlayerName())) {
+                        p.getWorkerPos().clear();
+                        p.getWorkerPos().add(s.getWorkerPos().get(0));
+                        p.getWorkerPos().add(s.getWorkerPos().get(1));
+                    }
+                }
+            }
             setEnemiesLists();
             LoadGameNotification oldState = new LoadGameNotification(board.getMap());
             oldState.setGodNames(godNames);
@@ -128,7 +137,7 @@ public class Turn implements ModelInterface {
      * reload the state of the turn, including the chosen worker, the current effect and all the powers involved
      */
     private void reloadTurn() {
-        if(saveState.getChosenWorker() == 0) {
+        if(saveState.getChosenWorker() % 2 == 0) {
             currWorker = cardList.get(actualPlayer).getWorker1();
         } else {
             currWorker = cardList.get(actualPlayer).getWorker2();
@@ -177,9 +186,12 @@ public class Turn implements ModelInterface {
             }
         }
         Map<Integer, String> newOrder = new HashMap<>();
+        List<PlayerInfo> temp = new ArrayList<>();
         for(int i = 0; i < nameMap.size(); i++) {
             newOrder.put(i, nameMap.get(playerMap.get(i)));
+            temp.add(players.get(playerMap.get(i)));
         }
+        players = temp;
         nameMap = newOrder;
         socket.sortPlayers(playerMap);
         for(int i = 0; i < numPlayer; i++) {
@@ -314,8 +326,8 @@ public class Turn implements ModelInterface {
     @Override
     public void providePosition(boolean use) {
         cardList.get(actualPlayer).setActivePower(use);
+        powerUsed = use;
         if (currEffect == 0) {
-            powerUsed = use;
             if (powerUsed) {
                 totalEffects = cardList.get(actualPlayer).getCardRoutine().size();
             } else {
@@ -411,12 +423,15 @@ public class Turn implements ModelInterface {
     private void saveGame() {
         Position pos;
         List<Position> positions;
+        List<PlayerInfo> pl = new ArrayList<>();
         for(int i = 0; i < players.size(); i++) {
             positions = new ArrayList<>();
             positions.add(cardList.get(i).getWorker1().getPosition());
             positions.add(cardList.get(i).getWorker2().getPosition());
             players.get(i).setWorkerPos(positions);
+            pl.add(players.get(i));
         }
+        saveState.setPlayers(pl);
         saveState.setEliminatedPlayers(eliminatedPlayers);
         saveState.setGameMap(board.getMap());
         saveState.setActualPlayer(actualPlayer);

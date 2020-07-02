@@ -7,9 +7,6 @@ import it.polimi.ingsw.model.Player.Card;
 
 import java.io.*;
 import java.lang.reflect.Type;
-import java.net.URISyntaxException;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,17 +21,6 @@ public class IOHandler {
     public IOHandler() {
         gson = new GsonBuilder().setPrettyPrinting().create();
         saveStatePath = (new File("").getAbsolutePath());
-//        try {
-//            System.out.println(new File(IOHandler.class.getProtectionDomain().getCodeSource().getLocation()
-//                    .toURI()).getPath());
-//        } catch (URISyntaxException e) {
-//            e.printStackTrace();
-//        }
-//        String path = IOHandler.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-//        String decodedPath = URLDecoder.decode(path, StandardCharsets.UTF_8);
-//        System.out.println(decodedPath);
-//        ClassLoader loader = IOHandler.class.getClassLoader();
-//        System.out.println(loader.getResource("foo/Test.class"));
     }
 
     /**
@@ -88,7 +74,9 @@ public class IOHandler {
      */
     public void deleteFile() {
         File toBeDeleted = new File(saveStatePath);
-        toBeDeleted.delete();
+        if(toBeDeleted.delete()) {
+            System.out.println("Save file eliminated");
+        }
     }
 
     /**

@@ -14,13 +14,15 @@ public class SocketServer {
     private final int port;
     private ServerSocket serverSocket;
     private final boolean[] aborted = {false};
+    private final int time;
 
     /**
      * creates the server and creates a thread for all the clients
      * @param port the port of the server
      */
-    public SocketServer(int port) {
+    public SocketServer(int port, int time) {
         this.port = port;
+        this.time = time;
         addClients();
     }
 
@@ -50,7 +52,6 @@ public class SocketServer {
     }
 
     private void createLobby() {
-        int time = 1000000;
         int actualNum = 0;
         int min = 2;
         int max = 3;
