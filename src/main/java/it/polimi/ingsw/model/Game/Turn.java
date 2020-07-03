@@ -363,7 +363,6 @@ public class Turn implements ModelInterface {
             }
         } else {
             currEffect = 0;
-            
             nextTurn();
             List<Position> availableWorkers = new ArrayList<>();
             availableWorkers.add(cardList.get(actualPlayer).getWorker1().getPosition());
