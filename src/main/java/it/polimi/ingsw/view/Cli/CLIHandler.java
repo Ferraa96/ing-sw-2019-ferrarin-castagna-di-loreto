@@ -129,9 +129,9 @@ public class CLIHandler implements ViewInterface {
      * @param answer the input
      */
     public void reloadStateAnswer(String answer) {
-        if(answer.equals("y")) {
+        if(answer.equals("y") || answer.equals("Y")) {
             socketClient.send(new AskForReloadStateNotification(true));
-        } else if(answer.equals("n")) {
+        } else if(answer.equals("n") || answer.equals("N")) {
             socketClient.send(new AskForReloadStateNotification(false));
         } else {
             System.out.print("Y/N: ");
@@ -372,9 +372,9 @@ public class CLIHandler implements ViewInterface {
      * @param answer the answer
      */
     public void verifyPower(String answer) {
-        if(answer.equals("y")) {
+        if(answer.equals("y") || answer.equals("Y")) {
             socketClient.send(new SetPowerNotification(true));
-        } else if(answer.equals("n")) {
+        } else if(answer.equals("n") || answer.equals("N")) {
             socketClient.send(new SetPowerNotification(false));
         } else {
             System.out.print("Y/N: ");
