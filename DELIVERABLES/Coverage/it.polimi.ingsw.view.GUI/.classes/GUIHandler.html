@@ -1,0 +1,530 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: GUIHandler</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">it.polimi.ingsw.view.GUI</a> ]
+</div>
+
+<h1>Coverage Summary for Class: GUIHandler (it.polimi.ingsw.view.GUI)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">GUIHandler</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 42)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 177)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package it.polimi.ingsw.view.GUI;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import it.polimi.ingsw.controller.Client.SocketClient;
+<i>4</i>&nbsp;import it.polimi.ingsw.controller.Instructions.*;
+<i>5</i>&nbsp;import it.polimi.ingsw.model.Game.Cell;
+<i>6</i>&nbsp;import it.polimi.ingsw.model.Effects.Movement;
+<i>7</i>&nbsp;import it.polimi.ingsw.model.Game.Position;
+<i>8</i>&nbsp;import it.polimi.ingsw.view.ViewInterface;
+<i>9</i>&nbsp;
+<i>10</i>&nbsp;import java.util.ArrayList;
+<i>11</i>&nbsp;import java.util.HashMap;
+<i>12</i>&nbsp;import java.util.List;
+<i>13</i>&nbsp;
+<i>14</i>&nbsp;/**
+<i>15</i>&nbsp; * Class that recives informations from the controllers and takes care to call the correct display method
+<i>16</i>&nbsp; * and communicate those information to the server
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; */
+<i>19</i>&nbsp;public class GUIHandler implements ViewInterface {
+<i>20</i>&nbsp;
+<i>21</i>&nbsp;    private SocketClient socketClient;
+<i>22</i>&nbsp;    private final GUI gui;
+<i>23</i>&nbsp;    private int playernumber;
+<b class="nc"><i>24</i>&nbsp;    private String name = &quot;&quot;;</b>
+<i>25</i>&nbsp;    private String imagepath;
+<b class="nc"><i>26</i>&nbsp;    private final List&lt;String&gt; godName = new ArrayList&lt;&gt;();</b>
+<i>27</i>&nbsp;    private String message;
+<b class="nc"><i>28</i>&nbsp;    private final List&lt;String&gt; userName = new ArrayList&lt;&gt;();</b>
+<i>29</i>&nbsp;    private String state;
+<i>30</i>&nbsp;    private boolean isMyTurn;
+<i>31</i>&nbsp;    private Square[][] map;
+<b class="nc"><i>32</i>&nbsp;    private int scanId = -1;</b>
+<b class="nc"><i>33</i>&nbsp;    private final List&lt;Integer&gt; chosen = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>34</i>&nbsp;    private final List&lt;Position&gt; availablePos = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>35</i>&nbsp;    private final List&lt;Position&gt; currentChoice = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>36</i>&nbsp;    private final List&lt;Boolean&gt; isAlive = new ArrayList&lt;&gt;();</b>
+<i>37</i>&nbsp;
+<b class="nc"><i>38</i>&nbsp;    public GUIHandler(GUI gui){</b>
+<b class="nc"><i>39</i>&nbsp;        this.gui = gui;</b>
+<i>40</i>&nbsp;    }
+<i>41</i>&nbsp;
+<i>42</i>&nbsp;    /**
+<i>43</i>&nbsp;     * let the player set his name
+<i>44</i>&nbsp;     * @param name the input
+<i>45</i>&nbsp;     *
+<i>46</i>&nbsp;     */
+<i>47</i>&nbsp;    public void getLoginInfo(String name,int port, String ip){
+<b class="nc"><i>48</i>&nbsp;        this.name = name;</b>
+<b class="nc"><i>49</i>&nbsp;        socketClient = new SocketClient();</b>
+<b class="nc"><i>50</i>&nbsp;        map = new Square[5][5];</b>
+<b class="nc"><i>51</i>&nbsp;        for(int i = 0; i &lt; 5; i++) {</b>
+<b class="nc"><i>52</i>&nbsp;            for(int j = 0; j &lt; 5; j++) {</b>
+<b class="nc"><i>53</i>&nbsp;                map[i][j] = new Square();</b>
+<i>54</i>&nbsp;            }
+<i>55</i>&nbsp;        }
+<b class="nc"><i>56</i>&nbsp;        if(socketClient.connect(ip, port, this)){</b>
+<b class="nc"><i>57</i>&nbsp;            socketClient.send(new SetNameNotification(name));</b>
+<i>58</i>&nbsp;        }else{
+<b class="nc"><i>59</i>&nbsp;            Login();</b>
+<i>60</i>&nbsp;        }
+<i>61</i>&nbsp;    }
+<i>62</i>&nbsp;
+<i>63</i>&nbsp;    public void GetUserName(String name){
+<b class="nc"><i>64</i>&nbsp;        this.name = name;</b>
+<b class="nc"><i>65</i>&nbsp;        socketClient.send(new SetNameNotification(name));</b>
+<i>66</i>&nbsp;    }
+<i>67</i>&nbsp;
+<i>68</i>&nbsp;    public void Login(){
+<b class="nc"><i>69</i>&nbsp;        state = &quot;SET NAME&quot;;</b>
+<b class="nc"><i>70</i>&nbsp;        gui.showLogin();</b>
+<i>71</i>&nbsp;    }
+<i>72</i>&nbsp;
+<i>73</i>&nbsp;    @Override
+<i>74</i>&nbsp;    public void setName(){
+<b class="nc"><i>75</i>&nbsp;        state = &quot;RESET NAME&quot;;</b>
+<b class="nc"><i>76</i>&nbsp;        gui.showLogin();</b>
+<i>77</i>&nbsp;    }
+<i>78</i>&nbsp;
+<i>79</i>&nbsp;    public void getSelectedCards(List&lt;Integer&gt; chosen){
+<b class="nc"><i>80</i>&nbsp;        this.chosen.addAll(chosen);</b>
+<b class="nc"><i>81</i>&nbsp;        socketClient.send(new ChooseCardListNotification(chosen));</b>
+<i>82</i>&nbsp;    }
+<i>83</i>&nbsp;
+<i>84</i>&nbsp;    /**
+<i>85</i>&nbsp;     * Call to choose &#39;num&#39; cards between all
+<i>86</i>&nbsp;     * @param num the amount of players playing
+<i>87</i>&nbsp;     */
+<i>88</i>&nbsp;    @Override
+<i>89</i>&nbsp;    public void chooseCardList(int num) {
+<b class="nc"><i>90</i>&nbsp;        playernumber = num;</b>
+<b class="nc"><i>91</i>&nbsp;        state = &quot;CARD LIST&quot;;</b>
+<b class="nc"><i>92</i>&nbsp;        gui.showSelectionCards();</b>
+<i>93</i>&nbsp;    }
+<i>94</i>&nbsp;
+<i>95</i>&nbsp;    /**
+<i>96</i>&nbsp;     *Choose the card you want to play with between the ones chosen before
+<i>97</i>&nbsp;     */
+<i>98</i>&nbsp;    @Override
+<i>99</i>&nbsp;    public void chooseCard(List&lt;Integer&gt; cardList) {
+<b class="nc"><i>100</i>&nbsp;        chosen.clear();</b>
+<b class="nc"><i>101</i>&nbsp;        chosen.addAll(cardList);</b>
+<b class="nc"><i>102</i>&nbsp;        state = &quot;SET CARD&quot;;</b>
+<b class="nc"><i>103</i>&nbsp;        gui.showCardSelection();</b>
+<i>104</i>&nbsp;    }
+<i>105</i>&nbsp;
+<i>106</i>&nbsp;    /**
+<i>107</i>&nbsp;     * Used to get the card selected
+<i>108</i>&nbsp;     * @param imagepath the path to correct god image
+<i>109</i>&nbsp;     */
+<i>110</i>&nbsp;    public void getCard(int card, String imagepath){
+<b class="nc"><i>111</i>&nbsp;        this.imagepath = imagepath;</b>
+<b class="nc"><i>112</i>&nbsp;        socketClient.send(new ChooseCardNotification(card));</b>
+<i>113</i>&nbsp;    }
+<i>114</i>&nbsp;
+<i>115</i>&nbsp;    /**
+<i>116</i>&nbsp;     * Method called for every player to set the initial positions
+<i>117</i>&nbsp;     * @param availablePos list of the available postions
+<i>118</i>&nbsp;     * @param godName list of the god cards chosen
+<i>119</i>&nbsp;     * @param userName list of the usernames
+<i>120</i>&nbsp;     * @param client id of the player that recives the call
+<i>121</i>&nbsp;     * scanId is used to identify the player and connect it to the worker
+<i>122</i>&nbsp;     */
+<i>123</i>&nbsp;    @Override
+<i>124</i>&nbsp;    public void firstPositioning(List&lt;Position&gt; availablePos, List&lt;String&gt; godName, List&lt;String&gt; userName, int client, boolean isMyTurn) {
+<b class="nc"><i>125</i>&nbsp;        scanId++;</b>
+<b class="nc"><i>126</i>&nbsp;        this.userName.clear();</b>
+<b class="nc"><i>127</i>&nbsp;        this.godName.clear();</b>
+<b class="nc"><i>128</i>&nbsp;        this.userName.addAll(userName);</b>
+<b class="nc"><i>129</i>&nbsp;        this.godName.addAll(godName);</b>
+<b class="nc"><i>130</i>&nbsp;        this.playernumber = userName.size();</b>
+<b class="nc"><i>131</i>&nbsp;        for(int i=0;i&lt;playernumber;i++){</b>
+<b class="nc"><i>132</i>&nbsp;            isAlive.add(true);</b>
+<i>133</i>&nbsp;        }
+<b class="nc"><i>134</i>&nbsp;        if(isMyTurn) {</b>
+<b class="nc"><i>135</i>&nbsp;            this.isMyTurn = true;</b>
+<b class="nc"><i>136</i>&nbsp;            this.availablePos.addAll(availablePos);</b>
+<b class="nc"><i>137</i>&nbsp;            this.message = &quot;Select Workers position&quot;;</b>
+<b class="nc"><i>138</i>&nbsp;            this.state = &quot;FIRSTPOS&quot;;</b>
+<i>139</i>&nbsp;        }else {
+<b class="nc"><i>140</i>&nbsp;            this.isMyTurn = false;</b>
+<b class="nc"><i>141</i>&nbsp;            state = &quot;WAITFIRST&quot;;</b>
+<b class="nc"><i>142</i>&nbsp;            for(Position currPos: availablePos) {</b>
+<b class="nc"><i>143</i>&nbsp;                map[currPos.getRow()][currPos.getColumn()].setWorker(scanId);</b>
+<b class="nc"><i>144</i>&nbsp;            }</b>
+<i>145</i>&nbsp;        }
+<b class="nc"><i>146</i>&nbsp;        gui.showMap();</b>
+<i>147</i>&nbsp;    }
+<i>148</i>&nbsp;
+<i>149</i>&nbsp;    /**
+<i>150</i>&nbsp;     * Used to get the position of the worker and bind it to the player
+<i>151</i>&nbsp;     * @param pos contains the position of the worker placed
+<i>152</i>&nbsp;     */
+<i>153</i>&nbsp;    public void setSelectedPos(Position pos){
+<b class="nc"><i>154</i>&nbsp;        currentChoice.add(pos);</b>
+<b class="nc"><i>155</i>&nbsp;        state = &quot;POS&quot;;</b>
+<b class="nc"><i>156</i>&nbsp;        map[pos.getRow()][pos.getColumn()].setWorker(scanId);</b>
+<i>157</i>&nbsp;    }
+<i>158</i>&nbsp;
+<i>159</i>&nbsp;    public void definePositions(){
+<b class="nc"><i>160</i>&nbsp;        state = &quot;WAIT&quot;;</b>
+<b class="nc"><i>161</i>&nbsp;        socketClient.send(new FirstPositioningNotification(currentChoice));</b>
+<i>162</i>&nbsp;    }
+<i>163</i>&nbsp;
+<i>164</i>&nbsp;    /**
+<i>165</i>&nbsp;     * Choose which of the two workers you want to move
+<i>166</i>&nbsp;     */
+<i>167</i>&nbsp;    @Override
+<i>168</i>&nbsp;    public void chooseWorker(List&lt;Position&gt; availableWorkers) {
+<b class="nc"><i>169</i>&nbsp;        availablePos.clear();</b>
+<b class="nc"><i>170</i>&nbsp;        availablePos.addAll(availableWorkers);</b>
+<b class="nc"><i>171</i>&nbsp;        isMyTurn = true;</b>
+<b class="nc"><i>172</i>&nbsp;        message = &quot;Select the worker you want to use&quot;;</b>
+<b class="nc"><i>173</i>&nbsp;        state = &quot;SELECTWORKER&quot;;</b>
+<b class="nc"><i>174</i>&nbsp;        updateScreen();</b>
+<i>175</i>&nbsp;    }
+<i>176</i>&nbsp;
+<i>177</i>&nbsp;    public void defineWorker(Position pos){
+<b class="nc"><i>178</i>&nbsp;        state = &quot;WAIT&quot;;</b>
+<b class="nc"><i>179</i>&nbsp;        socketClient.send(new ChooseWorkerNotification(pos));</b>
+<i>180</i>&nbsp;    }
+<i>181</i>&nbsp;
+<i>182</i>&nbsp;    /**
+<i>183</i>&nbsp;     * Choose whether you want to activate the power or not
+<i>184</i>&nbsp;     */
+<i>185</i>&nbsp;    @Override
+<i>186</i>&nbsp;    public void choosePower() {
+<b class="nc"><i>187</i>&nbsp;        message = &quot;Do you want to activate the card power?&quot;;</b>
+<b class="nc"><i>188</i>&nbsp;        isMyTurn = true;</b>
+<b class="nc"><i>189</i>&nbsp;        state = &quot;POWER&quot;;</b>
+<b class="nc"><i>190</i>&nbsp;        gui.showRequest();</b>
+<i>191</i>&nbsp;    }
+<i>192</i>&nbsp;
+<i>193</i>&nbsp;    public void getPowerSelection(boolean power){
+<b class="nc"><i>194</i>&nbsp;        state = &quot;POWER&quot;;</b>
+<b class="nc"><i>195</i>&nbsp;        socketClient.send(new SetPowerNotification(power));</b>
+<b class="nc"><i>196</i>&nbsp;        updateScreen();</b>
+<i>197</i>&nbsp;    }
+<i>198</i>&nbsp;
+<i>199</i>&nbsp;    /**
+<i>200</i>&nbsp;     * After the worker selection choose where to move it
+<i>201</i>&nbsp;     * @param list contains the positions where the worker can go
+<i>202</i>&nbsp;     */
+<i>203</i>&nbsp;    @Override
+<i>204</i>&nbsp;    public void choosePosition(List&lt;Position&gt; list) {
+<b class="nc"><i>205</i>&nbsp;        availablePos.clear();</b>
+<b class="nc"><i>206</i>&nbsp;        availablePos.addAll(list);</b>
+<b class="nc"><i>207</i>&nbsp;        isMyTurn = true;</b>
+<b class="nc"><i>208</i>&nbsp;        message = &quot;Do your moves &amp; buildings&quot;;</b>
+<b class="nc"><i>209</i>&nbsp;        state = &quot;SELECTPOSITION&quot;;</b>
+<b class="nc"><i>210</i>&nbsp;        updateScreen();</b>
+<i>211</i>&nbsp;    }
+<i>212</i>&nbsp;
+<i>213</i>&nbsp;    public void defineMovement(Position pos){
+<b class="nc"><i>214</i>&nbsp;        state = &quot;WAIT&quot;;</b>
+<b class="nc"><i>215</i>&nbsp;        socketClient.send(new ChoosePosNotification(pos));</b>
+<i>216</i>&nbsp;    }
+<i>217</i>&nbsp;
+<i>218</i>&nbsp;    /**
+<i>219</i>&nbsp;     * Used to refresh the map deleting the elements from the old pos and adding them to the new one
+<i>220</i>&nbsp;     * @param movements Contains the old position and the new position after the movement is done
+<i>221</i>&nbsp;     */
+<i>222</i>&nbsp;    @Override
+<i>223</i>&nbsp;    public void move(List&lt;Movement&gt; movements) {
+<b class="nc"><i>224</i>&nbsp;        List&lt;Integer&gt; id = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>225</i>&nbsp;        isMyTurn = true;</b>
+<b class="nc"><i>226</i>&nbsp;        for(Movement currMove: movements) {</b>
+<b class="nc"><i>227</i>&nbsp;            id.add(map[currMove.getOldPos().getRow()][currMove.getOldPos().getColumn()].getWorker());</b>
+<b class="nc"><i>228</i>&nbsp;            map[currMove.getOldPos().getRow()][currMove.getOldPos().getColumn()].setWorker(-1);</b>
+<b class="nc"><i>229</i>&nbsp;        }</b>
+<b class="nc"><i>230</i>&nbsp;        for(int i = 0; i &lt; movements.size(); i++ ){</b>
+<b class="nc"><i>231</i>&nbsp;            map[movements.get(i).getNewPos().getRow()][movements.get(i).getNewPos().getColumn()].setWorker(id.get(i));</b>
+<i>232</i>&nbsp;        }
+<i>233</i>&nbsp;    }
+<i>234</i>&nbsp;
+<i>235</i>&nbsp;    /**
+<i>236</i>&nbsp;     * Set the new height after a build has been places
+<i>237</i>&nbsp;     */
+<i>238</i>&nbsp;    @Override
+<i>239</i>&nbsp;    public void buildBlock(Position position, int height) {
+<b class="nc"><i>240</i>&nbsp;        state = &quot;BLOCK&quot;;</b>
+<b class="nc"><i>241</i>&nbsp;        isMyTurn = true;</b>
+<b class="nc"><i>242</i>&nbsp;        map[position.getRow()][position.getColumn()].setHeight(height);</b>
+<i>243</i>&nbsp;    }
+<i>244</i>&nbsp;
+<i>245</i>&nbsp;    /**
+<i>246</i>&nbsp;     * Set the dome flag true when a dome has been built
+<i>247</i>&nbsp;     */
+<i>248</i>&nbsp;    @Override
+<i>249</i>&nbsp;    public void buildDome(Position position, int height) {
+<b class="nc"><i>250</i>&nbsp;        state = &quot;DOME&quot;;</b>
+<b class="nc"><i>251</i>&nbsp;        isMyTurn = true;</b>
+<b class="nc"><i>252</i>&nbsp;        map[position.getRow()][position.getColumn()].setHeight(height);</b>
+<b class="nc"><i>253</i>&nbsp;        map[position.getRow()][position.getColumn()].setDome(true);</b>
+<i>254</i>&nbsp;    }
+<i>255</i>&nbsp;
+<i>256</i>&nbsp;    @Override
+<i>257</i>&nbsp;    public void updateScreen() {
+<b class="nc"><i>258</i>&nbsp;        if(state.equals(&quot;POWER&quot;))</b>
+<b class="nc"><i>259</i>&nbsp;            gui.showMap();</b>
+<b class="nc"><i>260</i>&nbsp;        gui.refreshMap();</b>
+<i>261</i>&nbsp;    }
+<i>262</i>&nbsp;
+<i>263</i>&nbsp;    @Override
+<i>264</i>&nbsp;    public void askForReloadState() {
+<b class="nc"><i>265</i>&nbsp;        this.message = &quot;Do you want to use an existent save?&quot;;</b>
+<b class="nc"><i>266</i>&nbsp;        state = &quot;RELOAD&quot;;</b>
+<b class="nc"><i>267</i>&nbsp;        gui.showRequest();</b>
+<i>268</i>&nbsp;    }
+<i>269</i>&nbsp;
+<i>270</i>&nbsp;    public void getReloadSelection(boolean reload){
+<b class="nc"><i>271</i>&nbsp;        socketClient.send(new AskForReloadStateNotification(reload));</b>
+<i>272</i>&nbsp;    }
+<i>273</i>&nbsp;
+<i>274</i>&nbsp;    @Override
+<i>275</i>&nbsp;    public void reloadState(Cell[][] map, List&lt;String&gt; godNames, List&lt;String&gt; userNames, int clientId) {
+<b class="nc"><i>276</i>&nbsp;        HashMap&lt;Integer, Position&gt; workerPos = new HashMap&lt;&gt;();</b>
+<b class="nc"><i>277</i>&nbsp;        message = &quot;Loading game...&quot;;</b>
+<b class="nc"><i>278</i>&nbsp;        gui.showMessage();</b>
+<b class="nc"><i>279</i>&nbsp;        for(int row = 0; row &lt; 5; row++) {</b>
+<b class="nc"><i>280</i>&nbsp;            for(int column = 0; column &lt; 5; column++) {</b>
+<b class="nc"><i>281</i>&nbsp;                int height = map[row][column].getHeight();</b>
+<b class="nc"><i>282</i>&nbsp;                if(height &gt; 0) {</b>
+<b class="nc"><i>283</i>&nbsp;                    if(map[row][column].isDome()) {</b>
+<b class="nc"><i>284</i>&nbsp;                        buildDome(new Position(row, column), height);</b>
+<i>285</i>&nbsp;                    } else {
+<b class="nc"><i>286</i>&nbsp;                        buildBlock(new Position(row, column), height);</b>
+<i>287</i>&nbsp;                    }
+<i>288</i>&nbsp;                }
+<b class="nc"><i>289</i>&nbsp;                if(map[row][column].getWorkerID() != -1) {</b>
+<b class="nc"><i>290</i>&nbsp;                    workerPos.put(map[row][column].getWorkerID(), new Position(row, column));</b>
+<i>291</i>&nbsp;                }
+<i>292</i>&nbsp;            }
+<i>293</i>&nbsp;        }
+<b class="nc"><i>294</i>&nbsp;        List&lt;Integer&gt; eliminated = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>295</i>&nbsp;        for(int i = 0; i &lt; godNames.size(); i++) {</b>
+<b class="nc"><i>296</i>&nbsp;            if(workerPos.containsKey(i * 2)) {</b>
+<b class="nc"><i>297</i>&nbsp;                List&lt;Position&gt; myWorker = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>298</i>&nbsp;                myWorker.add(workerPos.get(i * 2));</b>
+<b class="nc"><i>299</i>&nbsp;                myWorker.add(workerPos.get(i * 2 + 1));</b>
+<b class="nc"><i>300</i>&nbsp;                imagepath = convertGod(godNames.get(clientId));</b>
+<b class="nc"><i>301</i>&nbsp;                godName.addAll(godNames);</b>
+<b class="nc"><i>302</i>&nbsp;                userName.addAll(userNames);</b>
+<b class="nc"><i>303</i>&nbsp;                firstPositioning(myWorker, godNames, userNames, clientId, false);</b>
+<b class="nc"><i>304</i>&nbsp;            } else {</b>
+<b class="nc"><i>305</i>&nbsp;                eliminated.add(i);</b>
+<i>306</i>&nbsp;            }
+<i>307</i>&nbsp;        }
+<b class="nc"><i>308</i>&nbsp;        for(Integer i: eliminated) {</b>
+<b class="nc"><i>309</i>&nbsp;            isAlive.set(i, false);</b>
+<b class="nc"><i>310</i>&nbsp;        }</b>
+<i>311</i>&nbsp;    }
+<i>312</i>&nbsp;
+<i>313</i>&nbsp;    @Override
+<i>314</i>&nbsp;    public void handleDisconnection(String message) {
+<b class="nc"><i>315</i>&nbsp;        state = &quot;END&quot;;</b>
+<b class="nc"><i>316</i>&nbsp;        this.message = message;</b>
+<b class="nc"><i>317</i>&nbsp;        socketClient.closeClient();</b>
+<b class="nc"><i>318</i>&nbsp;        gui.showMessage();</b>
+<i>319</i>&nbsp;    }
+<i>320</i>&nbsp;
+<i>321</i>&nbsp;    @Override
+<i>322</i>&nbsp;    public void notificationForOtherClient(String message) {
+<b class="nc"><i>323</i>&nbsp;        this.message = message;</b>
+<b class="nc"><i>324</i>&nbsp;        isMyTurn = false;</b>
+<b class="nc"><i>325</i>&nbsp;        switch (state){</b>
+<i>326</i>&nbsp;            case &quot;SET NAME&quot;:
+<i>327</i>&nbsp;            case &quot;RESET NAME&quot;:
+<i>328</i>&nbsp;            case &quot;CARD LIST&quot;:
+<i>329</i>&nbsp;            case &quot;SET CARD&quot;:
+<b class="nc"><i>330</i>&nbsp;                gui.showMessage();</b>
+<b class="nc"><i>331</i>&nbsp;                break;</b>
+<i>332</i>&nbsp;            default:
+<b class="nc"><i>333</i>&nbsp;                gui.showMap();</b>
+<i>334</i>&nbsp;                break;
+<i>335</i>&nbsp;        }
+<i>336</i>&nbsp;    }
+<i>337</i>&nbsp;
+<i>338</i>&nbsp;    @Override
+<i>339</i>&nbsp;    public void elimination(boolean elim, String eliminatedPlayer, List&lt;Position&gt; eliminatedWorkers) {
+<b class="nc"><i>340</i>&nbsp;        int index = userName.indexOf(eliminatedPlayer);</b>
+<b class="nc"><i>341</i>&nbsp;        isAlive.set(index, false);</b>
+<b class="nc"><i>342</i>&nbsp;        for(Position position: eliminatedWorkers) {</b>
+<b class="nc"><i>343</i>&nbsp;            map[position.getRow()][position.getColumn()].setWorker(-1);</b>
+<b class="nc"><i>344</i>&nbsp;        }</b>
+<b class="nc"><i>345</i>&nbsp;        gui.refreshMap();</b>
+<i>346</i>&nbsp;    }
+<i>347</i>&nbsp;
+<i>348</i>&nbsp;    @Override
+<i>349</i>&nbsp;    public void win(boolean win, String winnerName) {
+<b class="nc"><i>350</i>&nbsp;        state = &quot;END&quot;;</b>
+<b class="nc"><i>351</i>&nbsp;        if(win) {</b>
+<b class="nc"><i>352</i>&nbsp;            this.message = &quot;You won&quot;;</b>
+<i>353</i>&nbsp;        } else {
+<b class="nc"><i>354</i>&nbsp;            this.message = winnerName + &quot; won&quot;;</b>
+<i>355</i>&nbsp;        }
+<b class="nc"><i>356</i>&nbsp;        socketClient.closeClient();</b>
+<b class="nc"><i>357</i>&nbsp;        gui.winScreen();</b>
+<i>358</i>&nbsp;    }
+<i>359</i>&nbsp;
+<i>360</i>&nbsp;    /**
+<i>361</i>&nbsp;     * Returns the correct path to the god image
+<i>362</i>&nbsp;     * @param godName God name that has to be converted
+<i>363</i>&nbsp;     */
+<i>364</i>&nbsp;    private String convertGod(String godName){
+<b class="nc"><i>365</i>&nbsp;        switch(godName){</b>
+<i>366</i>&nbsp;            case &quot;Apollo&quot;:{
+<b class="nc"><i>367</i>&nbsp;                return &quot;/images/01.png&quot;;</b>
+<i>368</i>&nbsp;            }
+<i>369</i>&nbsp;            case &quot;Artemis&quot;:{
+<b class="nc"><i>370</i>&nbsp;                return &quot;/images/02.png&quot;;</b>
+<i>371</i>&nbsp;            }
+<i>372</i>&nbsp;            case &quot;Athena&quot;:{
+<b class="nc"><i>373</i>&nbsp;                return &quot;/images/03.png&quot;;</b>
+<i>374</i>&nbsp;            }
+<i>375</i>&nbsp;            case &quot;Atlas&quot;:{
+<b class="nc"><i>376</i>&nbsp;                return &quot;/images/04.png&quot;;</b>
+<i>377</i>&nbsp;            }
+<i>378</i>&nbsp;            case &quot;Demeter&quot;:{
+<b class="nc"><i>379</i>&nbsp;                return &quot;/images/05.png&quot;;</b>
+<i>380</i>&nbsp;            }
+<i>381</i>&nbsp;            case &quot;Hephaestus&quot;:{
+<b class="nc"><i>382</i>&nbsp;                return &quot;/images/06.png&quot;;</b>
+<i>383</i>&nbsp;            }
+<i>384</i>&nbsp;            case &quot;Minotaur&quot;:{
+<b class="nc"><i>385</i>&nbsp;                return &quot;/images/08.png&quot;;</b>
+<i>386</i>&nbsp;            }
+<i>387</i>&nbsp;            case &quot;Pan&quot;:{
+<b class="nc"><i>388</i>&nbsp;                return &quot;/images/09.png&quot;;</b>
+<i>389</i>&nbsp;            }
+<i>390</i>&nbsp;            case &quot;Prometheus&quot;:{
+<b class="nc"><i>391</i>&nbsp;                return &quot;/images/10.png&quot;;</b>
+<i>392</i>&nbsp;            }
+<i>393</i>&nbsp;            default:{
+<b class="nc"><i>394</i>&nbsp;                return &quot;Invalid Choice&quot;;</b>
+<i>395</i>&nbsp;            }
+<i>396</i>&nbsp;        }
+<i>397</i>&nbsp;    }
+<i>398</i>&nbsp;
+<i>399</i>&nbsp;    public List&lt;String&gt; getGodName() {
+<b class="nc"><i>400</i>&nbsp;        return this.godName;</b>
+<i>401</i>&nbsp;    }
+<i>402</i>&nbsp;
+<i>403</i>&nbsp;    public List&lt;Boolean&gt; getIsAlive() {
+<b class="nc"><i>404</i>&nbsp;        return this.isAlive;</b>
+<i>405</i>&nbsp;    }
+<i>406</i>&nbsp;
+<i>407</i>&nbsp;    public List&lt;String&gt; getUsername(){
+<b class="nc"><i>408</i>&nbsp;        return this.userName;</b>
+<i>409</i>&nbsp;    }
+<i>410</i>&nbsp;
+<i>411</i>&nbsp;    public String getName(){
+<b class="nc"><i>412</i>&nbsp;        return this.name;</b>
+<i>413</i>&nbsp;    }
+<i>414</i>&nbsp;
+<i>415</i>&nbsp;    public boolean isMyTurn() {
+<b class="nc"><i>416</i>&nbsp;        return isMyTurn;</b>
+<i>417</i>&nbsp;    }
+<i>418</i>&nbsp;
+<i>419</i>&nbsp;    public String getMessage(){
+<b class="nc"><i>420</i>&nbsp;        return this.message;</b>
+<i>421</i>&nbsp;    }
+<i>422</i>&nbsp;
+<i>423</i>&nbsp;    public int getPlayers(){
+<b class="nc"><i>424</i>&nbsp;        return this.playernumber;</b>
+<i>425</i>&nbsp;    }
+<i>426</i>&nbsp;
+<i>427</i>&nbsp;    public String getState(){
+<b class="nc"><i>428</i>&nbsp;        return this.state;</b>
+<i>429</i>&nbsp;    }
+<i>430</i>&nbsp;
+<i>431</i>&nbsp;    public List&lt;Integer&gt; getGodList(){
+<b class="nc"><i>432</i>&nbsp;        return this.chosen;</b>
+<i>433</i>&nbsp;    }
+<i>434</i>&nbsp;
+<i>435</i>&nbsp;    public String getGodOnMap(){
+<b class="nc"><i>436</i>&nbsp;        return this.imagepath;</b>
+<i>437</i>&nbsp;    }
+<i>438</i>&nbsp;
+<i>439</i>&nbsp;    public List&lt;Position&gt; getAvailablePos(){
+<b class="nc"><i>440</i>&nbsp;        return this.availablePos;</b>
+<i>441</i>&nbsp;    }
+<i>442</i>&nbsp;
+<i>443</i>&nbsp;    public Square[][] getMap() {
+<b class="nc"><i>444</i>&nbsp;        return map;</b>
+<i>445</i>&nbsp;    }
+<i>446</i>&nbsp;
+<i>447</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-07-02 21:27</div>
+</div>
+</body>
+</html>

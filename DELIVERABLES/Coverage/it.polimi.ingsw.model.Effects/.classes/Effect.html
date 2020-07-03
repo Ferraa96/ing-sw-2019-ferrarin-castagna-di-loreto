@@ -1,0 +1,113 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: Effect</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">it.polimi.ingsw.model.Effects</a> ]
+</div>
+
+<h1>Coverage Summary for Class: Effect (it.polimi.ingsw.model.Effects)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">Effect</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package it.polimi.ingsw.model.Effects;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import it.polimi.ingsw.controller.Instructions.NotificationInterface;
+<i>4</i>&nbsp;import it.polimi.ingsw.model.Game.Position;
+<i>5</i>&nbsp;import it.polimi.ingsw.model.Player.Worker;
+<i>6</i>&nbsp;
+<i>7</i>&nbsp;import java.util.List;
+<i>8</i>&nbsp;
+<i>9</i>&nbsp;/**
+<i>10</i>&nbsp; * regroup 2 different types of effects: Move or Build
+<i>11</i>&nbsp; */
+<i>12</i>&nbsp;public interface Effect {
+<i>13</i>&nbsp;
+<i>14</i>&nbsp;    /**
+<i>15</i>&nbsp;     * search free cells around
+<i>16</i>&nbsp;     * @param target worker interested
+<i>17</i>&nbsp;     * @return list of available positions
+<i>18</i>&nbsp;     */
+<i>19</i>&nbsp;    List&lt;Position&gt; availableWithGod(Worker target);
+<i>20</i>&nbsp;
+<i>21</i>&nbsp;    /**
+<i>22</i>&nbsp;     * do the action and update the map
+<i>23</i>&nbsp;     * @param chosenCell cell selected
+<i>24</i>&nbsp;     * @param worker target of action
+<i>25</i>&nbsp;     * @return message to send to view
+<i>26</i>&nbsp;     */
+<i>27</i>&nbsp;    NotificationInterface executeAction(Position chosenCell, Worker worker);
+<i>28</i>&nbsp;
+<i>29</i>&nbsp;    /**
+<i>30</i>&nbsp;     * set last move
+<i>31</i>&nbsp;     * @param lastMoveInitialPosition initial cell of last move
+<i>32</i>&nbsp;     */
+<i>33</i>&nbsp;    void setLastMoveInitialPosition(Position lastMoveInitialPosition);
+<i>34</i>&nbsp;
+<i>35</i>&nbsp;    /**
+<i>36</i>&nbsp;     * used for athena
+<i>37</i>&nbsp;     * @param noUp true if athena triggers her power
+<i>38</i>&nbsp;     */
+<i>39</i>&nbsp;    void setNoUp(Boolean noUp);
+<i>40</i>&nbsp;
+<i>41</i>&nbsp;    /**
+<i>42</i>&nbsp;     * auto move for forced targets
+<i>43</i>&nbsp;     * @param enemy worker forced by mino/apollo
+<i>44</i>&nbsp;     * @param pos the position of the enemy
+<i>45</i>&nbsp;     * @param worker the moving worker
+<i>46</i>&nbsp;     * @return message to send to view
+<i>47</i>&nbsp;     */
+<i>48</i>&nbsp;    NotificationInterface executeAutoAction(Worker enemy, Position pos, Worker worker);
+<i>49</i>&nbsp;
+<i>50</i>&nbsp;    /**
+<i>51</i>&nbsp;     * set last build
+<i>52</i>&nbsp;     * @param lastBuildPosition cell of last build
+<i>53</i>&nbsp;     */
+<i>54</i>&nbsp;    void setLastBuildPosition(Position lastBuildPosition);
+<i>55</i>&nbsp;
+<i>56</i>&nbsp;    /**
+<i>57</i>&nbsp;     * @return the last position chosen
+<i>58</i>&nbsp;     */
+<i>59</i>&nbsp;    Position getLastPosition();
+<i>60</i>&nbsp;
+<i>61</i>&nbsp;    /**
+<i>62</i>&nbsp;     * getter
+<i>63</i>&nbsp;     * @return height difference of the move
+<i>64</i>&nbsp;     */
+<i>65</i>&nbsp;    int getDownUp();
+<i>66</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-07-02 21:27</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,168 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: ModelUpdater</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">it.polimi.ingsw.controller.Server</a> ]
+</div>
+
+<h1>Coverage Summary for Class: ModelUpdater (it.polimi.ingsw.controller.Server)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ModelUpdater</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    6,7%
+  </span>
+  <span class="absValue">
+    (1/ 15)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    11,5%
+  </span>
+  <span class="absValue">
+    (3/ 26)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package it.polimi.ingsw.controller.Server;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import it.polimi.ingsw.controller.Instructions.*;
+<i>4</i>&nbsp;import it.polimi.ingsw.model.Game.ModelInterface;
+<i>5</i>&nbsp;
+<i>6</i>&nbsp;/**
+<i>7</i>&nbsp; * handle the messages from the client
+<i>8</i>&nbsp; */
+<i>9</i>&nbsp;public class ModelUpdater implements NotificationVisitor {
+<i>10</i>&nbsp;    private final ModelInterface turn;
+<i>11</i>&nbsp;
+<b class="fc"><i>12</i>&nbsp;    public ModelUpdater(ModelInterface turn) {</b>
+<b class="fc"><i>13</i>&nbsp;        this.turn = turn;</b>
+<b class="fc"><i>14</i>&nbsp;    }</b>
+<i>15</i>&nbsp;
+<i>16</i>&nbsp;    @Override
+<i>17</i>&nbsp;    public void visit(AskForReloadStateNotification msg) {
+<b class="nc"><i>18</i>&nbsp;        turn.loadState(msg.isResponse());</b>
+<b class="nc"><i>19</i>&nbsp;    }</b>
+<i>20</i>&nbsp;
+<i>21</i>&nbsp;    @Override
+<i>22</i>&nbsp;    public void visit(BuildNotification msg) {
+<i>23</i>&nbsp;
+<b class="nc"><i>24</i>&nbsp;    }</b>
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;    @Override
+<i>27</i>&nbsp;    public void visit(ChooseCardNotification msg) {
+<b class="nc"><i>28</i>&nbsp;        turn.setCards(msg.getChosenCard());</b>
+<b class="nc"><i>29</i>&nbsp;    }</b>
+<i>30</i>&nbsp;
+<i>31</i>&nbsp;    @Override
+<i>32</i>&nbsp;    public void visit(ChooseCardListNotification msg) {
+<b class="nc"><i>33</i>&nbsp;        turn.setInitialCards(msg.getChosenCards());</b>
+<b class="nc"><i>34</i>&nbsp;    }</b>
+<i>35</i>&nbsp;
+<i>36</i>&nbsp;    @Override
+<i>37</i>&nbsp;    public void visit(ChoosePosNotification msg) {
+<b class="nc"><i>38</i>&nbsp;        turn.apply(msg.getChosenPos());</b>
+<b class="nc"><i>39</i>&nbsp;    }</b>
+<i>40</i>&nbsp;
+<i>41</i>&nbsp;    @Override
+<i>42</i>&nbsp;    public void visit(ChooseWorkerNotification msg) {
+<b class="nc"><i>43</i>&nbsp;        turn.selectCorrectWorker(msg.getChosenWorker());</b>
+<b class="nc"><i>44</i>&nbsp;    }</b>
+<i>45</i>&nbsp;
+<i>46</i>&nbsp;    @Override
+<i>47</i>&nbsp;    public void visit(FirstPositioningNotification msg) {
+<b class="nc"><i>48</i>&nbsp;        turn.setWorkersPosition(msg.getPositions());</b>
+<b class="nc"><i>49</i>&nbsp;    }</b>
+<i>50</i>&nbsp;
+<i>51</i>&nbsp;    @Override
+<i>52</i>&nbsp;    public void visit(MoveNotification msg) {
+<i>53</i>&nbsp;
+<b class="nc"><i>54</i>&nbsp;    }</b>
+<i>55</i>&nbsp;
+<i>56</i>&nbsp;    @Override
+<i>57</i>&nbsp;    public void visit(SetNameNotification msg) {
+<b class="nc"><i>58</i>&nbsp;        turn.setPlayerName(msg.getName(), msg.getClientID());</b>
+<b class="nc"><i>59</i>&nbsp;    }</b>
+<i>60</i>&nbsp;
+<i>61</i>&nbsp;    @Override
+<i>62</i>&nbsp;    public void visit(SetPowerNotification msg) {
+<b class="nc"><i>63</i>&nbsp;        turn.providePosition(msg.isPower());</b>
+<b class="nc"><i>64</i>&nbsp;    }</b>
+<i>65</i>&nbsp;
+<i>66</i>&nbsp;    @Override
+<i>67</i>&nbsp;    public void visit(DisconnectionNotification msg) {
+<b class="nc"><i>68</i>&nbsp;        turn.handleDisconnection(msg.getClientID());</b>
+<b class="nc"><i>69</i>&nbsp;    }</b>
+<i>70</i>&nbsp;
+<i>71</i>&nbsp;    @Override
+<i>72</i>&nbsp;    public void visit(LoadGameNotification msg) {
+<i>73</i>&nbsp;
+<b class="nc"><i>74</i>&nbsp;    }</b>
+<i>75</i>&nbsp;
+<i>76</i>&nbsp;    @Override
+<i>77</i>&nbsp;    public void visit(EliminationNotification msg) {
+<i>78</i>&nbsp;
+<b class="nc"><i>79</i>&nbsp;    }</b>
+<i>80</i>&nbsp;
+<i>81</i>&nbsp;    @Override
+<i>82</i>&nbsp;    public void visit(WinNotification msg) {
+<i>83</i>&nbsp;
+<b class="nc"><i>84</i>&nbsp;    }</b>
+<i>85</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-07-02 21:27</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,185 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: ServerThread</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">it.polimi.ingsw.controller.Server</a> ]
+</div>
+
+<h1>Coverage Summary for Class: ServerThread (it.polimi.ingsw.controller.Server)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ServerThread</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 31)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package it.polimi.ingsw.controller.Server;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import it.polimi.ingsw.controller.Instructions.DisconnectionNotification;
+<i>4</i>&nbsp;import it.polimi.ingsw.controller.Instructions.NotificationInterface;
+<i>5</i>&nbsp;import it.polimi.ingsw.controller.Instructions.NotificationVisitor;
+<i>6</i>&nbsp;
+<i>7</i>&nbsp;import java.io.IOException;
+<i>8</i>&nbsp;import java.io.ObjectInputStream;
+<i>9</i>&nbsp;import java.io.ObjectOutputStream;
+<i>10</i>&nbsp;import java.net.Socket;
+<i>11</i>&nbsp;
+<i>12</i>&nbsp;/**
+<i>13</i>&nbsp; * the thread that handle the client
+<i>14</i>&nbsp; */
+<i>15</i>&nbsp;public class ServerThread extends Thread {
+<i>16</i>&nbsp;    private ObjectOutputStream outStream;
+<i>17</i>&nbsp;    private ObjectInputStream inStream;
+<i>18</i>&nbsp;    private NotificationVisitor modelUpdater;
+<i>19</i>&nbsp;    private int clientID;
+<i>20</i>&nbsp;    private final Socket socketClient;
+<b class="nc"><i>21</i>&nbsp;    private boolean running = true;</b>
+<i>22</i>&nbsp;
+<i>23</i>&nbsp;    /**
+<i>24</i>&nbsp;     * handle the client connected to the server
+<i>25</i>&nbsp;     * @param socketClient the socket that represent the client
+<i>26</i>&nbsp;     */
+<b class="nc"><i>27</i>&nbsp;    public ServerThread(Socket socketClient) {</b>
+<b class="nc"><i>28</i>&nbsp;        this.socketClient = socketClient;</b>
+<i>29</i>&nbsp;        try {
+<b class="nc"><i>30</i>&nbsp;            outStream = new ObjectOutputStream(socketClient.getOutputStream());</b>
+<b class="nc"><i>31</i>&nbsp;            inStream = new ObjectInputStream(socketClient.getInputStream());</b>
+<b class="nc"><i>32</i>&nbsp;        } catch (IOException e) {</b>
+<b class="nc"><i>33</i>&nbsp;            e.printStackTrace();</b>
+<b class="nc"><i>34</i>&nbsp;        }</b>
+<i>35</i>&nbsp;    }
+<i>36</i>&nbsp;
+<i>37</i>&nbsp;    /**
+<i>38</i>&nbsp;     * creates a thread listening to the commands from the client
+<i>39</i>&nbsp;     */
+<i>40</i>&nbsp;    @Override
+<i>41</i>&nbsp;    public void run() {
+<i>42</i>&nbsp;        try {
+<i>43</i>&nbsp;            while(true) {
+<b class="nc"><i>44</i>&nbsp;                NotificationInterface msg = (NotificationInterface) inStream.readObject();</b>
+<b class="nc"><i>45</i>&nbsp;                if(running) {</b>
+<b class="nc"><i>46</i>&nbsp;                    msg.setClientID(clientID);</b>
+<b class="nc"><i>47</i>&nbsp;                    msg.accept(modelUpdater);</b>
+<i>48</i>&nbsp;                } else {
+<i>49</i>&nbsp;                    return;
+<i>50</i>&nbsp;                }
+<b class="nc"><i>51</i>&nbsp;            }</b>
+<b class="nc"><i>52</i>&nbsp;        } catch(IOException | ClassNotFoundException e) {</b>
+<b class="nc"><i>53</i>&nbsp;            if(running) {</b>
+<b class="nc"><i>54</i>&nbsp;                DisconnectionNotification disconnection = new DisconnectionNotification(&quot;&quot;);</b>
+<b class="nc"><i>55</i>&nbsp;                disconnection.setClientID(clientID);</b>
+<b class="nc"><i>56</i>&nbsp;                disconnection.accept(modelUpdater);</b>
+<b class="nc"><i>57</i>&nbsp;                Thread.currentThread().interrupt();</b>
+<i>58</i>&nbsp;            }
+<i>59</i>&nbsp;            try {
+<b class="nc"><i>60</i>&nbsp;                socketClient.close();</b>
+<b class="nc"><i>61</i>&nbsp;            } catch (IOException ioException) {</b>
+<b class="nc"><i>62</i>&nbsp;                ioException.printStackTrace();</b>
+<b class="nc"><i>63</i>&nbsp;            }</b>
+<i>64</i>&nbsp;        }
+<i>65</i>&nbsp;    }
+<i>66</i>&nbsp;
+<i>67</i>&nbsp;    /**
+<i>68</i>&nbsp;     * send the command to the client
+<i>69</i>&nbsp;     * @param commands the command to send
+<i>70</i>&nbsp;     */
+<i>71</i>&nbsp;    public void send(NotificationInterface commands) {
+<i>72</i>&nbsp;        try {
+<b class="nc"><i>73</i>&nbsp;            outStream.writeObject(commands);</b>
+<b class="nc"><i>74</i>&nbsp;            outStream.reset();</b>
+<b class="nc"><i>75</i>&nbsp;        } catch(IOException e) {</b>
+<b class="nc"><i>76</i>&nbsp;            e.printStackTrace();</b>
+<b class="nc"><i>77</i>&nbsp;        }</b>
+<i>78</i>&nbsp;    }
+<i>79</i>&nbsp;
+<i>80</i>&nbsp;    /**
+<i>81</i>&nbsp;     * associate the current serverThread with the clientID
+<i>82</i>&nbsp;     * @param clientID the id of the connected player
+<i>83</i>&nbsp;     */
+<i>84</i>&nbsp;    public void setClientID(int clientID) {
+<b class="nc"><i>85</i>&nbsp;        this.clientID = clientID;</b>
+<i>86</i>&nbsp;    }
+<i>87</i>&nbsp;
+<i>88</i>&nbsp;    /**
+<i>89</i>&nbsp;     * closes the connection
+<i>90</i>&nbsp;     */
+<i>91</i>&nbsp;    public void closeConnection() {
+<b class="nc"><i>92</i>&nbsp;        running = false;</b>
+<i>93</i>&nbsp;    }
+<i>94</i>&nbsp;
+<i>95</i>&nbsp;    /**
+<i>96</i>&nbsp;     * set the modelUpdater
+<i>97</i>&nbsp;     * @param modelUpdater the modelUpdater
+<i>98</i>&nbsp;     */
+<i>99</i>&nbsp;    public void setModelUpdater(NotificationVisitor modelUpdater) {
+<b class="nc"><i>100</i>&nbsp;        this.modelUpdater = modelUpdater;</b>
+<i>101</i>&nbsp;    }
+<i>102</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-07-02 21:27</div>
+</div>
+</body>
+</html>

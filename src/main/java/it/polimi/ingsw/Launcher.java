@@ -11,22 +11,23 @@ public class Launcher {
             switch (args[0]) {
                 case "s":
                     int inputPort = 10000;
-                    int delay = 120000;
+                    int delay = 120;
                     if(args.length > 1) {
                         try {
                             inputPort = Integer.parseInt(args[1]);
                         } catch (NumberFormatException e) {
-                            System.out.println("Not valid port parameter, using default port");
+                            System.out.println("Invalid port parameter, using default port");
                         }
                     }
                     if(args.length > 2) {
                         try {
                             delay = Integer.parseInt(args[2]);
                         } catch (NumberFormatException e) {
-                            System.out.println("Not valid delay parameter, using default delay");
+                            System.out.println("Invalid delay parameter, using default delay");
                         }
                     }
-                    new SocketServer(inputPort, delay);
+                    new SocketServer(inputPort, delay * 1000);
+                    break;
                 case "g":
                     GUI gui = new GUI();
                     gui.initialize();

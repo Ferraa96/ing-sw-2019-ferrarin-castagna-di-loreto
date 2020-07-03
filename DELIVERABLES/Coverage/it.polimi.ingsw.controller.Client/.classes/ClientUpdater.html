@@ -1,0 +1,224 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: ClientUpdater</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">it.polimi.ingsw.controller.Client</a> ]
+</div>
+
+<h1>Coverage Summary for Class: ClientUpdater (it.polimi.ingsw.controller.Client)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ClientUpdater</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 15)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 43)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package it.polimi.ingsw.controller.Client;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import it.polimi.ingsw.controller.Instructions.*;
+<i>4</i>&nbsp;import it.polimi.ingsw.view.ViewInterface;
+<i>5</i>&nbsp;
+<i>6</i>&nbsp;import java.util.ArrayList;
+<i>7</i>&nbsp;import java.util.List;
+<i>8</i>&nbsp;
+<i>9</i>&nbsp;/**
+<i>10</i>&nbsp; * handle the messages from the server
+<i>11</i>&nbsp; */
+<i>12</i>&nbsp;public class ClientUpdater implements NotificationVisitor {
+<i>13</i>&nbsp;    private final ViewInterface view;
+<i>14</i>&nbsp;    private int playerID;
+<i>15</i>&nbsp;    private List&lt;String&gt; allNames;
+<i>16</i>&nbsp;
+<i>17</i>&nbsp;    /**
+<i>18</i>&nbsp;     * adapter server-client
+<i>19</i>&nbsp;     * @param view the view instance
+<i>20</i>&nbsp;     */
+<b class="nc"><i>21</i>&nbsp;    public ClientUpdater(ViewInterface view) {</b>
+<b class="nc"><i>22</i>&nbsp;        this.view = view;</b>
+<b class="nc"><i>23</i>&nbsp;        allNames = new ArrayList&lt;&gt;();</b>
+<i>24</i>&nbsp;    }
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;    @Override
+<i>27</i>&nbsp;    public void visit(AskForReloadStateNotification msg) {
+<b class="nc"><i>28</i>&nbsp;        if(msg.getClientID() == playerID) {</b>
+<b class="nc"><i>29</i>&nbsp;            view.askForReloadState();</b>
+<i>30</i>&nbsp;        } else {
+<b class="nc"><i>31</i>&nbsp;            view.notificationForOtherClient(&quot;Player &quot; + msg.getClientID() + &quot; is choosing if he wants to reload the game&quot;);</b>
+<i>32</i>&nbsp;        }
+<i>33</i>&nbsp;    }
+<i>34</i>&nbsp;
+<i>35</i>&nbsp;    @Override
+<i>36</i>&nbsp;    public void visit(BuildNotification msg) {
+<b class="nc"><i>37</i>&nbsp;        if(!msg.isDome()) {</b>
+<b class="nc"><i>38</i>&nbsp;            view.buildBlock(msg.getPos(), msg.getHeight());</b>
+<i>39</i>&nbsp;        } else {
+<b class="nc"><i>40</i>&nbsp;            view.buildDome(msg.getPos(), msg.getHeight());</b>
+<i>41</i>&nbsp;        }
+<b class="nc"><i>42</i>&nbsp;        view.updateScreen();</b>
+<i>43</i>&nbsp;    }
+<i>44</i>&nbsp;
+<i>45</i>&nbsp;    @Override
+<i>46</i>&nbsp;    public void visit(ChooseCardNotification msg) {
+<b class="nc"><i>47</i>&nbsp;        if(msg.getClientID() == playerID) {</b>
+<b class="nc"><i>48</i>&nbsp;            view.chooseCard(msg.getAvailableCards());</b>
+<i>49</i>&nbsp;        } else {
+<b class="nc"><i>50</i>&nbsp;            view.notificationForOtherClient(allNames.get(msg.getClientID()) + &quot; is choosing the card&quot;);</b>
+<i>51</i>&nbsp;        }
+<i>52</i>&nbsp;    }
+<i>53</i>&nbsp;
+<i>54</i>&nbsp;    @Override
+<i>55</i>&nbsp;    public void visit(ChooseCardListNotification msg) {
+<b class="nc"><i>56</i>&nbsp;        allNames = msg.getUserNames();</b>
+<b class="nc"><i>57</i>&nbsp;        if(msg.getClientID() == playerID) {</b>
+<b class="nc"><i>58</i>&nbsp;            view.chooseCardList(msg.getNumPlayers());</b>
+<i>59</i>&nbsp;        } else {
+<b class="nc"><i>60</i>&nbsp;            view.notificationForOtherClient(allNames.get(msg.getClientID()) + &quot; is choosing all the cards&quot;);</b>
+<i>61</i>&nbsp;        }
+<i>62</i>&nbsp;    }
+<i>63</i>&nbsp;
+<i>64</i>&nbsp;    @Override
+<i>65</i>&nbsp;    public void visit(ChoosePosNotification msg) {
+<b class="nc"><i>66</i>&nbsp;        if(msg.getClientID() == playerID) {</b>
+<b class="nc"><i>67</i>&nbsp;            view.choosePosition(msg.getAvailablePositions());</b>
+<i>68</i>&nbsp;        } else {
+<b class="nc"><i>69</i>&nbsp;            view.notificationForOtherClient(allNames.get(msg.getClientID()) + &quot; is choosing the position&quot;);</b>
+<i>70</i>&nbsp;        }
+<i>71</i>&nbsp;    }
+<i>72</i>&nbsp;
+<i>73</i>&nbsp;    @Override
+<i>74</i>&nbsp;    public void visit(ChooseWorkerNotification msg) {
+<b class="nc"><i>75</i>&nbsp;        if(msg.getClientID() == playerID) {</b>
+<b class="nc"><i>76</i>&nbsp;            view.chooseWorker(msg.getAvailableWorkers());</b>
+<i>77</i>&nbsp;        } else {
+<b class="nc"><i>78</i>&nbsp;            view.notificationForOtherClient(allNames.get(msg.getClientID()) + &quot; is choosing the worker&quot;);</b>
+<i>79</i>&nbsp;        }
+<i>80</i>&nbsp;    }
+<i>81</i>&nbsp;
+<i>82</i>&nbsp;    @Override
+<i>83</i>&nbsp;    public void visit(FirstPositioningNotification msg) {
+<b class="nc"><i>84</i>&nbsp;        if(msg.getClientID() == playerID) {</b>
+<b class="nc"><i>85</i>&nbsp;            if(!msg.isLoadPos()) {</b>
+<b class="nc"><i>86</i>&nbsp;                view.firstPositioning(msg.getPositions(), msg.getGodNames(), allNames, msg.getClientID(), true);</b>
+<i>87</i>&nbsp;            }
+<i>88</i>&nbsp;        } else {
+<b class="nc"><i>89</i>&nbsp;            if(msg.isLoadPos()) {</b>
+<b class="nc"><i>90</i>&nbsp;                view.firstPositioning(msg.getPositions(), msg.getGodNames(), allNames, msg.getClientID(), false);</b>
+<i>91</i>&nbsp;            } else {
+<b class="nc"><i>92</i>&nbsp;                view.notificationForOtherClient(allNames.get(msg.getClientID()) + &quot; is choosing where to position his workers&quot;);</b>
+<i>93</i>&nbsp;            }
+<i>94</i>&nbsp;        }
+<i>95</i>&nbsp;    }
+<i>96</i>&nbsp;
+<i>97</i>&nbsp;    @Override
+<i>98</i>&nbsp;    public void visit(MoveNotification msg) {
+<b class="nc"><i>99</i>&nbsp;        view.move(msg.getMovements());</b>
+<b class="nc"><i>100</i>&nbsp;        view.updateScreen();</b>
+<i>101</i>&nbsp;    }
+<i>102</i>&nbsp;
+<i>103</i>&nbsp;    @Override
+<i>104</i>&nbsp;    public void visit(SetNameNotification msg) {
+<b class="nc"><i>105</i>&nbsp;        playerID = msg.getClientID();</b>
+<b class="nc"><i>106</i>&nbsp;        if(!msg.isOk()) {</b>
+<b class="nc"><i>107</i>&nbsp;            view.setName();</b>
+<i>108</i>&nbsp;        }
+<i>109</i>&nbsp;    }
+<i>110</i>&nbsp;
+<i>111</i>&nbsp;    @Override
+<i>112</i>&nbsp;    public void visit(SetPowerNotification msg) {
+<b class="nc"><i>113</i>&nbsp;        if(msg.getClientID() == playerID) {</b>
+<b class="nc"><i>114</i>&nbsp;            view.choosePower();</b>
+<i>115</i>&nbsp;        } else {
+<b class="nc"><i>116</i>&nbsp;            view.notificationForOtherClient(allNames.get(msg.getClientID()) + &quot; is choosing the power&quot;);</b>
+<i>117</i>&nbsp;        }
+<i>118</i>&nbsp;    }
+<i>119</i>&nbsp;
+<i>120</i>&nbsp;    @Override
+<i>121</i>&nbsp;    public void visit(DisconnectionNotification msg) {
+<b class="nc"><i>122</i>&nbsp;        view.handleDisconnection(msg.getMessage());</b>
+<i>123</i>&nbsp;    }
+<i>124</i>&nbsp;
+<i>125</i>&nbsp;    @Override
+<i>126</i>&nbsp;    public void visit(LoadGameNotification msg) {
+<b class="nc"><i>127</i>&nbsp;        allNames = msg.getUserNames();</b>
+<b class="nc"><i>128</i>&nbsp;        view.reloadState(msg.getMap(), msg.getGodNames(), msg.getUserNames(), playerID);</b>
+<b class="nc"><i>129</i>&nbsp;        view.updateScreen();</b>
+<i>130</i>&nbsp;    }
+<i>131</i>&nbsp;
+<i>132</i>&nbsp;    @Override
+<i>133</i>&nbsp;    public void visit(EliminationNotification msg) {
+<b class="nc"><i>134</i>&nbsp;        view.elimination(msg.getClientID() == playerID, msg.getPlayerName(), msg.getEliminatedWorkers());</b>
+<i>135</i>&nbsp;    }
+<i>136</i>&nbsp;
+<i>137</i>&nbsp;    @Override
+<i>138</i>&nbsp;    public void visit(WinNotification msg) {
+<b class="nc"><i>139</i>&nbsp;        view.win(msg.getClientID() == playerID, msg.getPlayerName());</b>
+<i>140</i>&nbsp;    }
+<i>141</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-07-02 21:27</div>
+</div>
+</body>
+</html>
